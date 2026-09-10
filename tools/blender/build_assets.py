@@ -19,7 +19,7 @@ PALETTE = {'Stone': (51,49,65), 'Wood': (62,43,58), 'Metal': (43,40,57), 'Roof':
            'Glow': (255,188,104), 'Foliage': (25,43,43), 'Accent': (255,140,60),
            'Glass': (120,160,220), 'Water': (80,205,255), 'Ground': (29,43,42),
            'Collision': (220,50,80)}
-BUDGETS = {'StreetLamp':600, 'Gravestone':150, 'PineTree':400, 'DeadTree':600, 'Pumpkin':300,
+BUDGETS = {'StreetLamp':600, 'Gravestone':150, 'PineTree':400, 'DeadTree':600, 'Pumpkin':500,
            'GhostFountain':4000, 'ChamberPortal':2500, 'RebirthAltar':2000, 'NoticeBoard':600, 'WelcomeSign':300,
            'HauntShowcase':6000, 'MansionHill':3000, 'MansionFacade':18000, 'Boulder':200,
            'ShopHouse':5000, 'Caretaker':1200, 'MarketStall':800, 'OakCask':200, 'Crate':100,
@@ -203,6 +203,7 @@ def pumpkin():
     turned('Glow',[(1.57,.22),(1.64,.22)],sides=4,phase=math.pi/4)
     sweep([(0,0,1.56),(.04,0,1.95),(.24,.02,2.25)],[.18,.13,.075],4)
     box('Collision',(0,0,.7),(1.6,1.6,1.4))
+    pumpkin_details()
 
 
 def tube(role_name, a, b, r1, r2, sides=6):
@@ -267,7 +268,7 @@ def ghost_fountain():
         box('Glow',(x,y,1.25),(.5,.5,.5))
     taper('Collision',(0,0,.85),1.7,12.6,12.6,16)
     taper('Collision',(0,0,3.2),3.0,4.95,4.95,12)
-    fountain_details()
+    fountain_details(); fountain_details2()
 
 
 def chamber_portal():
@@ -286,7 +287,7 @@ def chamber_portal():
     disc2 = turned('Accent',[(-.1,3.7),(.1,3.7)],sides=16); disc2.rotation_euler=(math.pi/2,0,0); disc2.location=(0,-.15,5.3)
     taper('Collision',(0,0,.5),1.0,8.1,8.1,16)
     for x in (-5.6,5.6): box('Collision',(x,0,5.5),(2.3,2.7,9.0))
-    portal_details()
+    portal_details(); portal_details2()
 
 
 def rebirth_altar():
@@ -305,6 +306,7 @@ def rebirth_altar():
     taper('Collision',(0,0,.9),1.8,6.1,6.1,16)
     box('Collision',(0,0,2.8),(3.6,2.2,2.0))
     for x,y in ring_of(4,3.9,math.pi/4): box('Collision',(x,y,3.2),(1.3,1.3,2.8))
+    altar_details2()
 
 
 def notice_board():
@@ -386,7 +388,7 @@ def haunt_showcase():
     for sx in (-1, 1):
         box('Foliage', (sx*21.5, 6, 2.1), (1.9, 26, 2.2))
         box('Foliage', (sx*13.2, 18.5, 2.0), (17.4, 1.8, 2.0))
-    haunt_details()
+    haunt_details(); haunt_details2()
 
 
 def arched_window(role_name, x, y, z, width, height, depth=.24, facing='-Y'):
@@ -427,6 +429,7 @@ def mansion_hill():
     for sx in (-1, 1):                                                # side retaining walls of the upper terrace
         box('Stone', (sx*45.2, 13.5, 6), (.6, 43, 12))
     box('Stone', (0, -35.2, .8), (90, .6, 1.6))                       # front retaining wall of the lower terrace
+    hill_details2()
 
 
 def mansion_facade():
@@ -465,7 +468,7 @@ def mansion_facade():
         for x, h in ((36, 30), (39, 22), (14, 18)):
             box('Foliage', (sx*x, -13.2, h/2+1), (1.6, .35, h))
         box('Foliage', (sx*61.5, -6, 20), (.35, 8, 36))
-    mansion_details()
+    mansion_details(); mansion_details2()
 
 
 def boulder():
@@ -510,7 +513,7 @@ def shop_house():
     box('Glow', (7.4, -10.5, 8.2), (.7, .7, .9))                        # hanging lantern
     box('Metal', (-4.2, -9.9, 8.9), (.2, 1.4, .2))                      # sign rod
     box('Wood', (-4.2, -10.4, 7.9), (4.4, .3, 1.7))                     # hanging sign board
-    shop_details()
+    shop_details(); shop_details2()
 
 
 def caretaker():
@@ -523,6 +526,7 @@ def caretaker():
     box('Metal', (1.15, -.95, 1.75), (.12, .12, .8))                   # lantern handle
     box('Metal', (1.15, -.95, 1.25), (.5, .5, .1)); box('Metal', (1.15, -.95, .55), (.5, .5, .1))
     box('Glow', (1.15, -.95, .9), (.4, .4, .6))
+    caretaker_details2()
 
 
 def market_stall():
@@ -534,12 +538,14 @@ def market_stall():
     for x, y in ((-2.4, .3), (-.6, -.5), (1.4, .4), (2.8, -.6)):
         turned('Accent', [(2.58, .15), (2.75, .55), (3.2, .6), (3.55, .35), (3.65, .12)], sides=8).location = (x, y, 0)
     box('Glow', (3.2, -2.2, 4.6), (.5, .5, .7))                        # lantern
+    stall_details2()
 
 
 def barrel():
     turned('Wood', [(0, .78), (.4, .95), (1.3, 1.0), (2.2, .95), (2.6, .78)], sides=10, smooth=True)
     for z in (.55, 2.05):
         turned('Metal', [(z-.08, 1.03), (z+.08, 1.03)], sides=10)   # hoops sit just outside the staves
+    cask_details2()
 
 
 def crate():
@@ -565,6 +571,7 @@ def graveyard_fence():
         for k in range(4):
             pk = box('Metal', (sx*3.0+sx*(k-1.5)*.8*math.cos(.9), -23.6-(k-1.5)*.8*math.sin(.9)*sx*sx, 1.9), (.1, .1, 3.2))
             pk.rotation_euler = (0, 0, sx*.9)
+    graveyard_details2()
 
 
 def crypt():
@@ -576,7 +583,7 @@ def crypt():
     box('Stone', (0, -4.7, 5.3), (3.6, .5, .6))                        # lintel
     box('Foliage', (-3.2, -4.55, 3.2), (1.2, .3, 4.6))                 # ivy
     box('Glow', (0, -4.7, 6.4), (.5, .3, .5))                          # lamp over the door
-    crypt_details()
+    crypt_details(); crypt_details2()
 
 
 def gravestone_cross():
@@ -752,6 +759,130 @@ def lamp_details():
     for sx in (-1, 1):
         sweep([(sx*.3, 0, 5.4), (sx*.9, 0, 5.9), (sx*.75, 0, 6.5)], [.07, .06, .05], 5, 'Metal')
     turned('Metal', [(8.55, .12), (8.75, .2), (8.95, .06)], sides=6)
+
+
+# ---------------------------------------------------------------- Level B round 2
+def mullions(role_name, x, y, z, width, height, facing='Y', t=.1, depth=.28):
+    """A cross of glazing bars over a pane whose base is at z."""
+    if facing == 'Y':
+        box(role_name, (x, y, z+height/2), (t, depth, height)); box(role_name, (x, y, z+height*.55), (width, depth, t))
+    else:
+        box(role_name, (x, y, z+height/2), (depth, t, height)); box(role_name, (x, y, z+height*.55), (depth, width, t))
+
+
+def small_pumpkin(x, y, z, r=.6):
+    rings = [[(x+rr*(1+.07*math.cos(5*a))*math.cos(a), y+rr*(1+.07*math.cos(5*a))*math.sin(a), z+zz)
+              for a in [i*2*math.pi/10 for i in range(10)]]
+             for zz, rr in [(0, r*.3), (r*.25, r*.95), (r*.75, r*1.05), (r*1.25, r*.8), (r*1.5, r*.25)]]
+    loft('Accent', rings, smooth=True)
+    box('Wood', (x, y, z+r*1.6), (.16, .16, .35))
+
+
+def jack_face(y, scale=1.0, z0=0):
+    """Glowing carved face on the -Y side of a pumpkin: two diamond eyes and a jagged grin."""
+    for sx in (-1, 1):
+        eye = box('Glow', (sx*.55*scale, y, z0+1.25*scale), (.5*scale, .3, .5*scale)); eye.rotation_euler = (0, math.pi/4, 0)
+    for i, (x, h) in enumerate(((-.7, .3), (-.35, .18), (0, .32), (.35, .18), (.7, .3))):
+        box('Glow', (x*scale, y, z0+(.72+(.06 if i % 2 else 0))*scale), (.34*scale, .3, h*scale))
+
+
+def pumpkin_details():
+    jack_face(-1.5)
+
+
+def haunt_details2():
+    # Gate arch with a plot-colour lantern, flagstone path to the door, a bench, gate pumpkins, window mullions.
+    arch('Metal', 0, 20, 5.3, 4.2, .28, .28, 7)
+    box('Metal', (0, 20, 9.45), (.2, .2, .5)); box('Accent', (0, 20, 8.7), (.7, .7, .9))
+    for i, yy in enumerate(range(18, -9, -2)):
+        box('Stone', (((-1) ** i)*.35, yy, 1.06), (2.3, 1.7, .12))
+    box('Wood', (-17.5, 10, 1.55), (3.2, .9, .16)); box('Wood', (-18.7, 10, 1.25), (.3, .8, .5)); box('Wood', (-16.3, 10, 1.25), (.3, .8, .5))
+    for x in (-5.4, 5.4): small_pumpkin(x, 18.6, 1.0, .55)
+    for x in (-10.5, -5.5, 5.5, 10.5): mullions('Roof', x, -10.84, 3.1, 1.8, 2.4)
+    for x in (-11, -6, 0, 6, 11): mullions('Roof', x, -10.54, 8.5, 1.6, 2.2)
+    for sx in (-1, 1):
+        for y in (-18.2, -13.2): mullions('Roof', sx*15.8, y, 8.6, 1.5, 2.0, facing='X')
+
+
+def shop_details2():
+    for x in (-5.5, 5.5):
+        box('Wood', (x, -9.7, 8.55), (2.6, .55, .45)); box('Foliage', (x, -9.7, 8.95), (2.4, .45, .35))
+        mullions('Roof', x, -9.38, 8.8, 2.0, 2.6)
+    mullions('Roof', 3.6, -8.18, 2.3, 6.4, 3.6, t=.12)
+    box('Metal', (-4.2, -9.6, 9.35), (.18, 1.2, .18)); box('Metal', (-4.2, -9.0, 9.4), (.18, .18, 1.0))
+    box('Metal', (7.4, -10.4, 8.75), (.08, .08, .5))
+
+
+def mansion_details2():
+    for sx in (-1, 1):
+        for z in (8, 20, 32): mullions('Roof', sx*51, -13.13, z, 3.2, 6.5, depth=.3)
+        box('Stone', (sx*22, 2, 53), (2.6, 2.6, 6.5)); box('Stone', (sx*22, 2, 56.5), (3.2, 3.2, .5))     # chimneys
+        for cx, cy in ((-1, -1), (1, -1), (-1, 1), (1, 1)):                                             # gargoyle heads
+            box('Stone', (sx*51+cx*11.9, cy*13.9, 47.6), (1.1, 1.1, .9))
+            box('Glow', (sx*51+cx*12.4, cy*14.4, 47.8), (.3, .3, .25))
+        box('Metal', (sx*13.2, -18.5, 10.2), (.2, .2, .9)); box('Glow', (sx*13.2, -18.9, 9.3), (.7, .7, .9))   # porch lanterns
+        for x in (48, 55): box('Foliage', (sx*x, -13.2, 12), (1.2, .35, 22))
+    for x in (-30, -20, 20, 30): mullions('Roof', x, -13.13, 4, 3.6, 7, depth=.3)
+    for x in (-30, -20, -10, 10, 20, 30):
+        mullions('Roof', x, -13.13, 17, 3.2, 6, depth=.3); mullions('Roof', x, -13.13, 29, 3.2, 6, depth=.3)
+    for x in (-24, 0, 24):                                                                               # gable dormers
+        box('Stone', (x, -11.2, 43.2), (4.6, 3.6, 3.4))
+        prism_y('Roof', -13.4, -9.4, [(-2.8, 44.8), (2.8, 44.8), (0, 46.6)])
+        arched_window('Glow', x, -13.05, 42.2, 1.8, 2.6)
+    for sx in (-1, 1): turned('Metal', [(51.9, .4), (52.6, .55), (54.2, .12)], sides=6).location = (sx*41.2, 0, 0)
+
+
+def crypt_details2():
+    for x in (-.8, -.4, 0, .4, .8): box('Metal', (x, -4.62, 2.9), (.12, .12, 3.6))
+    box('Metal', (0, -4.62, 4.6), (2.2, .12, .12)); box('Stone', (0, -4.75, 6.0), (1.7, .16, .55))
+
+
+def fountain_details2():
+    for i in range(4):
+        a = math.pi/4+i*math.pi/2
+        head = box('Stone', (4.75*math.cos(a), 4.75*math.sin(a), 5.0), (.9, .8, .75)); head.rotation_euler = (0, 0, a)
+        snout = box('Stone', (5.25*math.cos(a), 5.25*math.sin(a), 4.85), (.5, .4, .4)); snout.rotation_euler = (0, 0, a)
+    box('Metal', (0, -1.5, 13.15), (.55, .2, .22))
+
+
+def graveyard_details2():
+    arch('Metal', 0, -25, 5.0, 5.2, .28, .28, 7)
+    box('Metal', (0, -25, 9.9), (.2, .2, .5)); box('Accent', (0, -25, 9.15), (.7, .7, .9))
+
+
+def altar_details2():
+    for x, y in ring_of(8, 3.2, math.pi/8): box('Accent', (x, y, 1.86), (.6, .6, .08))
+    for sx, sy in ((-2.6, 2.4), (2.6, -2.4)):
+        for dx, dy, h in ((0, 0, .9), (.45, .3, .6)):
+            turned('Stone', [(1.8, .15), (1.8+h, .15)], sides=6).location = (sx+dx, sy+dy, 0)
+            box('Glow', (sx+dx, sy+dy, 1.8+h+.15), (.2, .2, .3))
+
+
+def portal_details2():
+    turned('Stone', [(1.0, 7.3), (1.25, 7.5), (1.25, 7.0)], sides=16)
+    for x in (-5.6, 5.6): box('Stone', (x, 0, 1.4), (3.0, 3.4, .8))
+
+
+def caretaker_details2():
+    turned('Wood', [(4.72, .95), (4.9, 1.0), (5.02, .42)], sides=8)
+    tube('Wood', (-1.0, -.5, .2), (-1.25, -.6, 4.7), .09, .07, 6)
+    turned('Glow', [(4.6, .1), (4.85, .22), (5.1, .1)], sides=6).location = (-1.27, -.6, 0)
+
+
+def hill_details2():
+    for sx in (-1, 1):
+        turned('Stone', [(12.3, .6), (12.6, .75), (13.6, .55), (13.9, .7), (14.1, .3)], sides=8).location = (sx*13.6, -7.6, 0)
+        for x in (16, 24, 32, 40, 44): box('Accent', (sx*x, -7.6, 15.55), (.5, .5, .5))
+
+
+def stall_details2():
+    for x in (-2.4, 0, 2.4):
+        box('Metal', (x, -2.9, 4.75), (.08, .08, .5)); box('Glow', (x, -2.9, 4.2), (.4, .4, .55))
+    box('Wood', (2.2, 0, .7), (1.4, 1.4, 1.4))
+
+
+def cask_details2():
+    box('Metal', (0, -1.05, .9), (.15, .5, .15)); box('Metal', (0, -1.3, .78), (.25, .12, .2))
 
 BUILDERS = {'StreetLamp':street_lamp,'Gravestone':gravestone,'PineTree':pine,
             'DeadTree':dead_tree,'Pumpkin':pumpkin,

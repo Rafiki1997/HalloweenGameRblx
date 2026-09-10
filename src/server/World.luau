@@ -21,13 +21,13 @@ local function lamp(parent,pos)
         local model=Assets.place('StreetLamp',parent,CFrame.new(pos))
         local glow=model:FindFirstChild('StreetLamp_Glow',true)
         if glow then
-            local light=Instance.new('PointLight'); light.Color=warm; light.Brightness=2.4; light.Range=28; light.Parent=glow
+            local light=Instance.new('PointLight'); light.Color=warm; light.Brightness=2.8; light.Range=30; light.Parent=glow
         end
         return
     end
     part(parent,'LampPost',Vector3.new(0.4,7,0.4),pos+Vector3.new(0,3.5,0))
     local glow=part(parent,'Lantern',Vector3.new(1,1.6,1),pos+Vector3.new(0,7.5,0),warm,Enum.Material.Neon)
-    local light=Instance.new('PointLight'); light.Color=warm; light.Brightness=2.4; light.Range=28; light.Parent=glow
+    local light=Instance.new('PointLight'); light.Color=warm; light.Brightness=2.8; light.Range=30; light.Parent=glow
     part(parent,'LanternCap',Vector3.new(1.6,0.3,1.6),pos+Vector3.new(0,8.5,0))
 end
 local function sign(parent,pos,text,color)
@@ -51,9 +51,9 @@ function W.build()
     local root=Instance.new('Folder'); root.Name='GhostlightWorld'; root.Parent=workspace; W.Root=root
     local lighting=game:GetService('Lighting')
     -- Future lighting is much darker than Voxel at the same numbers: moonlit ambient, exposure and environment lighting are raised.
-    lighting.ClockTime=0.5; lighting.Brightness=2.4; lighting.Ambient=Color3.fromRGB(78,72,124); lighting.OutdoorAmbient=Color3.fromRGB(118,124,178)
-    lighting.GlobalShadows=true; lighting.FogColor=Color3.fromRGB(44,42,78); lighting.FogStart=170; lighting.FogEnd=640
-    lighting.EnvironmentDiffuseScale=0.75; lighting.EnvironmentSpecularScale=0.7; lighting.ShadowSoftness=0.25; lighting.ExposureCompensation=0.7
+    lighting.ClockTime=0.5; lighting.Brightness=2.8; lighting.Ambient=Color3.fromRGB(96,90,146); lighting.OutdoorAmbient=Color3.fromRGB(140,146,200)
+    lighting.GlobalShadows=true; lighting.FogColor=Color3.fromRGB(52,50,90); lighting.FogStart=200; lighting.FogEnd=700
+    lighting.EnvironmentDiffuseScale=0.9; lighting.EnvironmentSpecularScale=0.7; lighting.ShadowSoftness=0.25; lighting.ExposureCompensation=1.0
     local atm=Instance.new('Atmosphere'); atm.Density=0.2; atm.Offset=0.25; atm.Haze=1.0; atm.Glare=0.2
     atm.Color=Color3.fromRGB(112,116,165); atm.Decay=Color3.fromRGB(65,48,94); atm.Parent=lighting
     local bloom=Instance.new('BloomEffect'); bloom.Intensity=0.26; bloom.Size=26; bloom.Threshold=1.6; bloom.Parent=lighting

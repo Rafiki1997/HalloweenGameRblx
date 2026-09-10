@@ -20,7 +20,7 @@
       "assetId": 122240540563593,
       "uploadedAt": "2026-09-10T13:32:58.624240+00:00",
       "sha256": "e3c738d4969c52f3cf95b7be7b5b44978dc7f337d3f4356ae06743c6816bf5c7",
-      "exportSha256": "e3c738d4969c52f3cf95b7be7b5b44978dc7f337d3f4356ae06743c6816bf5c7"
+      "exportSha256": "e14c220e1363d735f909c7f2ceffbbf05c62e8e66bb4e70bd5ac0d90a4f3f6b5"
     },
     "Gravestone": {
       "zone": "Props",
@@ -40,7 +40,7 @@
       "assetId": 136583765279249,
       "uploadedAt": "2026-09-10T13:32:58.624479+00:00",
       "sha256": "02cc5748c8e06ba979ac06cf7354a6dba334fb53b2b2931ceb2988a9cdd9c846",
-      "exportSha256": "02cc5748c8e06ba979ac06cf7354a6dba334fb53b2b2931ceb2988a9cdd9c846"
+      "exportSha256": "a65537fb490a326400ed09b727d7c726b749570b4530fc795f56dca381a195b4"
     },
     "PineTree": {
       "zone": "Props",
@@ -61,7 +61,7 @@
       "assetId": 115634389395822,
       "uploadedAt": "2026-09-10T13:32:58.624747+00:00",
       "sha256": "650f58c8ea17b14d412a848e2b0172757c34f94229287c17512946bad2f7096d",
-      "exportSha256": "650f58c8ea17b14d412a848e2b0172757c34f94229287c17512946bad2f7096d"
+      "exportSha256": "cda324359324d9727e2f22b2bb903c2d2cce1779a23932501f4397b2ddf02db4"
     },
     "DeadTree": {
       "zone": "Props",
@@ -81,14 +81,14 @@
       "assetId": 76444404897817,
       "uploadedAt": "2026-09-10T13:32:58.625044+00:00",
       "sha256": "c1bbd2d22858bcb0f01b61a4b8771b66df65acba57de1a27e9fd835e4cb4d201",
-      "exportSha256": "c1bbd2d22858bcb0f01b61a4b8771b66df65acba57de1a27e9fd835e4cb4d201"
+      "exportSha256": "65e855c3dd9ee9c6d0eaf2e4dd3503e0f41d0f689aa00c2aa7d2086104fef4d9"
     },
     "Pumpkin": {
       "zone": "Props",
       "footprint": [
         2.8628,
         2.29155,
-        2.87657
+        3.08828
       ],
       "roles": [
         "Accent",
@@ -96,14 +96,14 @@
         "Glow",
         "Wood"
       ],
-      "triangleBudget": 300,
-      "triangles": 280,
+      "triangleBudget": 500,
+      "triangles": 364,
       "meshCount": 4,
-      "geometrySha256": "1e2993396f3b9190570ad8da5c8b405a7dcaa5af1fb52025c4f2a73cb6c14e9c",
+      "geometrySha256": "f2e8577110c65ba57c3aaa8ffea15f3c028a60c36d85609f6ba64f1308d5b38e",
       "assetId": 88455361663381,
       "uploadedAt": "2026-09-10T13:32:58.625297+00:00",
       "sha256": "03e50d5a3034e75c79d94f12064f148f813c493672683f41abc06315701dd805",
-      "exportSha256": "03e50d5a3034e75c79d94f12064f148f813c493672683f41abc06315701dd805"
+      "exportSha256": "1f5cc80d8b22930ce66a8e6c2e554020303441c4dc48a6e042fe65de635c4c17"
     },
     "GhostFountain": {
       "zone": "Plaza",
@@ -121,13 +121,13 @@
         "Water"
       ],
       "triangleBudget": 4000,
-      "triangles": 1988,
+      "triangles": 2096,
       "meshCount": 6,
-      "geometrySha256": "d8e76dc6532679c14ce321a55588770052f820a2f62543549766390f7e52726e",
+      "geometrySha256": "c286d1bd99458c401b421bc62ded928567496332d5c1d8396c0900d285647efb",
       "assetId": 106922798333990,
       "uploadedAt": "2026-09-10T13:32:58.625846+00:00",
       "sha256": "710068a469af37c1a4fffcb95d9bddfb83fef8998db1fa4ac6256669b876b945",
-      "exportSha256": "710068a469af37c1a4fffcb95d9bddfb83fef8998db1fa4ac6256669b876b945"
+      "exportSha256": "87c50380b4a188ade30578e41dca16e1262dc85584ca1a4b93afd4a30723af53"
     },
     "ChamberPortal": {
       "zone": "Plaza",
@@ -144,13 +144,13 @@
         "Stone"
       ],
       "triangleBudget": 2500,
-      "triangles": 720,
+      "triangles": 836,
       "meshCount": 5,
-      "geometrySha256": "4d1208d8639f87fe1b4223bf48f743a61a2ecf7656d2f9e574c5036ff3563093",
+      "geometrySha256": "e11d31a22d6cec8b9c0ddd293613926bdc6f522e762f4506eab794e1e210e5f8",
       "assetId": 126465059915313,
       "uploadedAt": "2026-09-10T13:32:58.626178+00:00",
       "sha256": "a1338c48dc0e74462196422d9f70673177308ece51645c81d56c1162bc7e9d35",
-      "exportSha256": "a1338c48dc0e74462196422d9f70673177308ece51645c81d56c1162bc7e9d35"
+      "exportSha256": "290709d9c498128f77ad87a1f849eededc6f150e6399a5ed3e3cc191297d187d"
     },
     "RebirthAltar": {
       "zone": "Plaza",
@@ -166,13 +166,13 @@
         "Stone"
       ],
       "triangleBudget": 2000,
-      "triangles": 852,
+      "triangles": 1076,
       "meshCount": 4,
-      "geometrySha256": "96df885dd9ae947cf9c2d6091961e9aa8c091a173ab2cbe32470aa8f568bc04c",
+      "geometrySha256": "a3de7c56a4cd0953471803568f7cd93da4c97d4757c17bb4bddb9936ad162f80",
       "assetId": 117043793736449,
       "uploadedAt": "2026-09-10T13:32:58.626496+00:00",
       "sha256": "575721b42794006c7012de5a9902473ff4c8678b6b8e3c900e16536d08827046",
-      "exportSha256": "575721b42794006c7012de5a9902473ff4c8678b6b8e3c900e16536d08827046"
+      "exportSha256": "2742bde543464abaee4f79e3fd93303719be039eafbe9193d34ae5880e5504fc"
     },
     "NoticeBoard": {
       "zone": "Plaza",
@@ -194,7 +194,7 @@
       "assetId": 132306502866809,
       "uploadedAt": "2026-09-10T13:32:58.626723+00:00",
       "sha256": "78fbc7fb9464d46be19c54cc678874b613d099b9275f3da877411105d18ac971",
-      "exportSha256": "78fbc7fb9464d46be19c54cc678874b613d099b9275f3da877411105d18ac971"
+      "exportSha256": "81f629609e34a86529d8b38011d11acf634ccc1638d4241ded109e9c05d6ae94"
     },
     "WelcomeSign": {
       "zone": "Plaza",
@@ -216,7 +216,7 @@
       "assetId": 95106154151130,
       "uploadedAt": "2026-09-10T13:32:58.626940+00:00",
       "sha256": "7b3abbb27ef7c65b3de6af9ff981ddcd80bddeae34db86dfc0c49e54169309a9",
-      "exportSha256": "7b3abbb27ef7c65b3de6af9ff981ddcd80bddeae34db86dfc0c49e54169309a9"
+      "exportSha256": "64ede780bfb63593804842cc9d84d6fefc1bb89c45bf94057dac5f5264732428"
     },
     "HauntShowcase": {
       "zone": "Haunts",
@@ -234,40 +234,41 @@
         "Wood"
       ],
       "triangleBudget": 6000,
-      "triangles": 3584,
+      "triangles": 4424,
       "meshCount": 6,
-      "geometrySha256": "2f8a8fe2fb17c2f372b5d01b8fa6e8ed838a3d419b281c83672442dcf29b9fad",
+      "geometrySha256": "487ee298fcbe69c7ca65329a1df62359ccda898421f63f0dcf68e0e237c229b5",
       "assetId": 125731043348668,
       "uploadedAt": "2026-09-10T13:32:58.627555+00:00",
       "sha256": "a127822802cfd7c5fd81f8cdd9951058ef201cb016b1e65d35849bc4ebe835c9",
-      "exportSha256": "a127822802cfd7c5fd81f8cdd9951058ef201cb016b1e65d35849bc4ebe835c9"
+      "exportSha256": "9bb9de3f50fd25acd6dabd2ca0fe863821c5c784ac531d5719c95b837daf38a1"
     },
     "MansionHill": {
       "zone": "Mansion",
       "footprint": [
         91.00001,
-        15.3,
+        15.8,
         70.5
       ],
       "roles": [
+        "Accent",
         "Ground",
         "Stone"
       ],
       "triangleBudget": 3000,
-      "triangles": 436,
-      "meshCount": 2,
-      "geometrySha256": "c8e2ac21af4040a0ef67a167c9d8dd683452875fcdd14acae5a5b7d585b3d1f3",
+      "triangles": 708,
+      "meshCount": 3,
+      "geometrySha256": "fc52f45b6d0e2d5e960a75d46c0a776d6cc9e890e165d3b66c2ded1799e698ef",
       "assetId": 133984575959280,
       "uploadedAt": "2026-09-10T13:32:58.627770+00:00",
       "sha256": "7109435e40f2ad37f89a28029a3cb7cb588ce4153ced51b71768b6ef35f4c46d",
-      "exportSha256": "7109435e40f2ad37f89a28029a3cb7cb588ce4153ced51b71768b6ef35f4c46d"
+      "exportSha256": "71167fdadaf62a02cbc1df63cfeea3f98832642a928733916ef480fd43f2efa2"
     },
     "MansionFacade": {
       "zone": "Mansion",
       "footprint": [
-        126.20001,
+        127.10001,
         66.45,
-        36.24869
+        36.45
       ],
       "roles": [
         "Foliage",
@@ -278,13 +279,13 @@
         "Wood"
       ],
       "triangleBudget": 18000,
-      "triangles": 5424,
+      "triangles": 6556,
       "meshCount": 6,
-      "geometrySha256": "084e0922eeaf9bd8ea84109427be0c5b3238f43513f989490e275818b7a07bae",
+      "geometrySha256": "d4e69a4f48ea374e27da5bb70fc983c7330173758ab538b86b6f570d35253a94",
       "assetId": 117527253688421,
       "uploadedAt": "2026-09-10T13:32:58.628606+00:00",
       "sha256": "5ba74805326c59008f99e9c8000c02575cf290845a112c7e8d33c66d08d60851",
-      "exportSha256": "5ba74805326c59008f99e9c8000c02575cf290845a112c7e8d33c66d08d60851"
+      "exportSha256": "bbca637750656dfb0267cc5f33063d7b9b9787463782e8b04991c2fe56ccb863"
     },
     "Boulder": {
       "zone": "Mansion",
@@ -303,7 +304,7 @@
       "assetId": 104059816112501,
       "uploadedAt": "2026-09-10T13:32:58.628768+00:00",
       "sha256": "2b2b8b70684334a8749754e639e242f00ed93fff69e2f1861e6d048f7d4a7955",
-      "exportSha256": "2b2b8b70684334a8749754e639e242f00ed93fff69e2f1861e6d048f7d4a7955"
+      "exportSha256": "7e604df1dbe7aed17e2fb97d2eafb7ceb4a365db2ea3cde8d1bbcee10636a503"
     },
     "ShopHouse": {
       "zone": "Town",
@@ -313,6 +314,7 @@
         20.75011
       ],
       "roles": [
+        "Foliage",
         "Glow",
         "Metal",
         "Roof",
@@ -320,19 +322,19 @@
         "Wood"
       ],
       "triangleBudget": 5000,
-      "triangles": 832,
-      "meshCount": 5,
-      "geometrySha256": "6c2d49f97621e27128716a0defd685a3ba06d54102addaaec7a0615746200139",
+      "triangles": 988,
+      "meshCount": 6,
+      "geometrySha256": "4c9bcad8415a1c921f88af99f7ee94c6fbad0e567e1a923e588a2ccf461976a4",
       "assetId": 75167034499776,
       "uploadedAt": "2026-09-10T13:32:58.629099+00:00",
       "sha256": "7a37d3f3706e25add64b3b0f80bc08e3a2bfd493a6c460a2b74a7253170c5223",
-      "exportSha256": "7a37d3f3706e25add64b3b0f80bc08e3a2bfd493a6c460a2b74a7253170c5223"
+      "exportSha256": "0555c014fb4e2db3834209a82439c8f8ca31a18d0ad8012d29da26019045ae91"
     },
     "Caretaker": {
       "zone": "Town",
       "footprint": [
-        2.5371,
-        5.0,
+        2.89,
+        5.1,
         2.25
       ],
       "roles": [
@@ -341,35 +343,36 @@
         "Wood"
       ],
       "triangleBudget": 1200,
-      "triangles": 276,
+      "triangles": 372,
       "meshCount": 3,
-      "geometrySha256": "4ab065803e28dec942e37ebc9f5542566f7a43494ef78530b008671a93d1160e",
+      "geometrySha256": "7e820def0685dc9fd572277719cd42e7c79aff774cffc7c049f371d671792200",
       "assetId": 83052712222180,
       "uploadedAt": "2026-09-10T13:32:58.629326+00:00",
       "sha256": "e7a09ea4ec43097e175815cf15b5c3c7a3b5416504e3dd3d56adae388249a862",
-      "exportSha256": "e7a09ea4ec43097e175815cf15b5c3c7a3b5416504e3dd3d56adae388249a862"
+      "exportSha256": "2a2b7d3e236b41b62a41d17da0bcf2b157dde621701e97b50ea97db67b8614d6"
     },
     "MarketStall": {
       "zone": "Town",
       "footprint": [
         8.8,
         6.6,
-        6.0
+        6.1
       ],
       "roles": [
         "Accent",
         "Glow",
+        "Metal",
         "Roof",
         "Wood"
       ],
       "triangleBudget": 800,
-      "triangles": 396,
-      "meshCount": 4,
-      "geometrySha256": "20e4a776f4d49448ce6353abbf4a16f4959b5921bb4e52e3f7aae4cbacda8ffc",
+      "triangles": 480,
+      "meshCount": 5,
+      "geometrySha256": "4112138efe34b63639a165129a93faede8ff774f989d9f7b53a45b8bba87dfc1",
       "assetId": 111031379890133,
       "uploadedAt": "2026-09-10T13:32:58.629587+00:00",
       "sha256": "9118488ad6d12d7cf4ae80e39df00a3bbaadfca6f979e0411da9d2f32cbda2e3",
-      "exportSha256": "9118488ad6d12d7cf4ae80e39df00a3bbaadfca6f979e0411da9d2f32cbda2e3"
+      "exportSha256": "ccc89fd09dc48a25168e1680d50a9a700a72a4994c7f92b59315e5326d5d8736"
     },
     "Crate": {
       "zone": "Town",
@@ -389,13 +392,13 @@
       "assetId": 116239622920482,
       "uploadedAt": "2026-09-10T13:32:58.629755+00:00",
       "sha256": "6401607badd00a7f4abe34a5a2152ed3953cbebaf082419bcf7e6654ea08f225",
-      "exportSha256": "6401607badd00a7f4abe34a5a2152ed3953cbebaf082419bcf7e6654ea08f225"
+      "exportSha256": "d9f6c13c3b110d0db60b8bd83fb9b4bae06c49a2cc558fd5d79b48785cdb3c4e"
     },
     "GraveyardFence": {
       "zone": "Graveyard",
       "footprint": [
         70.36,
-        5.95,
+        10.37822,
         50.98
       ],
       "roles": [
@@ -404,13 +407,13 @@
         "Stone"
       ],
       "triangleBudget": 2200,
-      "triangles": 1776,
+      "triangles": 1884,
       "meshCount": 3,
-      "geometrySha256": "2df7af9f5a0b2f58acf7279ac7633f651383a2ea4dad7d9a9710a42b7d763c67",
+      "geometrySha256": "0856e36eaa6d43d5f5a69bf6411a383a3ddce2dfb6c0f8055b0b85ce8aa2d76f",
       "assetId": 88029584944856,
       "uploadedAt": "2026-09-10T13:32:58.630137+00:00",
       "sha256": "47ee5b232df634c7693f40c0c426d26b48e9872664070e01a84b3f3583b5ab19",
-      "exportSha256": "47ee5b232df634c7693f40c0c426d26b48e9872664070e01a84b3f3583b5ab19"
+      "exportSha256": "db5808277ad3b31cb770b203f8ab6b1dfa1dec5a60441b2b168419b3bbe00038"
     },
     "Crypt": {
       "zone": "Graveyard",
@@ -422,17 +425,18 @@
       "roles": [
         "Foliage",
         "Glow",
+        "Metal",
         "Roof",
         "Stone"
       ],
       "triangleBudget": 1800,
-      "triangles": 400,
-      "meshCount": 4,
-      "geometrySha256": "4473a7567e31d15e674daaed57ab0ea595142f31054cb5d1e0eb5898cc207bbd",
+      "triangles": 484,
+      "meshCount": 5,
+      "geometrySha256": "92a086e5511963b6ae914b01f54ba02dd93e32ee59150308ac7deb5299b739d0",
       "assetId": 139694357551178,
       "uploadedAt": "2026-09-10T13:32:58.630401+00:00",
       "sha256": "189d019d3ce8e6ddcbfab3f66b64fc44beec6e9404d73e4d589b119df8b0d6ee",
-      "exportSha256": "189d019d3ce8e6ddcbfab3f66b64fc44beec6e9404d73e4d589b119df8b0d6ee"
+      "exportSha256": "f1cb4d475fcffd00e4b7749dd213ae62cbc3fdfa099042026cd8b7a6c96ce41a"
     },
     "GravestoneCross": {
       "zone": "Graveyard",
@@ -451,7 +455,7 @@
       "assetId": 140340291491005,
       "uploadedAt": "2026-09-10T13:32:58.630546+00:00",
       "sha256": "7105057c7fd349f1870ab9aebf79777ebbac3b534b78cf1bd298f3bb98b2eb6f",
-      "exportSha256": "7105057c7fd349f1870ab9aebf79777ebbac3b534b78cf1bd298f3bb98b2eb6f"
+      "exportSha256": "263af2c7d96f932518e761f068574297ec9093fee6df6754b31dc6459e55bc4a"
     },
     "GravestoneObelisk": {
       "zone": "Graveyard",
@@ -470,27 +474,27 @@
       "assetId": 114583084841642,
       "uploadedAt": "2026-09-10T13:32:58.630694+00:00",
       "sha256": "5e93be201b011478460c91af91cd51a8f9ec0ef5e22c2b2c829dfd1e9b5dfcc6",
-      "exportSha256": "5e93be201b011478460c91af91cd51a8f9ec0ef5e22c2b2c829dfd1e9b5dfcc6"
+      "exportSha256": "b1f613077ad00e35e37b003e1ae00aff0cc69c29cf0c7890345a1e4a46be8ebb"
     },
     "OakCask": {
       "zone": "Town",
       "footprint": [
         2.06,
         2.6,
-        1.95918
+        2.33959
       ],
       "roles": [
         "Metal",
         "Wood"
       ],
       "triangleBudget": 200,
-      "triangles": 168,
+      "triangles": 192,
       "meshCount": 2,
-      "geometrySha256": "24e7822680b1106f45a88ceb447c2373ba77f734ccc148c0add3856ebe2a5cb3",
+      "geometrySha256": "84769fa91b0dc3e2376a082245c27577a0214748d04f17b422e7acfa753255cf",
       "assetId": 121112502527701,
       "uploadedAt": "2026-09-10T13:32:58.630880+00:00",
       "sha256": "3ce15f2fcad74ca87a9465b8172ba15367c3263bba58ddbe49e89cb3159db4d3",
-      "exportSha256": "3ce15f2fcad74ca87a9465b8172ba15367c3263bba58ddbe49e89cb3159db4d3"
+      "exportSha256": "3d238f36724383602a5b2719e1f22c2944d9ac3679a7a264e371352316b5503c"
     }
   }
 }
