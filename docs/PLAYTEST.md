@@ -1,13 +1,23 @@
 # Runtime acceptance checks
 
-## Mesh pipeline checks (first batch)
+## Mesh town checks
 
-- [ ] Upload all five collections, save town.blend, harvest IDs, regenerate AssetIds and rebuild.
-- [ ] Check StreetLamp raw extents and role names before trusting scale compensation.
-- [ ] Confirm 26 mesh lamps, 15 mesh gravestones, two mesh trees and one pumpkin appear.
-- [ ] Confirm visible meshes do not collide; simple collision boxes block only their intended area.
-- [ ] Repeat 26 runtime checks after upload with no asset-load warnings and inspect screenshots.
-- [ ] Confirm first-batch count is 117 MeshParts including collision meshes.
+Done 2026-09-09: the first ten assets loaded with zero warnings, StreetLamp extents matched Blender to
+four decimals (no scale compensation needed), role names survived import, 275 MeshParts.
+
+- [ ] After the remaining 13 uploads: Play once, Output shows `World.build` with no `Asset load failed`
+      lines and under 500 MeshParts; the acceptance place still reports 26 passes.
+- [ ] Spawn: fountain spirit is blue-white and lit, portal arch behind spawn, altar right, notice board and
+      two signposts behind, mesh lamps along every path, nothing floating or sunk.
+- [ ] Haunt: walk through the front gate (not around it), stand on the yard, place a ghost and see it on a
+      pedestal, GO HOME lands you in front of the gate, spires appear along the roof ridge after upgrades.
+- [ ] Mansion: walk up the avenue, one small step onto the lower terrace, up the stair without jumping,
+      door prompt at the porch, no gap between hill and facade, towers not overhanging the terrace.
+- [ ] Town: three shops face the plaza, the Workshop door opens Upgrades, signs readable, Mira in front
+      of the Workshop and Orin by the altar, stalls and barrels not blocking the path to the eighth Haunt.
+- [ ] Graveyard: enter through the west gate, headstones in three shapes, two crypts, mist and green light,
+      sign by the gate, nothing intersecting the tree ring.
+- [ ] Phone portrait and landscape: HUD still fits (independent of meshes) and frame rate holds.
 
 Local verification is not a substitute for Roblox playtesting. A pre-feedback single-client Studio baseline passed 26 automated checks (see STUDIO-ACCEPTANCE.txt). The next run should repeat that fixture against this feedback pass. It used starter capture power, server-driven chase/click calls into the real hunting service, and client RemoteEvent requests for travel, deposit, upgrades, flashlight, chamber and rebirth. The fixture grants money/unlocks to reach late systems and accelerates one chamber reward; this is functional testing, not a balance or manual-input playthrough. Test controls are absent from the shipped place.
 

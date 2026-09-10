@@ -38,7 +38,10 @@ This excludes collision meshes, pine foliage as an additional role, fountain, po
 mansion, shops, caretakers, fence, crypts, props, and extra hillside trees. Even if the seeded ring
 skips up to ten trees to clear the northern approach, this subtotal remains 132.
 
-Options presented to the user: raise the cap to 500 MeshParts while retaining all other budgets,
+Resolved 2026-09-09 evening: the cap is 500 MeshParts, all other budgets unchanged. The first ten
+assets measured 275 MeshParts in Studio.
+
+Original options presented to the user: raise the cap to 500 MeshParts while retaining all other budgets,
 or retain 120 and revise scenery counts/batching. The new limit is not approved yet. Counting
 unique meshes instead of placed MeshPart instances would not satisfy the original limit.
 
