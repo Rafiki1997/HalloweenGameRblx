@@ -27,7 +27,7 @@ otherwise `World.build()` keeps the primitive version of that piece.
 | Caretaker | Town | 276 / 1200 | 3 | 2.5, 5.0, 2.2 | Glow, Metal, Wood | uploaded 83052712222180 | [front](../assets/previews/Caretaker_front.png) [top](../assets/previews/Caretaker_top.png) |
 | Crate | Town | 84 / 100 | 2 | 1.9, 1.9, 1.9 | Metal, Wood | uploaded 116239622920482 | [front](../assets/previews/Crate_front.png) [top](../assets/previews/Crate_top.png) |
 | MarketStall | Town | 396 / 800 | 4 | 8.8, 6.6, 6.0 | Accent, Glow, Roof, Wood | uploaded 111031379890133 | [front](../assets/previews/MarketStall_front.png) [top](../assets/previews/MarketStall_top.png) |
-| OakBarrel | Town | 168 / 200 | 2 | 2.1, 2.6, 2.0 | Metal, Wood | not uploaded | [front](../assets/previews/OakBarrel_front.png) [top](../assets/previews/OakBarrel_top.png) |
+| OakCask | Town | 168 / 200 | 2 | 2.1, 2.6, 2.0 | Metal, Wood | not uploaded | [front](../assets/previews/OakCask_front.png) [top](../assets/previews/OakCask_top.png) |
 | ShopHouse | Town | 328 / 5000 | 5 | 23.6, 19.8, 20.4 | Glow, Metal, Roof, Stone, Wood | uploaded 75167034499776 | [front](../assets/previews/ShopHouse_front.png) [top](../assets/previews/ShopHouse_top.png) |
 
 ## Rebuild, preview, upload, harvest (PowerShell, project directory)

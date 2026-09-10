@@ -156,7 +156,7 @@ return {
     MansionHill={Id=133984575959280, Footprint=Vector3.new(91.00001, 15.3, 70.5), Roles={"Ground", "Stone"}},
     MarketStall={Id=111031379890133, Footprint=Vector3.new(8.8, 6.6, 6.0), Roles={"Accent", "Glow", "Roof", "Wood"}},
     NoticeBoard={Id=132306502866809, Footprint=Vector3.new(8.52254, 7.12481, 1.6), Roles={"Collision", "Roof", "Stone", "Wood"}},
-    OakBarrel={Id=0, Footprint=Vector3.new(2.06, 2.6, 1.95918), Roles={"Metal", "Wood"}},
+    OakCask={Id=0, Footprint=Vector3.new(2.06, 2.6, 1.95918), Roles={"Metal", "Wood"}},
     PineTree={Id=115634389395822, Footprint=Vector3.new(8.21162, 17.07149, 7.92104), Roles={"Collision", "Foliage", "Wood"}},
     Pumpkin={Id=88455361663381, Footprint=Vector3.new(2.8628, 2.29155, 2.87657), Roles={"Accent", "Collision", "Glow", "Wood"}},
     RebirthAltar={Id=117043793736449, Footprint=Vector3.new(12.2, 7.0, 12.2), Roles={"Accent", "Collision", "Glow", "Stone"}},
@@ -1123,7 +1123,7 @@ end
 function W.build()
     local loadNames={}
     for _,name in {'StreetLamp','Gravestone','PineTree','DeadTree','Pumpkin','GhostFountain','ChamberPortal','RebirthAltar','NoticeBoard','WelcomeSign','HauntShowcase','MansionHill','MansionFacade','Boulder',
-        'ShopHouse','Caretaker','MarketStall','OakBarrel','Crate','GraveyardFence','Crypt','GravestoneCross','GravestoneObelisk'} do
+        'ShopHouse','Caretaker','MarketStall','OakCask','Crate','GraveyardFence','Crypt','GravestoneCross','GravestoneObelisk'} do
         if Assets.configured(name) then table.insert(loadNames,name) end
     end
     Assets.preload(loadNames)
@@ -1319,7 +1319,7 @@ function W.build()
             if Assets.configured('MarketStall') then Assets.place('MarketStall',root,CFrame.new(-38,-0.5,z)*faceEast,{Accent=Color3.fromRGB(255,140,60)}) end
             blocker('StallCollision',Vector3.new(4.4,2.6,8),CFrame.new(-38,0.8,z))
         end
-        if Assets.configured('OakBarrel') then for _,z in {56,68.5,100} do Assets.place('OakBarrel',root,CFrame.new(-41.5,-0.5,z)) end end
+        if Assets.configured('OakCask') then for _,z in {56,68.5,100} do Assets.place('OakCask',root,CFrame.new(-41.5,-0.5,z)) end end
         if Assets.configured('Crate') then for _,c in {{-41.5,-0.5,90},{-39.6,-0.5,91.9},{-41.5,1.3,90}} do Assets.place('Crate',root,CFrame.new(c[1],c[2],c[3])) end end
         if Assets.configured('Pumpkin') then for _,c in {{-35.5,-0.5,58},{-35.2,-0.5,66.5},{-35.6,-0.5,80}} do Assets.place('Pumpkin',root,CFrame.new(c[1],c[2],c[3])) end end
     else

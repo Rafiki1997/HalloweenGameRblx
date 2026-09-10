@@ -22,11 +22,11 @@ PALETTE = {'Stone': (51,49,65), 'Wood': (62,43,58), 'Metal': (43,40,57), 'Roof':
 BUDGETS = {'StreetLamp':300, 'Gravestone':150, 'PineTree':400, 'DeadTree':600, 'Pumpkin':300,
            'GhostFountain':4000, 'ChamberPortal':2500, 'RebirthAltar':2000, 'NoticeBoard':600, 'WelcomeSign':300,
            'HauntShowcase':6000, 'MansionHill':3000, 'MansionFacade':18000, 'Boulder':200,
-           'ShopHouse':5000, 'Caretaker':1200, 'MarketStall':800, 'OakBarrel':200, 'Crate':100,
+           'ShopHouse':5000, 'Caretaker':1200, 'MarketStall':800, 'OakCask':200, 'Crate':100,
            'GraveyardFence':2200, 'Crypt':1800, 'GravestoneCross':150, 'GravestoneObelisk':150}
 ZONES = {'GhostFountain':'Plaza', 'ChamberPortal':'Plaza', 'RebirthAltar':'Plaza', 'NoticeBoard':'Plaza', 'WelcomeSign':'Plaza',
          'HauntShowcase':'Haunts', 'MansionHill':'Mansion', 'MansionFacade':'Mansion', 'Boulder':'Mansion',
-         'ShopHouse':'Town', 'Caretaker':'Town', 'MarketStall':'Town', 'OakBarrel':'Town', 'Crate':'Town',
+         'ShopHouse':'Town', 'Caretaker':'Town', 'MarketStall':'Town', 'OakCask':'Town', 'Crate':'Town',
          'GraveyardFence':'Graveyard', 'Crypt':'Graveyard', 'GravestoneCross':'Graveyard', 'GravestoneObelisk':'Graveyard'}
 ASSET = None
 
@@ -587,7 +587,7 @@ BUILDERS = {'StreetLamp':street_lamp,'Gravestone':gravestone,'PineTree':pine,
             'NoticeBoard':notice_board,'WelcomeSign':welcome_sign,
             'HauntShowcase':haunt_showcase,
             'MansionHill':mansion_hill,'MansionFacade':mansion_facade,'Boulder':boulder,
-            'ShopHouse':shop_house,'Caretaker':caretaker,'MarketStall':market_stall,'OakBarrel':barrel,'Crate':crate,
+            'ShopHouse':shop_house,'Caretaker':caretaker,'MarketStall':market_stall,'OakCask':barrel,'Crate':crate,
             'GraveyardFence':graveyard_fence,'Crypt':crypt,'GravestoneCross':gravestone_cross,'GravestoneObelisk':gravestone_obelisk}
 
 
