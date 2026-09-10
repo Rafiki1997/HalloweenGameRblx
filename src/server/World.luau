@@ -42,7 +42,7 @@ local function path(parent,a,b,width)
 end
 function W.build()
     local loadNames={}
-    for _,name in {'StreetLamp','Gravestone','PineTree','DeadTree','Pumpkin'} do
+    for _,name in {'StreetLamp','Gravestone','PineTree','DeadTree','Pumpkin','GhostFountain','ChamberPortal','RebirthAltar','NoticeBoard','WelcomeSign'} do
         if Assets.configured(name) then table.insert(loadNames,name) end
     end
     Assets.preload(loadNames)
@@ -56,11 +56,30 @@ function W.build()
     part(root,'TownGround',Vector3.new(420,3,420),Vector3.new(0,-2,0),Color3.fromRGB(29,43,42),Enum.Material.Grass)
     local plaza=part(root,'CircularPlaza',Vector3.new(1,66,66),Vector3.new(0,0,0),stone,Enum.Material.Cobblestone)
     plaza.Shape=Enum.PartType.Cylinder; plaza.CFrame=CFrame.new(0,0,0)*CFrame.Angles(0,0,math.pi/2)
-    local pedestal=part(root,'Fountain',Vector3.new(1.5,13,13),Vector3.new(0,1,0),stone)
-    pedestal.Shape=Enum.PartType.Cylinder; pedestal.CFrame=CFrame.new(0,1,0)*CFrame.Angles(0,0,math.pi/2)
-    V.ghost('mothlight',root,CFrame.new(0,7,0),2,false)
+    local spiritBlue=Color3.fromRGB(160,225,255)
+    if Assets.configured('GhostFountain') then
+        -- The plaza disc top is y 0.5; the fountain base sits on it. Its spirit is the Accent mesh, coloured blue-white.
+        local fountain=Assets.place('GhostFountain',root,CFrame.new(0,0.5,0),{Accent=spiritBlue})
+        local spirit=fountain:FindFirstChild('GhostFountain_Accent',true)
+        if spirit then
+            local l=Instance.new('PointLight'); l.Color=spiritBlue; l.Brightness=2.2; l.Range=28; l.Shadows=true; l.Parent=spirit
+        end
+    else
+        local pedestal=part(root,'Fountain',Vector3.new(1.5,13,13),Vector3.new(0,1,0),stone)
+        pedestal.Shape=Enum.PartType.Cylinder; pedestal.CFrame=CFrame.new(0,1,0)*CFrame.Angles(0,0,math.pi/2)
+        V.ghost('mothlight',root,CFrame.new(0,7,0),2,false)
+    end
     local spawn=Instance.new('SpawnLocation'); spawn.Name='TownSpawn'; spawn.Size=Vector3.new(8,1,8); spawn.Position=Vector3.new(0,0.6,21); spawn.Anchored=true; spawn.Neutral=true; spawn.Duration=0; spawn.Transparency=1; spawn.CanCollide=false; spawn.Parent=root
-    sign(root,Vector3.new(0,5,35),'GHOSTLIGHT HOLLOW\nHunt • Haunt • Discover')
+    -- Welcome signs flank the south path; nothing stands on the portal base any more.
+    if Assets.configured('WelcomeSign') then
+        for _,x in {-12,12} do
+            local post=Assets.place('WelcomeSign',root,CFrame.new(x,-0.5,50))
+            local board=post:FindFirstChild('WelcomeSign_Wood',true) or post:FindFirstChildWhichIsA('BasePart',true)
+            V.label(board,'GHOSTLIGHT HOLLOW\nHunt • Haunt • Discover',purple,240,65).Parent.StudsOffset=Vector3.new(0,1.2,0)
+        end
+    else
+        sign(root,Vector3.new(0,5,54),'GHOSTLIGHT HOLLOW\nHunt • Haunt • Discover')
+    end
     local plotNumber=0
     for i=1,8 do
         if i==5 then continue end
@@ -97,11 +116,11 @@ function W.build()
         end
         W.Plots[plotNumber]={Model=model,CF=cf,Slots=slots,Label=label,IncomeLabel=incomeLabel,Deposit=deposit,ChamberDoor=chamber,Owner=nil,Displays={}}
         path(root,Vector3.new(center.X,0.1,center.Z)*0.26,center,12)
-        lamp(root,(cf*CFrame.new(-20,0,-17)).Position)
-        lamp(root,(cf*CFrame.new(20,0,-17)).Position)
+        lamp(root,(cf*CFrame.new(-20,1,-17)).Position)
+        lamp(root,(cf*CFrame.new(20,1,-17)).Position)
     end
     path(root,Vector3.new(0,0.2,-30),Vector3.new(0,0.2,-180),18)
-    for z=-45,-170,-25 do lamp(root,Vector3.new(-13,0,z)); lamp(root,Vector3.new(13,0,z)) end
+    for z=-45,-170,-25 do lamp(root,Vector3.new(-13,-0.5,z)); lamp(root,Vector3.new(13,-0.5,z)) end
     -- Landmark exterior. Hunting wings are separated so access remains personal and server-validated.
     local facade=Instance.new('Model'); facade.Name='MansionExterior'; facade.Parent=root
     part(facade,'EntranceSteps',Vector3.new(70,2,40),Vector3.new(0,0,-181))
@@ -115,8 +134,14 @@ function W.build()
     W.MansionDoor=part(facade,'MansionEntrance',Vector3.new(10,14,1),Vector3.new(0,8,-195),purple,Enum.Material.Neon)
     sign(root,Vector3.new(0,17,-179),'THE HAUNTED MANSION\nEnter • Hunt • Return')
     W.Upgrades=sign(root,Vector3.new(-42,4,30),'THE WORKSHOP\nVacuum & Haunt Upgrades',warm)
-    W.Rebirth=sign(root,Vector3.new(42,4,30),'REBIRTH ALTAR\nPermanent income bonus',purple)
-    W.Leaderboard=sign(root,Vector3.new(0,5,62),'HOLLOW HUNTERS',warm)
+    -- The legacy REBIRTH ALTAR sign is gone; it overlapped the altar built further down.
+    if Assets.configured('NoticeBoard') then
+        local board=Assets.place('NoticeBoard',root,CFrame.new(0,-0.5,62))
+        W.Leaderboard=board:FindFirstChild('NoticeBoard_Collision',true) or board:FindFirstChildWhichIsA('BasePart',true)
+        V.label(W.Leaderboard,'HOLLOW HUNTERS',warm,240,65).Parent.StudsOffset=Vector3.new(0,0.8,0)
+    else
+        W.Leaderboard=sign(root,Vector3.new(0,5,62),'HOLLOW HUNTERS',warm)
+    end
     W.Leaderboard.Label.Size=UDim2.fromOffset(330,170)
     for _,x in {-47,47} do
         local npc=part(root,'Caretaker',Vector3.new(2,3,1),Vector3.new(x,2,36),Color3.fromRGB(63,45,84))
@@ -124,17 +149,14 @@ function W.build()
         V.label(npc,if x<0 then 'MIRA • EQUIPMENT' else 'ORIN • REBIRTH',warm,180,45)
     end
     local rng=Random.new(1047)
-    local convertedTrees=0
     for i=1,58 do
         local a=rng:NextNumber(0,math.pi*2); local r=rng:NextNumber(165,195)
         local pos=Vector3.new(math.cos(a)*r,0,math.sin(a)*r)
         if math.abs(pos.X)>24 or pos.Z>0 then
-            -- First upload batch stays below the original 120 MeshPart cap.
-            -- Replace two trees until the full-town instance budget is resolved.
-            local meshName=if convertedTrees==0 then 'PineTree' else 'DeadTree'
-            if convertedTrees<2 and Assets.configured(meshName) then
-                Assets.place(meshName,root,CFrame.new(pos))
-                convertedTrees+=1
+            -- Whole-town MeshPart cap is 500, so every ring tree is a mesh once uploaded: two pines per dead tree.
+            local meshName=if i%3==0 then 'DeadTree' else 'PineTree'
+            if Assets.configured(meshName) then
+                Assets.place(meshName,root,CFrame.new(pos.X,-0.5,pos.Z))
                 continue
             end
             part(root,'TreeTrunk',Vector3.new(2,11,2),pos+Vector3.new(0,5,0),wood,Enum.Material.Wood)
@@ -149,7 +171,7 @@ function W.build()
             part(root,'Gravestone',Vector3.new(3,4,1),pos,Color3.fromRGB(86,86,102))
         end
     end
-    if Assets.configured('Pumpkin') then Assets.place('Pumpkin',root,CFrame.new(47,0,26)) end
+    if Assets.configured('Pumpkin') then Assets.place('Pumpkin',root,CFrame.new(47,-0.5,26)) end
     sign(root,Vector3.new(146,3,93),'THE QUIET GARDEN',Color3.fromRGB(170,187,206))
     for floor,info in C.Floors do
         local center=Vector3.new((floor-1)*150,0,-450)
@@ -190,27 +212,56 @@ function W.build()
         -- Lights remain atmospheric and non-toggleable during exploration.
         W.Areas[floor]={Model=area,Center=center,Entry=entry,Exit=exit,Lights=lights}
     end
-    local portalBase=part(root,'ChamberPortalBase',Vector3.new(16,1,16),Vector3.new(0,0.7,40),Color3.fromRGB(54,38,83),Enum.Material.Cobblestone)
-    portalBase.Shape=Enum.PartType.Cylinder; portalBase.CFrame=CFrame.new(0,0.7,40)*CFrame.Angles(0,0,math.pi/2)
-    local portal=part(root,'ChamberPortal',Vector3.new(8,12,1),Vector3.new(0,7,40),Color3.fromRGB(103,245,224),Enum.Material.Neon)
-    portal.Transparency=0.25
-    local portalLight=Instance.new('PointLight'); portalLight.Color=Color3.fromRGB(103,245,224); portalLight.Range=22; portalLight.Brightness=3; portalLight.Parent=portal
-    V.label(portal,'HAUNT CHAMBER\nAFK PORTAL',Color3.fromRGB(131,255,225),210,60)
-    W.ChamberPortal=portal
-    local altarBase=part(root,'RebirthAltarBase',Vector3.new(12,2,12),Vector3.new(42,1,30),Color3.fromRGB(62,45,81),Enum.Material.Marble)
-    altarBase.Shape=Enum.PartType.Cylinder; altarBase.CFrame=CFrame.new(42,1,30)*CFrame.Angles(0,0,math.pi/2)
-    W.RebirthAltar=part(root,'RebirthAltar',Vector3.new(4,5,4),Vector3.new(42,4,30),Color3.fromRGB(169,93,246),Enum.Material.Neon)
-    W.RebirthAltar.Shape=Enum.PartType.Cylinder; W.RebirthAltar.CFrame=CFrame.new(42,4,30)*CFrame.Angles(0,0,math.pi/2)
-    local altarOrb=part(root,'RebirthOrb',Vector3.new(2.2,2.2,2.2),Vector3.new(42,8,30),Color3.fromRGB(255,197,111),Enum.Material.Neon); altarOrb.Shape=Enum.PartType.Ball
-    local altarLight=Instance.new('PointLight'); altarLight.Color=Color3.fromRGB(255,197,111); altarLight.Range=18; altarLight.Brightness=2; altarLight.Parent=altarOrb
-    V.label(W.RebirthAltar,'REBIRTH ALTAR\nPermanent bonus',Color3.fromRGB(255,197,111),190,55)
-    W.RebirthAltarPrompt=prompt(altarOrb,'View rebirth','Altar')
-    W.ChamberPortalPrompt=prompt(portal,'Enter chamber','AFK hunting')
+    local portalGlow,portalLight,portalHome
+    local portalCyan=Color3.fromRGB(103,245,224)
+    if Assets.configured('ChamberPortal') then
+        -- Ground top is y -0.5 outside the plaza disc; the portal base is one stud tall so it meets the plaza top.
+        local portalModel=Assets.place('ChamberPortal',root,CFrame.new(0,-0.5,40),{Accent=purple})
+        W.ChamberPortal=portalModel:FindFirstChild('ChamberPortal_Collision',true) or portalModel:FindFirstChildWhichIsA('BasePart',true)
+        portalGlow=portalModel:FindFirstChild('ChamberPortal_Glow',true)
+        if portalGlow then
+            portalGlow.Color=portalCyan; portalHome=portalGlow.CFrame
+            portalLight=Instance.new('PointLight'); portalLight.Color=portalCyan; portalLight.Range=22; portalLight.Brightness=3; portalLight.Shadows=true; portalLight.Parent=portalGlow
+        end
+        V.label(W.ChamberPortal,'HAUNT CHAMBER\nAFK PORTAL',Color3.fromRGB(131,255,225),210,60).Parent.StudsOffset=Vector3.new(0,9,0)
+    else
+        local portalBase=part(root,'ChamberPortalBase',Vector3.new(16,1,16),Vector3.new(0,0.7,40),Color3.fromRGB(54,38,83),Enum.Material.Cobblestone)
+        portalBase.Shape=Enum.PartType.Cylinder; portalBase.CFrame=CFrame.new(0,0.7,40)*CFrame.Angles(0,0,math.pi/2)
+        portalGlow=part(root,'ChamberPortal',Vector3.new(8,12,1),Vector3.new(0,7,40),portalCyan,Enum.Material.Neon)
+        portalGlow.Transparency=0.25; portalHome=portalGlow.CFrame
+        portalLight=Instance.new('PointLight'); portalLight.Color=portalCyan; portalLight.Range=22; portalLight.Brightness=3; portalLight.Parent=portalGlow
+        V.label(portalGlow,'HAUNT CHAMBER\nAFK PORTAL',Color3.fromRGB(131,255,225),210,60)
+        W.ChamberPortal=portalGlow
+    end
+    local orbAmber=Color3.fromRGB(255,197,111)
+    if Assets.configured('RebirthAltar') then
+        local altar=Assets.place('RebirthAltar',root,CFrame.new(42,-0.5,30),{Accent=Color3.fromRGB(169,93,246)})
+        W.RebirthAltar=altar:FindFirstChild('RebirthAltar_Collision',true) or altar:FindFirstChildWhichIsA('BasePart',true)
+        local orb=altar:FindFirstChild('RebirthAltar_Glow',true)
+        if orb then
+            orb.Color=orbAmber
+            local altarLight=Instance.new('PointLight'); altarLight.Color=orbAmber; altarLight.Range=18; altarLight.Brightness=2; altarLight.Parent=orb
+        end
+        V.label(W.RebirthAltar,'REBIRTH ALTAR\nPermanent bonus',orbAmber,190,55).Parent.StudsOffset=Vector3.new(0,6,0)
+        W.RebirthAltarPrompt=prompt(W.RebirthAltar,'View rebirth','Altar')
+    else
+        local altarBase=part(root,'RebirthAltarBase',Vector3.new(12,2,12),Vector3.new(42,1,30),Color3.fromRGB(62,45,81),Enum.Material.Marble)
+        altarBase.Shape=Enum.PartType.Cylinder; altarBase.CFrame=CFrame.new(42,1,30)*CFrame.Angles(0,0,math.pi/2)
+        W.RebirthAltar=part(root,'RebirthAltar',Vector3.new(4,5,4),Vector3.new(42,4,30),Color3.fromRGB(169,93,246),Enum.Material.Neon)
+        W.RebirthAltar.Shape=Enum.PartType.Cylinder; W.RebirthAltar.CFrame=CFrame.new(42,4,30)*CFrame.Angles(0,0,math.pi/2)
+        local altarOrb=part(root,'RebirthOrb',Vector3.new(2.2,2.2,2.2),Vector3.new(42,8,30),orbAmber,Enum.Material.Neon); altarOrb.Shape=Enum.PartType.Ball
+        local altarLight=Instance.new('PointLight'); altarLight.Color=orbAmber; altarLight.Range=18; altarLight.Brightness=2; altarLight.Parent=altarOrb
+        V.label(W.RebirthAltar,'REBIRTH ALTAR\nPermanent bonus',orbAmber,190,55)
+        W.RebirthAltarPrompt=prompt(altarOrb,'View rebirth','Altar')
+    end
+    W.ChamberPortalPrompt=prompt(W.ChamberPortal,'Enter chamber','AFK hunting')
     task.spawn(function()
         while root.Parent do
             local t=os.clock()
-            portal.CFrame=CFrame.new(0,7+math.sin(t*2)*0.25,40)*CFrame.Angles(0,math.sin(t)*0.05,0)
-            portalLight.Brightness=2.4+math.sin(t*3)*0.6
+            if portalGlow and portalHome then
+                portalGlow.CFrame=portalHome*CFrame.new(0,math.sin(t*2)*0.25,0)*CFrame.Angles(0,math.sin(t)*0.05,0)
+            end
+            if portalLight then portalLight.Brightness=2.4+math.sin(t*3)*0.6 end
             task.wait(0.05)
         end
     end)

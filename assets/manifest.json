@@ -20,7 +20,7 @@
       "assetId": 0,
       "uploadedAt": null,
       "sha256": null,
-      "exportSha256": "3b5ea08d82bd8813bb0420180e9251a1e6444f75224c3e5c9521ae92b1ba035d"
+      "exportSha256": "0e1a4d99ceb0eead7ffaeaf5bc2bc2e319f459ed04bcaaa3b3cc1177c5927655"
     },
     "Gravestone": {
       "zone": "Props",
@@ -40,7 +40,7 @@
       "assetId": 0,
       "uploadedAt": null,
       "sha256": null,
-      "exportSha256": "1c31a4e1aa818686adb4d1eedd6a530b6bef64fb223e300736e2cbae46b91558"
+      "exportSha256": "eed3d88a2116e3d4411adcf1bc05b24d59c8258edd31b8b02db9727aa4260fff"
     },
     "PineTree": {
       "zone": "Props",
@@ -61,7 +61,7 @@
       "assetId": 0,
       "uploadedAt": null,
       "sha256": null,
-      "exportSha256": "e5e5c6cd55422da4532b578010dcddc154210350930809e9d58297f2df8d30cb"
+      "exportSha256": "494f145e00d2d820dfedc8f496e9adee367c14507bdcab8e1058592e6a8eaf40"
     },
     "DeadTree": {
       "zone": "Props",
@@ -81,7 +81,7 @@
       "assetId": 0,
       "uploadedAt": null,
       "sha256": null,
-      "exportSha256": "6a584e65c6822657097f73be67ae5ebbbbc957be75fc412dca953535ce95011b"
+      "exportSha256": "2f6f31b3bb44c60df63700cc2cda9e12fc7f3f5fd6f5b55a01c5ba9570210b70"
     },
     "Pumpkin": {
       "zone": "Props",
@@ -103,7 +103,119 @@
       "assetId": 0,
       "uploadedAt": null,
       "sha256": null,
-      "exportSha256": "29aec04d31c600c807b247dac15cf2eb217b24546c26aa961c626fb41eda3856"
+      "exportSha256": "59238ef6eb8bd775e0f0ff803884637ee961fe2712fc202e7d463da76cae355b"
+    },
+    "GhostFountain": {
+      "zone": "Plaza",
+      "footprint": [
+        25.45997,
+        16.3,
+        25.45997
+      ],
+      "roles": [
+        "Accent",
+        "Collision",
+        "Glow",
+        "Metal",
+        "Stone",
+        "Water"
+      ],
+      "triangleBudget": 4000,
+      "triangles": 1352,
+      "meshCount": 6,
+      "geometrySha256": "0aefbbf362e94a6e17225bcb86f8f77e4bb1ca8081ffd0e2bf4a2835d1c89e73",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "8b2583118841257ebfe5ab2c7714e396a3cf747bbc21e00c361d3ea5312024fa"
+    },
+    "ChamberPortal": {
+      "zone": "Plaza",
+      "footprint": [
+        16.2,
+        16.3,
+        16.2
+      ],
+      "roles": [
+        "Accent",
+        "Collision",
+        "Glow",
+        "Stone"
+      ],
+      "triangleBudget": 2500,
+      "triangles": 564,
+      "meshCount": 4,
+      "geometrySha256": "237b8cc95b5e38eade198cd9ca8a1ebfe2e812b2d5917acd2e823cff2d2554b0",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "c4e344065ee74bc411cb98ab507ec6f15f7afa378f8886160f99549b545c9e23"
+    },
+    "RebirthAltar": {
+      "zone": "Plaza",
+      "footprint": [
+        12.2,
+        7.0,
+        12.2
+      ],
+      "roles": [
+        "Accent",
+        "Collision",
+        "Glow",
+        "Stone"
+      ],
+      "triangleBudget": 2000,
+      "triangles": 852,
+      "meshCount": 4,
+      "geometrySha256": "96df885dd9ae947cf9c2d6091961e9aa8c091a173ab2cbe32470aa8f568bc04c",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "bb6f39d67ece4c669579efe223e575f568031e04cc414294be633f84983c6e9d"
+    },
+    "NoticeBoard": {
+      "zone": "Plaza",
+      "footprint": [
+        8.52254,
+        7.12481,
+        1.6
+      ],
+      "roles": [
+        "Collision",
+        "Roof",
+        "Stone",
+        "Wood"
+      ],
+      "triangleBudget": 600,
+      "triangles": 120,
+      "meshCount": 4,
+      "geometrySha256": "668ebcadc1d9e673697c04c53bea649e7d40795c7573b28f4fd207df3b30b992",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "c80239397b97f7b74c4075e9b2f97c8144634153387fc0d09328ecbb10938561"
+    },
+    "WelcomeSign": {
+      "zone": "Plaza",
+      "footprint": [
+        2.9,
+        5.775,
+        0.6
+      ],
+      "roles": [
+        "Collision",
+        "Glow",
+        "Metal",
+        "Wood"
+      ],
+      "triangleBudget": 300,
+      "triangles": 72,
+      "meshCount": 4,
+      "geometrySha256": "ce9175fbdb5a3196011d4be8c2fa47ae3b1abbea31f52faa0f1bec752158bca0",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "1e373a838a8a4197a850842355b58e4f78e6c7a1ad94f0cc71683f0ffc785327"
     }
   }
 }

@@ -15,10 +15,13 @@ import bpy
 from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parents[2]
-PALETTE = {'Stone': (51,49,65), 'Wood': (62,43,58), 'Metal': (43,40,57),
+PALETTE = {'Stone': (51,49,65), 'Wood': (62,43,58), 'Metal': (43,40,57), 'Roof': (39,30,57),
            'Glow': (255,188,104), 'Foliage': (25,43,43), 'Accent': (255,140,60),
+           'Glass': (120,160,220), 'Water': (80,205,255), 'Ground': (29,43,42),
            'Collision': (220,50,80)}
-BUDGETS = {'StreetLamp':300, 'Gravestone':150, 'PineTree':400, 'DeadTree':600, 'Pumpkin':300}
+BUDGETS = {'StreetLamp':300, 'Gravestone':150, 'PineTree':400, 'DeadTree':600, 'Pumpkin':300,
+           'GhostFountain':4000, 'ChamberPortal':2500, 'RebirthAltar':2000, 'NoticeBoard':600, 'WelcomeSign':300}
+ZONES = {'GhostFountain':'Plaza', 'ChamberPortal':'Plaza', 'RebirthAltar':'Plaza', 'NoticeBoard':'Plaza', 'WelcomeSign':'Plaza'}
 ASSET = None
 
 
@@ -77,8 +80,8 @@ def loft(name, rings, smooth=False):
     return mesh_object(name,vertices,faces,smooth)
 
 
-def sweep(points, radii, sides=6):
-    """A continuous tapered branch: no disconnected cylinder joints."""
+def sweep(points, radii, sides=6, role_name='Wood'):
+    """A continuous tapered tube along a polyline: no disconnected cylinder joints."""
     points=[Vector(p) for p in points]
     rings=[]
     previous_tangent=None
@@ -94,7 +97,7 @@ def sweep(points, radii, sides=6):
         rings.append([p+radius*(radial*math.cos(j*2*math.pi/sides)+
                                perpendicular*math.sin(j*2*math.pi/sides)) for j in range(sides)])
         previous_tangent=tangent
-    return loft('Wood',rings,smooth=True)
+    return loft(role_name,rings,smooth=True)
 
 
 def turned(name, levels, sides=8, phase=0, smooth=False):
@@ -194,8 +197,128 @@ def pumpkin():
     box('Collision',(0,0,.7),(1.6,1.6,1.4))
 
 
+def tube(role_name, a, b, r1, r2, sides=6):
+    """Straight tapered tube between two points."""
+    start, end = Vector(a), Vector(b)
+    obj = taper(role_name, (start+end)/2, (end-start).length, r1, r2, sides)
+    obj.rotation_euler = (end-start).to_track_quat('Z', 'Y').to_euler()
+    return obj
+
+
+def pyramid(role_name, center, half_width, height):
+    """Square pyramid with axis-aligned edges; center is the base centre."""
+    obj = taper(role_name, (center[0], center[1], center[2]+height/2), height, half_width*math.sqrt(2), .02, 4)
+    obj.rotation_euler = (0, 0, math.pi/4)
+    return obj
+
+
+def arch(role_name, x, y, z_base, radius, thickness, depth, segments):
+    """Semicircular arch in the XZ plane from stone segments; overlaps hide the joints."""
+    for i in range(segments):
+        t0 = math.pi*i/segments; t1 = math.pi*(i+1)/segments; t = (t0+t1)/2
+        obj = box(role_name, (x+radius*math.cos(t), y, z_base+radius*math.sin(t)),
+                  (thickness, depth, radius*(t1-t0)*1.12))
+        obj.rotation_euler = (0, -t, 0)
+
+
+def ring_of(count, radius, start=0):
+    return [(radius*math.cos(start+2*math.pi*i/count), radius*math.sin(start+2*math.pi*i/count)) for i in range(count)]
+
+
+def ghost_fountain():
+    # Lower basin: up the outside, over the lip, down the inside to a floor disc.
+    turned('Stone',[(0,11.6),(.5,12.1),(1.3,12.1),(1.7,12.5),(1.7,11.2),(.9,11.0),(.9,.6)],sides=16)
+    turned('Water',[(1.0,11.0),(1.2,11.0)],sides=16)
+    # Pedestal column and upper bowl.
+    turned('Stone',[(.9,2.6),(1.3,2.0),(3.0,1.7),(3.4,2.2)],sides=12)
+    turned('Stone',[(3.3,1.0),(3.7,4.3),(4.4,4.7),(4.7,4.9),(4.7,4.1),(4.1,4.0),(4.1,.8)],sides=16)
+    turned('Water',[(4.15,3.9),(4.3,3.9)],sides=16)
+    # Four steep streams from the upper lip into the lower water.
+    for i in range(4):
+        a = math.pi/4 + i*math.pi/2
+        tube('Water',(4.6*math.cos(a),4.6*math.sin(a),4.7),(6.9*math.cos(a),6.9*math.sin(a),1.25),.22,.30,6)
+    # Ghost spirit, 12 studs tall: scalloped floating hem, tapered body, rounded hood, raised arms, dark eyes.
+    # Accent role so the game colours it blue-white while lanterns stay amber.
+    sides = 12
+    rings = []
+    for z, r in [(4.6,2.15),(5.5,2.05),(7.0,1.95),(9.0,1.75),(11.0,1.6),(12.6,1.5),(13.6,1.55),(14.8,1.4),(15.7,.95),(16.3,.35)]:
+        ring = []
+        for i in range(sides):
+            a = 2*math.pi*i/sides
+            hem = (.42 if i%2 else -.05) if z < 5 else 0
+            ring.append((r*math.cos(a), r*math.sin(a), z+hem))
+        rings.append(ring)
+    loft('Accent', rings, smooth=True)
+    sweep([(1.35,-.1,11.6),(2.6,-.5,12.8),(3.5,-.9,14.2)],[.5,.36,.16],6,'Accent')
+    sweep([(-1.35,-.1,11.6),(-2.6,-.5,12.9),(-3.3,-.8,14.4)],[.5,.36,.16],6,'Accent')
+    for x in (-.55,.55):
+        box('Metal',(x,-1.45,13.9),(.46,.22,.62))
+    # Eight bollard lights on the plaza ring.
+    for x,y in ring_of(8,13.4,math.pi/8):
+        box('Stone',(x,y,.5),(.7,.7,1.0))
+        box('Glow',(x,y,1.25),(.5,.5,.5))
+    taper('Collision',(0,0,.85),1.7,12.6,12.6,16)
+    taper('Collision',(0,0,3.2),3.0,4.95,4.95,12)
+
+
+def chamber_portal():
+    turned('Stone',[(0,8.0),(.7,8.0)],sides=16)                      # round base
+    turned('Stone',[(.7,7.2),(1.0,7.2)],sides=16)                    # low step
+    for x in (-5.6,5.6):
+        box('Stone',(x,0,5.5),(2.2,2.6,9.0))                         # pier
+        pyramid('Stone',(x,0,10.0),1.4,1.4)                          # pier cap
+        box('Glow',(x,0,11.5),(.5,.5,.5))                            # finial
+    arch('Stone',0,0,10.0,5.6,1.3,2.2,11)
+    box('Stone',(0,0,15.75),(1.6,2.4,1.1))                           # keystone
+    # Swirl plane inside the arch: a rounded-top slab in two layers.
+    box('Glow',(0,.15,2.75),(8.6,.25,5.5))
+    disc = turned('Glow',[(-.125,4.3),(.125,4.3)],sides=16); disc.rotation_euler=(math.pi/2,0,0); disc.location=(0,.15,5.5)
+    box('Accent',(0,-.15,2.6),(7.4,.2,5.2))
+    disc2 = turned('Accent',[(-.1,3.7),(.1,3.7)],sides=16); disc2.rotation_euler=(math.pi/2,0,0); disc2.location=(0,-.15,5.3)
+    taper('Collision',(0,0,.5),1.0,8.1,8.1,16)
+    for x in (-5.6,5.6): box('Collision',(x,0,5.5),(2.3,2.7,9.0))
+
+
+def rebirth_altar():
+    turned('Stone',[(0,6.0),(1.0,5.7)],sides=16)                     # marble round base
+    turned('Stone',[(1.0,4.3),(1.8,4.0)],sides=16)                   # second step
+    for x,y in ring_of(4,3.9,math.pi/4):
+        turned('Stone',[(1.8,.55),(4.0,.5),(4.3,.65)],sides=8).location=(x,y,0)
+        box('Stone',(x,y,4.45),(1.3,1.3,.3))
+    turned('Stone',[(1.8,1.5),(3.1,1.2),(3.3,1.6)],sides=12)         # pedestal
+    box('Accent',(0,0,3.55),(3.6,2.0,.5))                            # altar slab
+    turned('Glow',[(5.4,.25),(5.7,.8),(6.2,1.1),(6.7,.8),(7.0,.25)],sides=12,smooth=True)  # floating orb
+    for sx,sy in ((-2.2,-2.6),(2.4,2.2)):
+        for k,(dx,dy,h) in enumerate(((0,0,1.1),(.5,.3,.8),(-.4,.4,.6))):
+            turned('Stone',[(1.8,.16),(1.8+h,.16)],sides=6).location=(sx+dx,sy+dy,0)
+            box('Glow',(sx+dx,sy+dy,1.8+h+.15),(.2,.2,.3))
+    taper('Collision',(0,0,.9),1.8,6.1,6.1,16)
+    box('Collision',(0,0,2.8),(3.6,2.2,2.0))
+    for x,y in ring_of(4,3.9,math.pi/4): box('Collision',(x,y,3.2),(1.3,1.3,2.8))
+
+
+def notice_board():
+    for x in (-3.6,3.6): box('Wood',(x,0,2.75),(.5,.5,5.5))
+    box('Wood',(0,0,3.3),(7.6,.35,3.4))                              # board
+    for z in (1.4,5.2): box('Stone',(0,0,z),(8.0,.55,.35))           # frame rails
+    for x in (-3.85,3.85): box('Stone',(x,0,3.3),(.35,.55,4.1))      # frame stiles
+    for sgn in (-1,1):
+        cap = box('Roof',(sgn*2.1,0,6.05),(4.6,1.6,.3)); cap.rotation_euler=(0,sgn*.42,0)
+    box('Collision',(0,0,3.0),(8.0,.9,6.0))
+
+
+def welcome_sign():
+    box('Wood',(0,0,2.5),(.4,.4,5.0))
+    box('Wood',(0,0,4.5),(2.8,.25,1.4))
+    for z in (3.75,5.25): box('Metal',(0,0,z),(2.9,.32,.12))
+    box('Glow',(0,0,5.55),(.45,.45,.45))
+    box('Collision',(0,0,2.5),(.6,.6,5.0))
+
+
 BUILDERS = {'StreetLamp':street_lamp,'Gravestone':gravestone,'PineTree':pine,
-            'DeadTree':dead_tree,'Pumpkin':pumpkin}
+            'DeadTree':dead_tree,'Pumpkin':pumpkin,
+            'GhostFountain':ghost_fountain,'ChamberPortal':chamber_portal,'RebirthAltar':rebirth_altar,
+            'NoticeBoard':notice_board,'WelcomeSign':welcome_sign}
 
 
 def finalize(collection):
@@ -243,7 +366,7 @@ def finalize(collection):
             rotations=[coords[i:]+coords[:i] for i in range(3)]
             triangles_coordinates.append(min(rotations))
         geometry.append((obj.name,sorted(triangles_coordinates)))
-    return {'zone':'Props','footprint':[round(size.x,5),round(size.z,5),round(size.y,5)],
+    return {'zone':ZONES.get(collection.name,'Props'),'footprint':[round(size.x,5),round(size.z,5),round(size.y,5)],
             'roles':sorted({o['Role'] for o in collection.objects}),
             'triangleBudget':BUDGETS[collection.name],'triangles':triangles,
             'meshCount':len(collection.objects),

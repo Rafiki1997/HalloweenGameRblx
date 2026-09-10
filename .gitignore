@@ -6,3 +6,4 @@ build/*.Acceptance.rbxlx
 build/studio-check.png
 build/screens/
 *.blend1
+assets/exports/
