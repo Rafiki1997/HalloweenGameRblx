@@ -9,6 +9,15 @@ Roblox's collision approximation never meet. Whole-town MeshPart cap is 500 (275
 first ten assets). `World.build()` keeps the primitive version of any piece whose ID is still zero.
 See ASSETS.md (generated) for the catalog and the upload procedure.
 
+Quality passes (2026-09-10): Level A gives every mesh a box-projected UV map (8 studs per tile) and maps
+roles to built-in Roblox materials (Slate, WoodPlanks, Metal, Glass, Grass); the place file runs the
+Future lighting engine with tuned atmosphere, bloom and colour correction. Level B adds detail geometry to
+the seven most visible assets: tiled roof rows, window surrounds, timber framing, quoins, battlements,
+string courses, porch steps, fountain ribs and chains, portal runes, lamp scroll arms (18,930 triangles
+across all 23 assets). Uploads run headless with `tools/blender/upload_via_addon.py`, which drives the
+Roblox add-on's own Open Cloud client and falls back to its browser login when the saved token is stale.
+Level C (baked PBR textures embedded in the FBX) remains optional and undecided.
+
 `tools/verify.py` also runs `tools/lint_luau.py`, which fails on a file-level local used before its
 declaration and on unknown globals; both are nil at runtime in Roblox and slipped past the compiler
 once (the HUD panels opened empty on 2026-09-09).
