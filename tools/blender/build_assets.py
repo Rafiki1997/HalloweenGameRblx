@@ -20,8 +20,10 @@ PALETTE = {'Stone': (51,49,65), 'Wood': (62,43,58), 'Metal': (43,40,57), 'Roof':
            'Glass': (120,160,220), 'Water': (80,205,255), 'Ground': (29,43,42),
            'Collision': (220,50,80)}
 BUDGETS = {'StreetLamp':300, 'Gravestone':150, 'PineTree':400, 'DeadTree':600, 'Pumpkin':300,
-           'GhostFountain':4000, 'ChamberPortal':2500, 'RebirthAltar':2000, 'NoticeBoard':600, 'WelcomeSign':300}
-ZONES = {'GhostFountain':'Plaza', 'ChamberPortal':'Plaza', 'RebirthAltar':'Plaza', 'NoticeBoard':'Plaza', 'WelcomeSign':'Plaza'}
+           'GhostFountain':4000, 'ChamberPortal':2500, 'RebirthAltar':2000, 'NoticeBoard':600, 'WelcomeSign':300,
+           'HauntShowcase':6000}
+ZONES = {'GhostFountain':'Plaza', 'ChamberPortal':'Plaza', 'RebirthAltar':'Plaza', 'NoticeBoard':'Plaza', 'WelcomeSign':'Plaza',
+         'HauntShowcase':'Haunts'}
 ASSET = None
 
 
@@ -315,10 +317,74 @@ def welcome_sign():
     box('Collision',(0,0,2.5),(.6,.6,5.0))
 
 
+def prism_x(role_name, x0, x1, profile):
+    """Closed prism: a polygon in the YZ plane extruded from x0 to x1 (gable roofs, wedges)."""
+    n = len(profile)
+    vertices = [(x0, y, z) for y, z in profile] + [(x1, y, z) for y, z in profile]
+    faces = [tuple(reversed(range(n))), tuple(range(n, 2*n))]
+    for i in range(n):
+        j = (i+1) % n
+        faces.append((i, j, n+j, n+i))
+    return mesh_object(role_name, vertices, faces)
+
+
+def fence_run(a, b, post_every=4.6, picket_every=1.55):
+    """Low iron fence between two ground points: posts, two rails, pickets. Metal role."""
+    start, end = Vector((a[0], a[1], 0)), Vector((b[0], b[1], 0))
+    length = (end-start).length
+    direction = (end-start)/length
+    yaw = math.atan2(direction.y, direction.x)
+    def along(t, z, size):
+        pos = start+direction*t
+        obj = box('Metal', (pos.x, pos.y, z), size)
+        obj.rotation_euler = (0, 0, yaw)
+        return obj
+    posts = max(2, round(length/post_every)+1)
+    for i in range(posts):
+        along(length*i/(posts-1), 2.45, (.36, .36, 2.9))
+    for z in (2.05, 3.3):
+        along(length/2, z, (length, .14, .14))
+    pickets = int(length/picket_every)
+    for i in range(1, pickets):
+        along(length*i/pickets, 2.25, (.11, .11, 2.5))
+
+
+def haunt_showcase():
+    # Blender +Y is the plaza-facing front (Roblox -Z after export); the house sits at the back (-Y).
+    box('Stone', (0, 0, .5), (46, 40, 1.0))                       # yard plinth, top at z 1
+    # House: two storeys, jettied upper floor, gable roof, chimney, door, steps and glowing windows.
+    box('Wood', (0, -15.5, 4.0), (30, 9, 6))
+    box('Wood', (0, -15.6, 9.5), (31.4, 9.8, 5))
+    box('Roof', (0, -10.6, 7.1), (32.4, 1.4, .36))                 # jetty ledge
+    prism_x('Roof', -16.8, 16.8, [(-21.4, 11.85), (-9.6, 11.85), (-15.5, 18.7)])
+    box('Stone', (9.2, -13.6, 17.3), (1.8, 1.8, 5.4))
+    box('Roof', (0, -10.92, 3.1), (2.7, .28, 4.2))                 # door
+    box('Stone', (0, -10.2, 1.25), (4.6, 1.7, .5))                 # doorstep
+    for x in (-10.5, -5.5, 5.5, 10.5): box('Accent', (x, -10.86, 4.3), (1.8, .24, 2.4))
+    for x in (-11, -6, 0, 6, 11): box('Accent', (x, -10.56, 9.6), (1.6, .24, 2.2))
+    for sx in (-1, 1):
+        for y in (-18.2, -13.2): box('Accent', (sx*15.82, y, 9.6), (.24, 1.5, 2.0))
+    # Twenty display pedestals on the server's 5 by 4 slot grid (Roblox z = -Blender y).
+    for j in range(20):
+        x = ((j % 5)-2)*6; y = 5-(j//5)*5
+        box('Stone', (x, y, 1.6), (3.2, 3.2, 1.2))
+        box('Stone', (x, y, 2.27), (3.6, 3.6, .14))
+    # Gate posts with glowing caps, iron fence on three sides, hedges inside the fence.
+    for x in (-3.6, 3.6):
+        box('Stone', (x, 20, 3.1), (1.4, 1.4, 4.2))
+        box('Accent', (x, 20, 5.5), (.7, .7, .6))
+    fence_run((-23, 20), (-4.4, 20)); fence_run((4.4, 20), (23, 20))
+    fence_run((-23, 20), (-23, -20)); fence_run((23, 20), (23, -20))
+    for sx in (-1, 1):
+        box('Foliage', (sx*21.5, 6, 2.1), (1.9, 26, 2.2))
+        box('Foliage', (sx*13.2, 18.5, 2.0), (17.4, 1.8, 2.0))
+
+
 BUILDERS = {'StreetLamp':street_lamp,'Gravestone':gravestone,'PineTree':pine,
             'DeadTree':dead_tree,'Pumpkin':pumpkin,
             'GhostFountain':ghost_fountain,'ChamberPortal':chamber_portal,'RebirthAltar':rebirth_altar,
-            'NoticeBoard':notice_board,'WelcomeSign':welcome_sign}
+            'NoticeBoard':notice_board,'WelcomeSign':welcome_sign,
+            'HauntShowcase':haunt_showcase}
 
 
 def finalize(collection):

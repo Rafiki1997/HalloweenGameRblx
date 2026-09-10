@@ -144,6 +144,7 @@ return {
     DeadTree={Id=76444404897817, Footprint=Vector3.new(7.81895, 11.00885, 4.70124), Roles={"Collision", "Wood"}},
     GhostFountain={Id=106922798333990, Footprint=Vector3.new(25.45997, 16.3, 25.45997), Roles={"Accent", "Collision", "Glow", "Metal", "Stone", "Water"}},
     Gravestone={Id=136583765279249, Footprint=Vector3.new(2.9, 3.1, 1.3), Roles={"Collision", "Stone"}},
+    HauntShowcase={Id=0, Footprint=Vector3.new(46.36, 20.0, 42.1), Roles={"Accent", "Foliage", "Metal", "Roof", "Stone", "Wood"}},
     NoticeBoard={Id=132306502866809, Footprint=Vector3.new(8.52254, 7.12481, 1.6), Roles={"Collision", "Roof", "Stone", "Wood"}},
     PineTree={Id=115634389395822, Footprint=Vector3.new(8.21162, 17.07149, 7.92104), Roles={"Collision", "Foliage", "Wood"}},
     Pumpkin={Id=88455361663381, Footprint=Vector3.new(2.8628, 2.29155, 2.87657), Roles={"Accent", "Collision", "Glow", "Wood"}},
@@ -755,7 +756,8 @@ local function refreshPlot(player)
     local decor=Instance.new('Folder'); decor.Name='UpgradeDecor'; decor.Parent=plot.Model
     for i=2,p.HauntLevel do
         for _,s in {-1,1} do
-            local pillar=V.part(decor,'EstateSpire',Vector3.new(1.2,3+i,1.2),plot.CF*CFrame.new(s*(20+i),4+i,-10+i*5),V.color(i),Enum.Material.Neon)
+            local offset=if plot.SpireOffset then plot.SpireOffset(s,i) else CFrame.new(s*(20+i),4+i,-10+i*5)
+            local pillar=V.part(decor,'EstateSpire',Vector3.new(1.2,3+i,1.2),plot.CF*offset,V.color(i),Enum.Material.Neon)
             local l=Instance.new('PointLight'); l.Color=pillar.Color; l.Range=8; l.Brightness=0.3; l.Parent=pillar
         end
     end
@@ -1108,7 +1110,7 @@ local function path(parent,a,b,width)
 end
 function W.build()
     local loadNames={}
-    for _,name in {'StreetLamp','Gravestone','PineTree','DeadTree','Pumpkin','GhostFountain','ChamberPortal','RebirthAltar','NoticeBoard','WelcomeSign'} do
+    for _,name in {'StreetLamp','Gravestone','PineTree','DeadTree','Pumpkin','GhostFountain','ChamberPortal','RebirthAltar','NoticeBoard','WelcomeSign','HauntShowcase'} do
         if Assets.configured(name) then table.insert(loadNames,name) end
     end
     Assets.preload(loadNames)
@@ -1147,6 +1149,9 @@ function W.build()
         sign(root,Vector3.new(0,5,54),'GHOSTLIGHT HOLLOW\nHunt • Haunt • Discover')
     end
     local plotNumber=0
+    local hauntHues={Color3.fromRGB(166,103,246),Color3.fromRGB(70,130,255),Color3.fromRGB(80,220,140),Color3.fromRGB(255,85,85),
+        Color3.fromRGB(80,205,255),Color3.fromRGB(240,90,220),Color3.fromRGB(255,140,60)}
+    local meshHaunts=Assets.configured('HauntShowcase')
     for i=1,8 do
         if i==5 then continue end
         plotNumber+=1
@@ -1155,35 +1160,76 @@ function W.build()
         local model=Instance.new('Model'); model.Name='Haunt'..i; model.Parent=root
         local cf=CFrame.lookAt(center,Vector3.new(0,0,0))
         local function p(name,size,offset,color,mat) return V.part(model,name,size,cf*CFrame.new(offset),color or wood,mat) end
-        p('Foundation',Vector3.new(46,1,40),Vector3.new(0,0.5,0),stone,Enum.Material.Cobblestone)
-        p('BackWall',Vector3.new(46,13,1),Vector3.new(0,7,19))
-        for _,s in {-1,1} do
-            p('SideWall',Vector3.new(1,13,40),Vector3.new(s*23,7,0))
-            p('FrontPillar',Vector3.new(2,13,2),Vector3.new(s*21,7,-19))
-            p('Roof',Vector3.new(24,1.5,42),Vector3.new(s*10,15.2,0),Color3.fromRGB(39,30,57)).CFrame=cf*CFrame.new(s*10,15.2,0)*CFrame.Angles(0,0,s*math.rad(-18))
-        end
-        local board=p('OwnerBoard',Vector3.new(18,3,1),Vector3.new(0,12,-16),Color3.fromRGB(24,19,37))
-        local label=V.label(board,'UNCLAIMED HAUNT',purple,290,100)
-        local hologram=p('IncomeHologram',Vector3.new(0.5,0.5,0.5),Vector3.new(0,10,2),Color3.fromRGB(131,255,225),Enum.Material.Neon)
-        hologram.Transparency=1
-        local incomeLabel=V.label(hologram,'$/SEC • $0',Color3.fromRGB(131,255,225),210,48)
-        local deposit=p('Deposit',Vector3.new(5,0.4,5),Vector3.new(-11,1.2,-10),Color3.fromRGB(82,219,190),Enum.Material.Neon)
-        V.label(deposit,'DEPOSIT\nCaptured ghosts',Color3.fromRGB(153,255,223),140,45)
-        local chamber=p('ChamberDoor',Vector3.new(5,7,0.5),Vector3.new(11,4.5,14),purple,Enum.Material.Neon)
-        V.label(chamber,'HAUNT CHAMBER',purple,170,45)
-        chamber.Transparency=1; chamber.CanCollide=false
-        local chamberGui=chamber:FindFirstChild('Label'); if chamberGui then chamberGui.Enabled=false end
+        local label,incomeLabel,deposit,chamber,spireOffset
         local slots={}
-        for j=1,20 do
-            local x=((j-1)%5-2)*6
-            local z=math.floor((j-1)/5)*5-5
-            local pad=p('Slot'..j,Vector3.new(4,0.4,4),Vector3.new(x,1.2,z),Color3.fromRGB(70,53,98))
-            table.insert(slots,pad)
+        if meshHaunts then
+            -- Visuals come from the HauntShowcase mesh. Collision, slot pads and label anchors stay primitives so the
+            -- gate opening, pedestal tops and the server's plot contract never depend on Roblox's collision approximation.
+            -- The mesh base sits on the ground top (y -0.5); its yard plinth top is therefore y 0.5.
+            Assets.place('HauntShowcase',model,cf*CFrame.new(0,-0.5,0),{Accent=hauntHues[plotNumber]})
+            local function blocker(name,size,offset)
+                local b=p(name,size,offset,stone); b.Transparency=1; b.CanQuery=false; return b
+            end
+            blocker('PlinthCollision',Vector3.new(46,1,40),Vector3.new(0,0,0))
+            blocker('HouseCollision',Vector3.new(31.4,17.5,9.8),Vector3.new(0,9.25,15.6))
+            for _,s in {-1,1} do
+                blocker('SideFence',Vector3.new(0.6,3.4,40),Vector3.new(s*23,2.2,0))
+                blocker('FrontFence',Vector3.new(18.6,3.4,0.6),Vector3.new(s*13.7,2.2,-20))
+                blocker('GatePost',Vector3.new(1.4,4.2,1.4),Vector3.new(s*3.6,2.6,-20))
+                blocker('SideHedge',Vector3.new(1.9,2.2,26),Vector3.new(s*21.5,1.6,-6))
+                blocker('FrontHedge',Vector3.new(17.4,2.0,1.8),Vector3.new(s*13.2,1.5,-18.5))
+            end
+            local anchor=p('OwnerBoard',Vector3.new(0.5,0.5,0.5),Vector3.new(0,12.5,10.4))
+            anchor.Transparency=1; anchor.CanCollide=false; anchor.CanQuery=false
+            label=V.label(anchor,'UNCLAIMED HAUNT',purple,290,100)
+            local hologram=p('IncomeHologram',Vector3.new(0.5,0.5,0.5),Vector3.new(0,9,2),Color3.fromRGB(131,255,225),Enum.Material.Neon)
+            hologram.Transparency=1; hologram.CanCollide=false; hologram.CanQuery=false
+            incomeLabel=V.label(hologram,'$/SEC • $0',Color3.fromRGB(131,255,225),210,48)
+            deposit=p('Deposit',Vector3.new(5,0.4,5),Vector3.new(-11,0.7,-12),Color3.fromRGB(82,219,190),Enum.Material.Neon)
+            V.label(deposit,'DEPOSIT\nCaptured ghosts',Color3.fromRGB(153,255,223),140,45)
+            chamber=p('ChamberDoor',Vector3.new(5,7,0.5),Vector3.new(11,4.5,14),purple,Enum.Material.Neon)
+            chamber.Transparency=1; chamber.CanCollide=false; chamber.CanQuery=false
+            for j=1,20 do
+                local x=((j-1)%5-2)*6
+                local z=math.floor((j-1)/5)*5-5
+                blocker('Pedestal'..j,Vector3.new(3.2,1.2,3.2),Vector3.new(x,1.1,z))
+                -- The pad is the server's slot part: it recolours and dims it, and hangs the display ghost 2.3 studs above it.
+                local pad=p('Slot'..j,Vector3.new(3.6,0.3,3.6),Vector3.new(x,1.99,z),Color3.fromRGB(70,53,98))
+                table.insert(slots,pad)
+            end
+            -- Estate spires stand on the roof ridge instead of the yard edge, which the fence now occupies.
+            spireOffset=function(s,k) return CFrame.new(s*(5+2.2*k),19+0.5*k,15.5) end
+        else
+            p('Foundation',Vector3.new(46,1,40),Vector3.new(0,0.5,0),stone,Enum.Material.Cobblestone)
+            p('BackWall',Vector3.new(46,13,1),Vector3.new(0,7,19))
+            for _,s in {-1,1} do
+                p('SideWall',Vector3.new(1,13,40),Vector3.new(s*23,7,0))
+                p('FrontPillar',Vector3.new(2,13,2),Vector3.new(s*21,7,-19))
+                p('Roof',Vector3.new(24,1.5,42),Vector3.new(s*10,15.2,0),Color3.fromRGB(39,30,57)).CFrame=cf*CFrame.new(s*10,15.2,0)*CFrame.Angles(0,0,s*math.rad(-18))
+            end
+            local board=p('OwnerBoard',Vector3.new(18,3,1),Vector3.new(0,12,-16),Color3.fromRGB(24,19,37))
+            label=V.label(board,'UNCLAIMED HAUNT',purple,290,100)
+            local hologram=p('IncomeHologram',Vector3.new(0.5,0.5,0.5),Vector3.new(0,10,2),Color3.fromRGB(131,255,225),Enum.Material.Neon)
+            hologram.Transparency=1
+            incomeLabel=V.label(hologram,'$/SEC • $0',Color3.fromRGB(131,255,225),210,48)
+            deposit=p('Deposit',Vector3.new(5,0.4,5),Vector3.new(-11,1.2,-10),Color3.fromRGB(82,219,190),Enum.Material.Neon)
+            V.label(deposit,'DEPOSIT\nCaptured ghosts',Color3.fromRGB(153,255,223),140,45)
+            chamber=p('ChamberDoor',Vector3.new(5,7,0.5),Vector3.new(11,4.5,14),purple,Enum.Material.Neon)
+            V.label(chamber,'HAUNT CHAMBER',purple,170,45)
+            chamber.Transparency=1; chamber.CanCollide=false
+            local chamberGui=chamber:FindFirstChild('Label'); if chamberGui then chamberGui.Enabled=false end
+            for j=1,20 do
+                local x=((j-1)%5-2)*6
+                local z=math.floor((j-1)/5)*5-5
+                local pad=p('Slot'..j,Vector3.new(4,0.4,4),Vector3.new(x,1.2,z),Color3.fromRGB(70,53,98))
+                table.insert(slots,pad)
+            end
         end
-        W.Plots[plotNumber]={Model=model,CF=cf,Slots=slots,Label=label,IncomeLabel=incomeLabel,Deposit=deposit,ChamberDoor=chamber,Owner=nil,Displays={}}
+        W.Plots[plotNumber]={Model=model,CF=cf,Slots=slots,Label=label,IncomeLabel=incomeLabel,Deposit=deposit,ChamberDoor=chamber,SpireOffset=spireOffset,Owner=nil,Displays={}}
         path(root,Vector3.new(center.X,0.1,center.Z)*0.26,center,12)
-        lamp(root,(cf*CFrame.new(-20,1,-17)).Position)
-        lamp(root,(cf*CFrame.new(20,1,-17)).Position)
+        local plinthTop=if meshHaunts then 0.5 else 1
+        lamp(root,(cf*CFrame.new(-19,plinthTop,-15)).Position)
+        lamp(root,(cf*CFrame.new(19,plinthTop,-15)).Position)
     end
     path(root,Vector3.new(0,0.2,-30),Vector3.new(0,0.2,-180),18)
     for z=-45,-170,-25 do lamp(root,Vector3.new(-13,-0.5,z)); lamp(root,Vector3.new(13,-0.5,z)) end

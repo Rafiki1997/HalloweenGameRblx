@@ -42,7 +42,8 @@ local function refreshPlot(player)
     local decor=Instance.new('Folder'); decor.Name='UpgradeDecor'; decor.Parent=plot.Model
     for i=2,p.HauntLevel do
         for _,s in {-1,1} do
-            local pillar=V.part(decor,'EstateSpire',Vector3.new(1.2,3+i,1.2),plot.CF*CFrame.new(s*(20+i),4+i,-10+i*5),V.color(i),Enum.Material.Neon)
+            local offset=if plot.SpireOffset then plot.SpireOffset(s,i) else CFrame.new(s*(20+i),4+i,-10+i*5)
+            local pillar=V.part(decor,'EstateSpire',Vector3.new(1.2,3+i,1.2),plot.CF*offset,V.color(i),Enum.Material.Neon)
             local l=Instance.new('PointLight'); l.Color=pillar.Color; l.Range=8; l.Brightness=0.3; l.Parent=pillar
         end
     end
