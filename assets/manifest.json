@@ -17,10 +17,10 @@
       "triangles": 252,
       "meshCount": 3,
       "geometrySha256": "29d6e85319330a9bb034dfd0c02e6a263c1c978d1f5fc15c97dd9fc505147f80",
-      "assetId": 0,
-      "uploadedAt": null,
-      "sha256": null,
-      "exportSha256": "0e1a4d99ceb0eead7ffaeaf5bc2bc2e319f459ed04bcaaa3b3cc1177c5927655"
+      "assetId": 122240540563593,
+      "uploadedAt": "2026-09-10T02:38:06.082267+00:00",
+      "sha256": "016f1e63615957a2a71d9c71464515869ac9ec6cfcd2cfed5383732af9ec8109",
+      "exportSha256": "016f1e63615957a2a71d9c71464515869ac9ec6cfcd2cfed5383732af9ec8109"
     },
     "Gravestone": {
       "zone": "Props",
@@ -37,10 +37,10 @@
       "triangles": 148,
       "meshCount": 2,
       "geometrySha256": "7fd8e8bbeddf6b07c7272d77d4eddd84d8011fd2ca92d524228a5589dc88a79f",
-      "assetId": 0,
-      "uploadedAt": null,
-      "sha256": null,
-      "exportSha256": "eed3d88a2116e3d4411adcf1bc05b24d59c8258edd31b8b02db9727aa4260fff"
+      "assetId": 136583765279249,
+      "uploadedAt": "2026-09-10T02:38:06.082521+00:00",
+      "sha256": "27d7e2177ecef046d40dbf9981f1c82d5e656f2b9f6622ccdcac43713dd1e6c5",
+      "exportSha256": "27d7e2177ecef046d40dbf9981f1c82d5e656f2b9f6622ccdcac43713dd1e6c5"
     },
     "PineTree": {
       "zone": "Props",
@@ -58,10 +58,10 @@
       "triangles": 360,
       "meshCount": 3,
       "geometrySha256": "7da2965559c8fad2af385ff5f93b40e12563ed45cddfaf4460da79c8c4cd879f",
-      "assetId": 0,
-      "uploadedAt": null,
-      "sha256": null,
-      "exportSha256": "494f145e00d2d820dfedc8f496e9adee367c14507bdcab8e1058592e6a8eaf40"
+      "assetId": 115634389395822,
+      "uploadedAt": "2026-09-10T02:38:06.082887+00:00",
+      "sha256": "9744516b2495a46b0e0548aabe9b40e01764fd3a159780dd75bb11cae81c0fce",
+      "exportSha256": "9744516b2495a46b0e0548aabe9b40e01764fd3a159780dd75bb11cae81c0fce"
     },
     "DeadTree": {
       "zone": "Props",
@@ -78,10 +78,10 @@
       "triangles": 530,
       "meshCount": 2,
       "geometrySha256": "4ac99c36b5d26cdf4e8b94bb364d53a1bb7f4151ef1134e11093117546dd1ec5",
-      "assetId": 0,
-      "uploadedAt": null,
-      "sha256": null,
-      "exportSha256": "2f6f31b3bb44c60df63700cc2cda9e12fc7f3f5fd6f5b55a01c5ba9570210b70"
+      "assetId": 76444404897817,
+      "uploadedAt": "2026-09-10T02:38:06.083173+00:00",
+      "sha256": "bdbf45de75f6c3c064fc8e649c52f6421de61614cb9c5602f7e4827b476da6d1",
+      "exportSha256": "bdbf45de75f6c3c064fc8e649c52f6421de61614cb9c5602f7e4827b476da6d1"
     },
     "Pumpkin": {
       "zone": "Props",
@@ -100,10 +100,10 @@
       "triangles": 280,
       "meshCount": 4,
       "geometrySha256": "1e2993396f3b9190570ad8da5c8b405a7dcaa5af1fb52025c4f2a73cb6c14e9c",
-      "assetId": 0,
-      "uploadedAt": null,
-      "sha256": null,
-      "exportSha256": "59238ef6eb8bd775e0f0ff803884637ee961fe2712fc202e7d463da76cae355b"
+      "assetId": 88455361663381,
+      "uploadedAt": "2026-09-10T02:38:06.083424+00:00",
+      "sha256": "106e537c203a2d3ad5cdef149ca30dd21ae87349995d0b1b2b6f006cfbdbe307",
+      "exportSha256": "106e537c203a2d3ad5cdef149ca30dd21ae87349995d0b1b2b6f006cfbdbe307"
     },
     "GhostFountain": {
       "zone": "Plaza",
@@ -124,10 +124,10 @@
       "triangles": 1352,
       "meshCount": 6,
       "geometrySha256": "0aefbbf362e94a6e17225bcb86f8f77e4bb1ca8081ffd0e2bf4a2835d1c89e73",
-      "assetId": 0,
-      "uploadedAt": null,
-      "sha256": null,
-      "exportSha256": "8b2583118841257ebfe5ab2c7714e396a3cf747bbc21e00c361d3ea5312024fa"
+      "assetId": 106922798333990,
+      "uploadedAt": "2026-09-10T02:38:06.083843+00:00",
+      "sha256": "8ae06fec0103fe833954294bed99b66243d761b384ef135778e36f3a7ad3dd6e",
+      "exportSha256": "8ae06fec0103fe833954294bed99b66243d761b384ef135778e36f3a7ad3dd6e"
     },
     "ChamberPortal": {
       "zone": "Plaza",
@@ -146,10 +146,10 @@
       "triangles": 564,
       "meshCount": 4,
       "geometrySha256": "237b8cc95b5e38eade198cd9ca8a1ebfe2e812b2d5917acd2e823cff2d2554b0",
-      "assetId": 0,
-      "uploadedAt": null,
-      "sha256": null,
-      "exportSha256": "c4e344065ee74bc411cb98ab507ec6f15f7afa378f8886160f99549b545c9e23"
+      "assetId": 126465059915313,
+      "uploadedAt": "2026-09-10T02:38:06.084125+00:00",
+      "sha256": "92cde25d8ab304748265bfd66fc98551be5c2361c94c9749f82786f9aa6b5f2c",
+      "exportSha256": "92cde25d8ab304748265bfd66fc98551be5c2361c94c9749f82786f9aa6b5f2c"
     },
     "RebirthAltar": {
       "zone": "Plaza",
@@ -168,10 +168,10 @@
       "triangles": 852,
       "meshCount": 4,
       "geometrySha256": "96df885dd9ae947cf9c2d6091961e9aa8c091a173ab2cbe32470aa8f568bc04c",
-      "assetId": 0,
-      "uploadedAt": null,
-      "sha256": null,
-      "exportSha256": "bb6f39d67ece4c669579efe223e575f568031e04cc414294be633f84983c6e9d"
+      "assetId": 117043793736449,
+      "uploadedAt": "2026-09-10T02:38:06.084440+00:00",
+      "sha256": "bbfb8b985e2e625f442b5eadedc1f498c97d976bb5edcef35eef175490fead7c",
+      "exportSha256": "bbfb8b985e2e625f442b5eadedc1f498c97d976bb5edcef35eef175490fead7c"
     },
     "NoticeBoard": {
       "zone": "Plaza",
@@ -190,10 +190,10 @@
       "triangles": 120,
       "meshCount": 4,
       "geometrySha256": "668ebcadc1d9e673697c04c53bea649e7d40795c7573b28f4fd207df3b30b992",
-      "assetId": 0,
-      "uploadedAt": null,
-      "sha256": null,
-      "exportSha256": "c80239397b97f7b74c4075e9b2f97c8144634153387fc0d09328ecbb10938561"
+      "assetId": 132306502866809,
+      "uploadedAt": "2026-09-10T02:38:06.084672+00:00",
+      "sha256": "95a63ccd85d2413f007669c8f77a569c80c83b7bd83db78d524b27cced3f56ff",
+      "exportSha256": "95a63ccd85d2413f007669c8f77a569c80c83b7bd83db78d524b27cced3f56ff"
     },
     "WelcomeSign": {
       "zone": "Plaza",
@@ -212,10 +212,10 @@
       "triangles": 72,
       "meshCount": 4,
       "geometrySha256": "ce9175fbdb5a3196011d4be8c2fa47ae3b1abbea31f52faa0f1bec752158bca0",
-      "assetId": 0,
-      "uploadedAt": null,
-      "sha256": null,
-      "exportSha256": "1e373a838a8a4197a850842355b58e4f78e6c7a1ad94f0cc71683f0ffc785327"
+      "assetId": 95106154151130,
+      "uploadedAt": "2026-09-10T02:38:06.084897+00:00",
+      "sha256": "99c68f95bf20bd9662e4c2648b6695a196377734b76708e43e51f2d15eb6be83",
+      "exportSha256": "99c68f95bf20bd9662e4c2648b6695a196377734b76708e43e51f2d15eb6be83"
     }
   }
 }
