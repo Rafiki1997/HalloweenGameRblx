@@ -4,9 +4,9 @@
     "StreetLamp": {
       "zone": "Props",
       "footprint": [
-        1.44,
-        8.7,
-        1.44
+        1.24,
+        8.6,
+        1.07387
       ],
       "roles": [
         "Collision",
@@ -14,40 +14,40 @@
         "Metal"
       ],
       "triangleBudget": 300,
-      "triangles": 188,
+      "triangles": 252,
       "meshCount": 3,
-      "geometrySha256": "e3b97e9b5540cfb451ddf50972830038c5adc82f1d4713cad51241a7dc4220a0",
+      "geometrySha256": "29d6e85319330a9bb034dfd0c02e6a263c1c978d1f5fc15c97dd9fc505147f80",
       "assetId": 0,
       "uploadedAt": null,
       "sha256": null,
-      "exportSha256": "ec2d8a304c8d9117da3ddb24861b6c60e985e5bdfc20c137e18fb4b5bc636001"
+      "exportSha256": "3b5ea08d82bd8813bb0420180e9251a1e6444f75224c3e5c9521ae92b1ba035d"
     },
     "Gravestone": {
       "zone": "Props",
       "footprint": [
-        3.0,
-        3.2,
-        1.6
+        2.9,
+        3.1,
+        1.3
       ],
       "roles": [
         "Collision",
         "Stone"
       ],
       "triangleBudget": 150,
-      "triangles": 80,
+      "triangles": 148,
       "meshCount": 2,
-      "geometrySha256": "7ec7b4a2da618bafb4e342212b6e58cce57757a70541f43460cbc8305cde9c17",
+      "geometrySha256": "7fd8e8bbeddf6b07c7272d77d4eddd84d8011fd2ca92d524228a5589dc88a79f",
       "assetId": 0,
       "uploadedAt": null,
       "sha256": null,
-      "exportSha256": "01554ce6b3b12de6775ee0c936c956069d4d7316439fd77af3e3315e27f9dd38"
+      "exportSha256": "1c31a4e1aa818686adb4d1eedd6a530b6bef64fb223e300736e2cbae46b91558"
     },
     "PineTree": {
       "zone": "Props",
       "footprint": [
-        8.86327,
-        17.0,
-        8.72862
+        8.21162,
+        17.07149,
+        7.92104
       ],
       "roles": [
         "Collision",
@@ -55,40 +55,40 @@
         "Wood"
       ],
       "triangleBudget": 400,
-      "triangles": 132,
+      "triangles": 360,
       "meshCount": 3,
-      "geometrySha256": "a8ae27eb788d31591f8ff625e62b43b46b123252943e070191b3cd3c42a75259",
+      "geometrySha256": "7da2965559c8fad2af385ff5f93b40e12563ed45cddfaf4460da79c8c4cd879f",
       "assetId": 0,
       "uploadedAt": null,
       "sha256": null,
-      "exportSha256": "15577ed482cf3b4688ea289e646174df77f2f489308c834d3129349ebc77c658"
+      "exportSha256": "e5e5c6cd55422da4532b578010dcddc154210350930809e9d58297f2df8d30cb"
     },
     "DeadTree": {
       "zone": "Props",
       "footprint": [
-        6.34299,
-        10.54509,
-        4.04853
+        7.81895,
+        11.00885,
+        4.70124
       ],
       "roles": [
         "Collision",
         "Wood"
       ],
       "triangleBudget": 600,
-      "triangles": 392,
+      "triangles": 530,
       "meshCount": 2,
-      "geometrySha256": "615b36b21f53fb88c31bfce447877613414b39c0c1d5cbd781ee67d3b6ce9650",
+      "geometrySha256": "4ac99c36b5d26cdf4e8b94bb364d53a1bb7f4151ef1134e11093117546dd1ec5",
       "assetId": 0,
       "uploadedAt": null,
       "sha256": null,
-      "exportSha256": "97c06b8dcf6a993e7914b4fcdff8739438ed4a2698207be18860e5b7dc252a32"
+      "exportSha256": "6a584e65c6822657097f73be67ae5ebbbbc957be75fc412dca953535ce95011b"
     },
     "Pumpkin": {
       "zone": "Props",
       "footprint": [
-        2.916,
-        2.46633,
-        2.608
+        2.8628,
+        2.29155,
+        2.87657
       ],
       "roles": [
         "Accent",
@@ -97,13 +97,13 @@
         "Wood"
       ],
       "triangleBudget": 300,
-      "triangles": 300,
+      "triangles": 280,
       "meshCount": 4,
-      "geometrySha256": "17b3894d481af074784418519be0fe32a963699fed3b11aeff9fc7f8181d3b87",
+      "geometrySha256": "1e2993396f3b9190570ad8da5c8b405a7dcaa5af1fb52025c4f2a73cb6c14e9c",
       "assetId": 0,
       "uploadedAt": null,
       "sha256": null,
-      "exportSha256": "f0758a3eaf4c180061e617c385744d2563740a0e5cc5ce14130d2cc3045e52a5"
+      "exportSha256": "29aec04d31c600c807b247dac15cf2eb217b24546c26aa961c626fb41eda3856"
     }
   }
 }
