@@ -18,8 +18,8 @@
       "meshCount": 3,
       "geometrySha256": "9f4c3ea7e11047a9793f7f9dd2b777dad2ac05acede81870f2b44f7fb102828e",
       "assetId": 122240540563593,
-      "uploadedAt": "2026-09-10T13:32:58.624240+00:00",
-      "sha256": "e3c738d4969c52f3cf95b7be7b5b44978dc7f337d3f4356ae06743c6816bf5c7",
+      "uploadedAt": "2026-09-10T14:01:18.908671+00:00",
+      "sha256": "e14c220e1363d735f909c7f2ceffbbf05c62e8e66bb4e70bd5ac0d90a4f3f6b5",
       "exportSha256": "e14c220e1363d735f909c7f2ceffbbf05c62e8e66bb4e70bd5ac0d90a4f3f6b5"
     },
     "Gravestone": {
@@ -38,8 +38,8 @@
       "meshCount": 2,
       "geometrySha256": "7fd8e8bbeddf6b07c7272d77d4eddd84d8011fd2ca92d524228a5589dc88a79f",
       "assetId": 136583765279249,
-      "uploadedAt": "2026-09-10T13:32:58.624479+00:00",
-      "sha256": "02cc5748c8e06ba979ac06cf7354a6dba334fb53b2b2931ceb2988a9cdd9c846",
+      "uploadedAt": "2026-09-10T14:01:18.909145+00:00",
+      "sha256": "a65537fb490a326400ed09b727d7c726b749570b4530fc795f56dca381a195b4",
       "exportSha256": "a65537fb490a326400ed09b727d7c726b749570b4530fc795f56dca381a195b4"
     },
     "PineTree": {
@@ -59,8 +59,8 @@
       "meshCount": 3,
       "geometrySha256": "7da2965559c8fad2af385ff5f93b40e12563ed45cddfaf4460da79c8c4cd879f",
       "assetId": 115634389395822,
-      "uploadedAt": "2026-09-10T13:32:58.624747+00:00",
-      "sha256": "650f58c8ea17b14d412a848e2b0172757c34f94229287c17512946bad2f7096d",
+      "uploadedAt": "2026-09-10T14:01:18.909660+00:00",
+      "sha256": "cda324359324d9727e2f22b2bb903c2d2cce1779a23932501f4397b2ddf02db4",
       "exportSha256": "cda324359324d9727e2f22b2bb903c2d2cce1779a23932501f4397b2ddf02db4"
     },
     "DeadTree": {
@@ -79,8 +79,8 @@
       "meshCount": 2,
       "geometrySha256": "4ac99c36b5d26cdf4e8b94bb364d53a1bb7f4151ef1134e11093117546dd1ec5",
       "assetId": 76444404897817,
-      "uploadedAt": "2026-09-10T13:32:58.625044+00:00",
-      "sha256": "c1bbd2d22858bcb0f01b61a4b8771b66df65acba57de1a27e9fd835e4cb4d201",
+      "uploadedAt": "2026-09-10T14:01:18.910457+00:00",
+      "sha256": "65e855c3dd9ee9c6d0eaf2e4dd3503e0f41d0f689aa00c2aa7d2086104fef4d9",
       "exportSha256": "65e855c3dd9ee9c6d0eaf2e4dd3503e0f41d0f689aa00c2aa7d2086104fef4d9"
     },
     "Pumpkin": {
@@ -101,8 +101,8 @@
       "meshCount": 4,
       "geometrySha256": "f2e8577110c65ba57c3aaa8ffea15f3c028a60c36d85609f6ba64f1308d5b38e",
       "assetId": 88455361663381,
-      "uploadedAt": "2026-09-10T13:32:58.625297+00:00",
-      "sha256": "03e50d5a3034e75c79d94f12064f148f813c493672683f41abc06315701dd805",
+      "uploadedAt": "2026-09-10T14:01:18.911064+00:00",
+      "sha256": "1f5cc80d8b22930ce66a8e6c2e554020303441c4dc48a6e042fe65de635c4c17",
       "exportSha256": "1f5cc80d8b22930ce66a8e6c2e554020303441c4dc48a6e042fe65de635c4c17"
     },
     "GhostFountain": {
@@ -125,8 +125,8 @@
       "meshCount": 6,
       "geometrySha256": "c286d1bd99458c401b421bc62ded928567496332d5c1d8396c0900d285647efb",
       "assetId": 106922798333990,
-      "uploadedAt": "2026-09-10T13:32:58.625846+00:00",
-      "sha256": "710068a469af37c1a4fffcb95d9bddfb83fef8998db1fa4ac6256669b876b945",
+      "uploadedAt": "2026-09-10T14:01:18.911793+00:00",
+      "sha256": "87c50380b4a188ade30578e41dca16e1262dc85584ca1a4b93afd4a30723af53",
       "exportSha256": "87c50380b4a188ade30578e41dca16e1262dc85584ca1a4b93afd4a30723af53"
     },
     "ChamberPortal": {
@@ -148,8 +148,8 @@
       "meshCount": 5,
       "geometrySha256": "e11d31a22d6cec8b9c0ddd293613926bdc6f522e762f4506eab794e1e210e5f8",
       "assetId": 126465059915313,
-      "uploadedAt": "2026-09-10T13:32:58.626178+00:00",
-      "sha256": "a1338c48dc0e74462196422d9f70673177308ece51645c81d56c1162bc7e9d35",
+      "uploadedAt": "2026-09-10T14:01:18.912225+00:00",
+      "sha256": "290709d9c498128f77ad87a1f849eededc6f150e6399a5ed3e3cc191297d187d",
       "exportSha256": "290709d9c498128f77ad87a1f849eededc6f150e6399a5ed3e3cc191297d187d"
     },
     "RebirthAltar": {
@@ -170,8 +170,8 @@
       "meshCount": 4,
       "geometrySha256": "a3de7c56a4cd0953471803568f7cd93da4c97d4757c17bb4bddb9936ad162f80",
       "assetId": 117043793736449,
-      "uploadedAt": "2026-09-10T13:32:58.626496+00:00",
-      "sha256": "575721b42794006c7012de5a9902473ff4c8678b6b8e3c900e16536d08827046",
+      "uploadedAt": "2026-09-10T14:01:18.912630+00:00",
+      "sha256": "2742bde543464abaee4f79e3fd93303719be039eafbe9193d34ae5880e5504fc",
       "exportSha256": "2742bde543464abaee4f79e3fd93303719be039eafbe9193d34ae5880e5504fc"
     },
     "NoticeBoard": {
@@ -192,8 +192,8 @@
       "meshCount": 4,
       "geometrySha256": "668ebcadc1d9e673697c04c53bea649e7d40795c7573b28f4fd207df3b30b992",
       "assetId": 132306502866809,
-      "uploadedAt": "2026-09-10T13:32:58.626723+00:00",
-      "sha256": "78fbc7fb9464d46be19c54cc678874b613d099b9275f3da877411105d18ac971",
+      "uploadedAt": "2026-09-10T14:01:18.912947+00:00",
+      "sha256": "81f629609e34a86529d8b38011d11acf634ccc1638d4241ded109e9c05d6ae94",
       "exportSha256": "81f629609e34a86529d8b38011d11acf634ccc1638d4241ded109e9c05d6ae94"
     },
     "WelcomeSign": {
@@ -214,8 +214,8 @@
       "meshCount": 4,
       "geometrySha256": "ce9175fbdb5a3196011d4be8c2fa47ae3b1abbea31f52faa0f1bec752158bca0",
       "assetId": 95106154151130,
-      "uploadedAt": "2026-09-10T13:32:58.626940+00:00",
-      "sha256": "7b3abbb27ef7c65b3de6af9ff981ddcd80bddeae34db86dfc0c49e54169309a9",
+      "uploadedAt": "2026-09-10T14:01:18.913344+00:00",
+      "sha256": "64ede780bfb63593804842cc9d84d6fefc1bb89c45bf94057dac5f5264732428",
       "exportSha256": "64ede780bfb63593804842cc9d84d6fefc1bb89c45bf94057dac5f5264732428"
     },
     "HauntShowcase": {
@@ -238,8 +238,8 @@
       "meshCount": 6,
       "geometrySha256": "487ee298fcbe69c7ca65329a1df62359ccda898421f63f0dcf68e0e237c229b5",
       "assetId": 125731043348668,
-      "uploadedAt": "2026-09-10T13:32:58.627555+00:00",
-      "sha256": "a127822802cfd7c5fd81f8cdd9951058ef201cb016b1e65d35849bc4ebe835c9",
+      "uploadedAt": "2026-09-10T14:01:18.914702+00:00",
+      "sha256": "9bb9de3f50fd25acd6dabd2ca0fe863821c5c784ac531d5719c95b837daf38a1",
       "exportSha256": "9bb9de3f50fd25acd6dabd2ca0fe863821c5c784ac531d5719c95b837daf38a1"
     },
     "MansionHill": {
@@ -259,8 +259,8 @@
       "meshCount": 3,
       "geometrySha256": "fc52f45b6d0e2d5e960a75d46c0a776d6cc9e890e165d3b66c2ded1799e698ef",
       "assetId": 133984575959280,
-      "uploadedAt": "2026-09-10T13:32:58.627770+00:00",
-      "sha256": "7109435e40f2ad37f89a28029a3cb7cb588ce4153ced51b71768b6ef35f4c46d",
+      "uploadedAt": "2026-09-10T14:01:18.915325+00:00",
+      "sha256": "71167fdadaf62a02cbc1df63cfeea3f98832642a928733916ef480fd43f2efa2",
       "exportSha256": "71167fdadaf62a02cbc1df63cfeea3f98832642a928733916ef480fd43f2efa2"
     },
     "MansionFacade": {
@@ -283,8 +283,8 @@
       "meshCount": 6,
       "geometrySha256": "d4e69a4f48ea374e27da5bb70fc983c7330173758ab538b86b6f570d35253a94",
       "assetId": 117527253688421,
-      "uploadedAt": "2026-09-10T13:32:58.628606+00:00",
-      "sha256": "5ba74805326c59008f99e9c8000c02575cf290845a112c7e8d33c66d08d60851",
+      "uploadedAt": "2026-09-10T14:01:18.917715+00:00",
+      "sha256": "bbca637750656dfb0267cc5f33063d7b9b9787463782e8b04991c2fe56ccb863",
       "exportSha256": "bbca637750656dfb0267cc5f33063d7b9b9787463782e8b04991c2fe56ccb863"
     },
     "Boulder": {
@@ -302,8 +302,8 @@
       "meshCount": 1,
       "geometrySha256": "e031f38e6a5434887f18a893663345bb6c0fdd2725cc76b527798865849dcbc8",
       "assetId": 104059816112501,
-      "uploadedAt": "2026-09-10T13:32:58.628768+00:00",
-      "sha256": "2b2b8b70684334a8749754e639e242f00ed93fff69e2f1861e6d048f7d4a7955",
+      "uploadedAt": "2026-09-10T14:01:18.918084+00:00",
+      "sha256": "7e604df1dbe7aed17e2fb97d2eafb7ceb4a365db2ea3cde8d1bbcee10636a503",
       "exportSha256": "7e604df1dbe7aed17e2fb97d2eafb7ceb4a365db2ea3cde8d1bbcee10636a503"
     },
     "ShopHouse": {
@@ -326,8 +326,8 @@
       "meshCount": 6,
       "geometrySha256": "4c9bcad8415a1c921f88af99f7ee94c6fbad0e567e1a923e588a2ccf461976a4",
       "assetId": 75167034499776,
-      "uploadedAt": "2026-09-10T13:32:58.629099+00:00",
-      "sha256": "7a37d3f3706e25add64b3b0f80bc08e3a2bfd493a6c460a2b74a7253170c5223",
+      "uploadedAt": "2026-09-10T14:01:18.919254+00:00",
+      "sha256": "0555c014fb4e2db3834209a82439c8f8ca31a18d0ad8012d29da26019045ae91",
       "exportSha256": "0555c014fb4e2db3834209a82439c8f8ca31a18d0ad8012d29da26019045ae91"
     },
     "Caretaker": {
@@ -347,8 +347,8 @@
       "meshCount": 3,
       "geometrySha256": "7e820def0685dc9fd572277719cd42e7c79aff774cffc7c049f371d671792200",
       "assetId": 83052712222180,
-      "uploadedAt": "2026-09-10T13:32:58.629326+00:00",
-      "sha256": "e7a09ea4ec43097e175815cf15b5c3c7a3b5416504e3dd3d56adae388249a862",
+      "uploadedAt": "2026-09-10T14:01:18.920004+00:00",
+      "sha256": "2a2b7d3e236b41b62a41d17da0bcf2b157dde621701e97b50ea97db67b8614d6",
       "exportSha256": "2a2b7d3e236b41b62a41d17da0bcf2b157dde621701e97b50ea97db67b8614d6"
     },
     "MarketStall": {
@@ -370,8 +370,8 @@
       "meshCount": 5,
       "geometrySha256": "4112138efe34b63639a165129a93faede8ff774f989d9f7b53a45b8bba87dfc1",
       "assetId": 111031379890133,
-      "uploadedAt": "2026-09-10T13:32:58.629587+00:00",
-      "sha256": "9118488ad6d12d7cf4ae80e39df00a3bbaadfca6f979e0411da9d2f32cbda2e3",
+      "uploadedAt": "2026-09-10T14:01:18.922023+00:00",
+      "sha256": "ccc89fd09dc48a25168e1680d50a9a700a72a4994c7f92b59315e5326d5d8736",
       "exportSha256": "ccc89fd09dc48a25168e1680d50a9a700a72a4994c7f92b59315e5326d5d8736"
     },
     "Crate": {
@@ -390,8 +390,8 @@
       "meshCount": 2,
       "geometrySha256": "5a785280e380d9fb78231781e74b073052e3f5c149cfeca68a138cee815eccc9",
       "assetId": 116239622920482,
-      "uploadedAt": "2026-09-10T13:32:58.629755+00:00",
-      "sha256": "6401607badd00a7f4abe34a5a2152ed3953cbebaf082419bcf7e6654ea08f225",
+      "uploadedAt": "2026-09-10T14:01:18.922886+00:00",
+      "sha256": "d9f6c13c3b110d0db60b8bd83fb9b4bae06c49a2cc558fd5d79b48785cdb3c4e",
       "exportSha256": "d9f6c13c3b110d0db60b8bd83fb9b4bae06c49a2cc558fd5d79b48785cdb3c4e"
     },
     "GraveyardFence": {
@@ -411,8 +411,8 @@
       "meshCount": 3,
       "geometrySha256": "0856e36eaa6d43d5f5a69bf6411a383a3ddce2dfb6c0f8055b0b85ce8aa2d76f",
       "assetId": 88029584944856,
-      "uploadedAt": "2026-09-10T13:32:58.630137+00:00",
-      "sha256": "47ee5b232df634c7693f40c0c426d26b48e9872664070e01a84b3f3583b5ab19",
+      "uploadedAt": "2026-09-10T14:01:18.923986+00:00",
+      "sha256": "db5808277ad3b31cb770b203f8ab6b1dfa1dec5a60441b2b168419b3bbe00038",
       "exportSha256": "db5808277ad3b31cb770b203f8ab6b1dfa1dec5a60441b2b168419b3bbe00038"
     },
     "Crypt": {
@@ -434,8 +434,8 @@
       "meshCount": 5,
       "geometrySha256": "92a086e5511963b6ae914b01f54ba02dd93e32ee59150308ac7deb5299b739d0",
       "assetId": 139694357551178,
-      "uploadedAt": "2026-09-10T13:32:58.630401+00:00",
-      "sha256": "189d019d3ce8e6ddcbfab3f66b64fc44beec6e9404d73e4d589b119df8b0d6ee",
+      "uploadedAt": "2026-09-10T14:01:18.924751+00:00",
+      "sha256": "f1cb4d475fcffd00e4b7749dd213ae62cbc3fdfa099042026cd8b7a6c96ce41a",
       "exportSha256": "f1cb4d475fcffd00e4b7749dd213ae62cbc3fdfa099042026cd8b7a6c96ce41a"
     },
     "GravestoneCross": {
@@ -453,8 +453,8 @@
       "meshCount": 1,
       "geometrySha256": "93c4697d3f4dc3f6a728a61157bc1ac7f72b7f14f729d2194fcc94f1799c6cdb",
       "assetId": 140340291491005,
-      "uploadedAt": "2026-09-10T13:32:58.630546+00:00",
-      "sha256": "7105057c7fd349f1870ab9aebf79777ebbac3b534b78cf1bd298f3bb98b2eb6f",
+      "uploadedAt": "2026-09-10T14:01:18.925251+00:00",
+      "sha256": "263af2c7d96f932518e761f068574297ec9093fee6df6754b31dc6459e55bc4a",
       "exportSha256": "263af2c7d96f932518e761f068574297ec9093fee6df6754b31dc6459e55bc4a"
     },
     "GravestoneObelisk": {
@@ -472,8 +472,8 @@
       "meshCount": 1,
       "geometrySha256": "5f5da4663a66b753ac944c7f007fbb48618e10d15959ba0a623a1122a46bfeaa",
       "assetId": 114583084841642,
-      "uploadedAt": "2026-09-10T13:32:58.630694+00:00",
-      "sha256": "5e93be201b011478460c91af91cd51a8f9ec0ef5e22c2b2c829dfd1e9b5dfcc6",
+      "uploadedAt": "2026-09-10T14:01:18.925599+00:00",
+      "sha256": "b1f613077ad00e35e37b003e1ae00aff0cc69c29cf0c7890345a1e4a46be8ebb",
       "exportSha256": "b1f613077ad00e35e37b003e1ae00aff0cc69c29cf0c7890345a1e4a46be8ebb"
     },
     "OakCask": {
@@ -492,8 +492,8 @@
       "meshCount": 2,
       "geometrySha256": "84769fa91b0dc3e2376a082245c27577a0214748d04f17b422e7acfa753255cf",
       "assetId": 121112502527701,
-      "uploadedAt": "2026-09-10T13:32:58.630880+00:00",
-      "sha256": "3ce15f2fcad74ca87a9465b8172ba15367c3263bba58ddbe49e89cb3159db4d3",
+      "uploadedAt": "2026-09-10T14:01:18.925993+00:00",
+      "sha256": "3d238f36724383602a5b2719e1f22c2944d9ac3679a7a264e371352316b5503c",
       "exportSha256": "3d238f36724383602a5b2719e1f22c2944d9ac3679a7a264e371352316b5503c"
     }
   }

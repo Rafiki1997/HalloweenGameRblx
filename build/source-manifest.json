@@ -5,7 +5,7 @@
   "src/server/Main.server.luau": "36fd6fbd370833d3c2e7e85d5c7c59dc95ca305d781ebc2f201ddd5073ab07db",
   "src/server/Profiles.luau": "217ebb2424ae55bc7adc81e2dabc24a4363073d3c40a421ffe88088f377c361e",
   "src/server/World.luau": "fe37ab20d9735252ab68a6778bb1a9b36a70622e01b37effc95a634ae7f2d248",
-  "src/shared/AssetIds.luau": "e58849e3965f70209a8ed9810b6a9e81303ca6c6e02681dc94a3fb419970a998",
+  "src/shared/AssetIds.luau": "e540278c009f09243c12a79a7653ae36ebe505557edbdf187b9a5b2354f6d5ce",
   "src/shared/Assets/Loader.luau": "6b76372496623c133fdc91a635fded3e577a26db227fe3e033ef388526ae822a",
   "src/shared/Config.luau": "fe6ddd117982b9021e80b0d5556a82444093ab45b60f6f1495e4deb2297adc37",
   "src/shared/Rules.luau": "255a2104f1cb26a8d00f8cf3f80007748235a6a2fe4074c9035904f2a09b87fb",
