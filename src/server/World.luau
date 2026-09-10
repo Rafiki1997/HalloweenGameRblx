@@ -43,7 +43,7 @@ end
 function W.build()
     local loadNames={}
     for _,name in {'StreetLamp','Gravestone','PineTree','DeadTree','Pumpkin','GhostFountain','ChamberPortal','RebirthAltar','NoticeBoard','WelcomeSign','HauntShowcase','MansionHill','MansionFacade','Boulder',
-        'ShopHouse','Caretaker','MarketStall','Barrel','Crate','GraveyardFence','Crypt','GravestoneCross','GravestoneObelisk'} do
+        'ShopHouse','Caretaker','MarketStall','OakBarrel','Crate','GraveyardFence','Crypt','GravestoneCross','GravestoneObelisk'} do
         if Assets.configured(name) then table.insert(loadNames,name) end
     end
     Assets.preload(loadNames)
@@ -239,7 +239,7 @@ function W.build()
             if Assets.configured('MarketStall') then Assets.place('MarketStall',root,CFrame.new(-38,-0.5,z)*faceEast,{Accent=Color3.fromRGB(255,140,60)}) end
             blocker('StallCollision',Vector3.new(4.4,2.6,8),CFrame.new(-38,0.8,z))
         end
-        if Assets.configured('Barrel') then for _,z in {56,68.5,100} do Assets.place('Barrel',root,CFrame.new(-41.5,-0.5,z)) end end
+        if Assets.configured('OakBarrel') then for _,z in {56,68.5,100} do Assets.place('OakBarrel',root,CFrame.new(-41.5,-0.5,z)) end end
         if Assets.configured('Crate') then for _,c in {{-41.5,-0.5,90},{-39.6,-0.5,91.9},{-41.5,1.3,90}} do Assets.place('Crate',root,CFrame.new(c[1],c[2],c[3])) end end
         if Assets.configured('Pumpkin') then for _,c in {{-35.5,-0.5,58},{-35.2,-0.5,66.5},{-35.6,-0.5,80}} do Assets.place('Pumpkin',root,CFrame.new(c[1],c[2],c[3])) end end
     else
