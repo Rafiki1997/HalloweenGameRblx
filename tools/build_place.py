@@ -39,7 +39,8 @@ def build():
     workspace, props = item(root, 'Workspace', 'Workspace')
     ET.SubElement(props, 'bool', {'name': 'StreamingEnabled'}).text = 'false'
     item(workspace, 'Terrain', 'Terrain')
-    item(root, 'Lighting', 'Lighting')
+    _, lighting_props = item(root, 'Lighting', 'Lighting')
+    ET.SubElement(lighting_props, 'token', {'name': 'Technology'}).text = '4'  # Enum.Technology.Future: shadowed point lights, specular
     rep, _ = item(root, 'ReplicatedStorage', 'ReplicatedStorage')
     shared, _ = item(rep, 'Folder', 'Ghostlight')
     sources(shared, ROOT / 'src/shared')

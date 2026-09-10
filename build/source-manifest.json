@@ -4,9 +4,9 @@
   "src/server/Hunting.luau": "d5cf0a695399950119efbd3235b317ffc7ae5290309aa79461e290af8b131e9f",
   "src/server/Main.server.luau": "36fd6fbd370833d3c2e7e85d5c7c59dc95ca305d781ebc2f201ddd5073ab07db",
   "src/server/Profiles.luau": "217ebb2424ae55bc7adc81e2dabc24a4363073d3c40a421ffe88088f377c361e",
-  "src/server/World.luau": "546235c6b58accdb6fa0967658272b13b06675feb156d55102ebddef19eb7783",
+  "src/server/World.luau": "f5352bcafeff105c85ea34f22ea0fbea718b0de7ffb941c4849758869da82260",
   "src/shared/AssetIds.luau": "bfe75ee8b221f9af3d8e6c7c71c0e3420744bc20f00dedd6973fd350beb21bff",
-  "src/shared/Assets/Loader.luau": "177105226d37a6d8080ea3196dd0644b1281207deab021ceae7d430ca76d50d5",
+  "src/shared/Assets/Loader.luau": "f77aea26b795a7aca5e8bdd83279f375dd71953beefc539ce206013256ed24ca",
   "src/shared/Config.luau": "fe6ddd117982b9021e80b0d5556a82444093ab45b60f6f1495e4deb2297adc37",
   "src/shared/Rules.luau": "255a2104f1cb26a8d00f8cf3f80007748235a6a2fe4074c9035904f2a09b87fb",
   "src/shared/Visuals.luau": "ffb85a9331cf25afce6d7d65a99b4bebeeec28bf44ec6320338c676b4a9f57d1"

@@ -52,8 +52,11 @@ function W.build()
     local lighting=game:GetService('Lighting')
     lighting.ClockTime=0.5; lighting.Brightness=1.6; lighting.Ambient=Color3.fromRGB(40,32,67); lighting.OutdoorAmbient=Color3.fromRGB(61,65,103)
     lighting.GlobalShadows=true; lighting.FogColor=Color3.fromRGB(30,28,56); lighting.FogStart=130; lighting.FogEnd=560
-    local atm=Instance.new('Atmosphere'); atm.Density=0.24; atm.Color=Color3.fromRGB(112,116,165); atm.Decay=Color3.fromRGB(65,48,94); atm.Parent=lighting
-    local bloom=Instance.new('BloomEffect'); bloom.Intensity=0.14; bloom.Size=18; bloom.Threshold=2.2; bloom.Parent=lighting
+    lighting.EnvironmentDiffuseScale=0.35; lighting.EnvironmentSpecularScale=0.6; lighting.ShadowSoftness=0.2; lighting.ExposureCompensation=0.1
+    local atm=Instance.new('Atmosphere'); atm.Density=0.3; atm.Offset=0.15; atm.Haze=1.4; atm.Glare=0.25
+    atm.Color=Color3.fromRGB(112,116,165); atm.Decay=Color3.fromRGB(65,48,94); atm.Parent=lighting
+    local bloom=Instance.new('BloomEffect'); bloom.Intensity=0.26; bloom.Size=26; bloom.Threshold=1.6; bloom.Parent=lighting
+    local grade=Instance.new('ColorCorrectionEffect'); grade.Contrast=0.12; grade.Saturation=0.06; grade.TintColor=Color3.fromRGB(228,224,255); grade.Parent=lighting
     part(root,'TownGround',Vector3.new(420,3,420),Vector3.new(0,-2,0),Color3.fromRGB(29,43,42),Enum.Material.Grass)
     local plaza=part(root,'CircularPlaza',Vector3.new(1,66,66),Vector3.new(0,0,0),stone,Enum.Material.Cobblestone)
     plaza.Shape=Enum.PartType.Cylinder; plaza.CFrame=CFrame.new(0,0,0)*CFrame.Angles(0,0,math.pi/2)

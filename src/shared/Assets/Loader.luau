@@ -10,6 +10,13 @@ local palette={
     Glass={120,160,220},Glow={255,188,104},Accent={255,140,60},
     Foliage={25,43,43},Ground={29,43,42},Water={80,205,255},Collision={51,49,65},
 }
+-- Built-in Roblox materials give the meshes surface detail without any texture assets. Meshes carry a
+-- box-projected UV map from Blender so these tile evenly.
+local materials={
+    Stone=Enum.Material.Slate,Wood=Enum.Material.WoodPlanks,Roof=Enum.Material.Slate,Metal=Enum.Material.Metal,
+    Glass=Enum.Material.Glass,Glow=Enum.Material.Neon,Accent=Enum.Material.Neon,
+    Foliage=Enum.Material.Grass,Ground=Enum.Material.Grass,Water=Enum.Material.Glass,Collision=Enum.Material.SmoothPlastic,
+}
 local function warning(name,reason)
     if warned[name] then return end
     warned[name]=true
@@ -89,7 +96,9 @@ function Loader.place(name,parent,cf,options)
         p.Anchored=true
         p.CanCollide=role=='Collision'; p.CanQuery=role=='Collision'; p.CanTouch=false
         p.Transparency=if role=='Collision' then 1 elseif role=='Glass' then .4 elseif role=='Water' then .5 else 0
-        p.Material=if role=='Glow' or role=='Accent' then Enum.Material.Neon else Enum.Material.SmoothPlastic
+        p.Material=materials[role] or Enum.Material.SmoothPlastic
+        p.Reflectance=if role=='Water' then 0.35 elseif role=='Glass' then 0.2 elseif role=='Metal' then 0.08 else 0
+        p.CastShadow=role~='Glow' and role~='Water' and role~='Collision'
         p.Color=if role=='Accent' and options and options.Accent then options.Accent else Color3.fromRGB(table.unpack(palette[role]))
     end
     model.Parent=parent

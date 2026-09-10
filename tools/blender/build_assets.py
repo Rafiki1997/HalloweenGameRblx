@@ -29,6 +29,7 @@ ZONES = {'GhostFountain':'Plaza', 'ChamberPortal':'Plaza', 'RebirthAltar':'Plaza
          'ShopHouse':'Town', 'Caretaker':'Town', 'MarketStall':'Town', 'OakCask':'Town', 'Crate':'Town',
          'GraveyardFence':'Graveyard', 'Crypt':'Graveyard', 'GravestoneCross':'Graveyard', 'GravestoneObelisk':'Graveyard'}
 ASSET = None
+UV_TILE = 8.0  # studs per material tile; Roblox built-in materials repeat about every 8 studs on Parts
 
 
 def role(obj, name):
@@ -609,6 +610,19 @@ def finalize(collection):
         bm.from_mesh(obj.data)
         bmesh.ops.triangulate(bm,faces=list(bm.faces),quad_method='FIXED',ngon_method='EAR_CLIP')
         bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces))
+        # Replace any primitive UVs with a box projection in world units, so a Roblox material looks the same
+        # on a lofted basin as on a cube and tiles at Part-like density.
+        for name in list(bm.loops.layers.uv.keys()):
+            bm.loops.layers.uv.remove(bm.loops.layers.uv[name])
+        uv_layer=bm.loops.layers.uv.new('UVMap')
+        for face in bm.faces:
+            n=face.normal; ax,ay,az=abs(n.x),abs(n.y),abs(n.z)
+            for loop in face.loops:
+                co=loop.vert.co
+                if az>=ax and az>=ay: u,v=co.x,co.y
+                elif ax>=ay: u,v=co.y,co.z
+                else: u,v=co.x,co.z
+                loop[uv_layer].uv=(u/UV_TILE,v/UV_TILE)
         assert all(e.is_manifold for e in bm.edges), f'{obj.name}: open or nonmanifold edges'
         assert all(f.calc_area()>1e-9 for f in bm.faces), f'{obj.name}: degenerate triangle'
         assert bm.calc_volume(signed=True)>0, f'{obj.name}: invalid volume'
