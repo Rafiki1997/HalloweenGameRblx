@@ -21,9 +21,9 @@ PALETTE = {'Stone': (51,49,65), 'Wood': (62,43,58), 'Metal': (43,40,57), 'Roof':
            'Collision': (220,50,80)}
 BUDGETS = {'StreetLamp':300, 'Gravestone':150, 'PineTree':400, 'DeadTree':600, 'Pumpkin':300,
            'GhostFountain':4000, 'ChamberPortal':2500, 'RebirthAltar':2000, 'NoticeBoard':600, 'WelcomeSign':300,
-           'HauntShowcase':6000}
+           'HauntShowcase':6000, 'MansionHill':3000, 'MansionFacade':18000, 'Boulder':200}
 ZONES = {'GhostFountain':'Plaza', 'ChamberPortal':'Plaza', 'RebirthAltar':'Plaza', 'NoticeBoard':'Plaza', 'WelcomeSign':'Plaza',
-         'HauntShowcase':'Haunts'}
+         'HauntShowcase':'Haunts', 'MansionHill':'Mansion', 'MansionFacade':'Mansion', 'Boulder':'Mansion'}
 ASSET = None
 
 
@@ -380,11 +380,98 @@ def haunt_showcase():
         box('Foliage', (sx*13.2, 18.5, 2.0), (17.4, 1.8, 2.0))
 
 
+def arched_window(role_name, x, y, z, width, height, depth=.24, facing='-Y'):
+    """Rectangular pane with a half-disc top, proud of a wall. facing='-Y' means the pane's normal points to -Y."""
+    r = width/2
+    body_h = height-r
+    if facing in ('-Y', '+Y'):
+        box(role_name, (x, y, z+body_h/2), (width, depth, body_h))
+        disc = turned(role_name, [(-depth/2, r), (depth/2, r)], sides=10)
+        disc.rotation_euler = (math.pi/2, 0, 0); disc.location = (x, y, z+body_h)
+    else:
+        box(role_name, (x, y, z+body_h/2), (depth, width, body_h))
+        disc = turned(role_name, [(-depth/2, r), (depth/2, r)], sides=10)
+        disc.rotation_euler = (0, math.pi/2, 0); disc.location = (x, y, z+body_h)
+
+
+def mansion_hill():
+    # Front (plaza side) is -Y. Lower terrace, stair between the flanks, upper terrace the facade stands on.
+    prism_x('Ground', -45, 45, [(-35, 0), (-35, 1.6), (-21, 1.6), (-8, 12), (35, 12), (35, 0)])
+    box('Stone', (0, -28, 1.7), (88, 14, .3))                       # lower terrace paving, one step above the avenue
+    box('Stone', (0, 13.5, 12.15), (88, 43, .3))                     # upper terrace paving
+    # Grand stair, 24 wide: ten risers from z 3.5 to 12 between y -21 and -8.
+    profile = [(-21, 1.3)]
+    for k in range(10):
+        y0 = -21+1.3*k; z0 = 1.6+1.04*k
+        profile += [(y0, z0+1.04), (y0+1.3, z0+1.04)]
+    profile += [(-8, 12.3), (-6, 12.3), (-6, 1.3)]
+    prism_x('Stone', -12, 12, profile)
+    # Balustrades: sloped along the stair, level along the upper terrace edge, with square posts.
+    for sx in (-1, 1):
+        rail = box('Stone', (sx*12.9, -14.5, 8.2), (.9, 16.8, .8)); rail.rotation_euler = (math.atan2(10.4, 13), 0, 0)
+        for k in range(4):
+            y = -21+13*k/3; z = 1.6+10.4*k/3
+            box('Stone', (sx*12.9, y, z+1.2), (1.1, 1.1, 2.4))
+        box('Stone', (sx*29, -7.6, 13.2), (32, .9, 1.9))             # terrace-edge parapet
+        for x in (16, 24, 32, 40, 44):
+            box('Stone', (sx*x, -7.6, 14.6), (1.2, 1.2, 1.4))
+    for sx in (-1, 1):                                                # side retaining walls of the upper terrace
+        box('Stone', (sx*45.2, 13.5, 6), (.6, 43, 12))
+    box('Stone', (0, -35.2, .8), (90, .6, 1.6))                       # front retaining wall of the lower terrace
+
+
+def mansion_facade():
+    # Front is -Y. Central block, two towers with spires, taller central spire, porch, balcony, windows, ivy.
+    box('Stone', (0, 0, 20), (80, 26, 40))                            # central block
+    prism_x('Roof', -41, 41, [(-14, 40), (14, 40), (0, 52)])         # central gable
+    pyramid('Roof', (0, 0, 51.5), 7, 14)                              # central spire
+    box('Glow', (0, 0, 66), (.9, .9, .9))                              # spire lamp
+    for sx in (-1, 1):
+        box('Stone', (sx*51, 0, 25), (22, 26, 50))                    # tower
+        box('Stone', (sx*51, 0, 50.6), (23.6, 27.6, 1.2))            # tower cornice
+        pyramid('Roof', (sx*51, 0, 51), 11.8, 12)
+        box('Glow', (sx*51, 0, 63.5), (.8, .8, .8))
+        for cx, cy in ((-1, -1), (1, -1), (-1, 1), (1, 1)):          # gargoyle blocks on tower corners
+            box('Stone', (sx*51+cx*11, cy*13, 47.5), (2.2, 2.2, 2.6))
+        for z in (8, 20, 32):                                         # tower windows, front face
+            arched_window('Glow', sx*51, -13.15, z, 3.2, 6.5)
+    box('Roof', (0, -13.4, 40.2), (82, 1.2, 1.0))                     # front cornice
+    # Porch: four columns, roof slab, balcony with railing.
+    for x in (-11, -5, 5, 11):
+        turned('Stone', [(0, 1.0), (.4, 1.15), (12.2, .8), (12.6, 1.05)], sides=10).location = (x, -18.5, 0)
+    box('Stone', (0, -16.2, 13.2), (30, 8.4, 1.4))                    # porch roof
+    box('Stone', (0, -16.2, 14.3), (22, 6.4, .8))                     # balcony floor lip
+    for x in (-10.5, -6, -2, 2, 6, 10.5):
+        box('Metal', (x, -19.2, 15.9), (.25, .25, 2.4))
+    box('Metal', (0, -19.2, 17.2), (21.6, .25, .25))
+    box('Wood', (0, -13.35, 7), (10, .6, 14))                          # entrance door
+    box('Stone', (0, -13.5, 14.5), (13, .9, 1.0))                     # door lintel
+    arched_window('Glow', 0, -13.15, 17, 5, 8)                        # balcony door glow
+    for x in (-30, -20, 20, 30):                                       # ground-floor windows
+        arched_window('Glow', x, -13.15, 4, 3.6, 7)
+    for x in (-30, -20, -10, 10, 20, 30):                              # upper storeys
+        arched_window('Glow', x, -13.15, 17, 3.2, 6)
+        arched_window('Glow', x, -13.15, 29, 3.2, 6)
+    for sx in (-1, 1):                                                 # ivy strips
+        for x, h in ((36, 30), (39, 22), (14, 18)):
+            box('Foliage', (sx*x, -13.2, h/2+1), (1.6, .35, h))
+        box('Foliage', (sx*61.5, -6, 20), (.35, 8, 36))
+
+
+def boulder():
+    rng = [0.92, 1.08, 0.97, 1.12, 0.9, 1.05, 1.0, 0.94]
+    rings = []
+    for z, r in [(0, 1.2), (.5, 1.9), (1.3, 2.2), (2.1, 1.7), (2.6, .7)]:
+        rings.append([(r*rng[i]*math.cos(2*math.pi*i/8), r*rng[(i+3) % 8]*math.sin(2*math.pi*i/8)*.85, z) for i in range(8)])
+    loft('Stone', rings)
+
+
 BUILDERS = {'StreetLamp':street_lamp,'Gravestone':gravestone,'PineTree':pine,
             'DeadTree':dead_tree,'Pumpkin':pumpkin,
             'GhostFountain':ghost_fountain,'ChamberPortal':chamber_portal,'RebirthAltar':rebirth_altar,
             'NoticeBoard':notice_board,'WelcomeSign':welcome_sign,
-            'HauntShowcase':haunt_showcase}
+            'HauntShowcase':haunt_showcase,
+            'MansionHill':mansion_hill,'MansionFacade':mansion_facade,'Boulder':boulder}
 
 
 def finalize(collection):

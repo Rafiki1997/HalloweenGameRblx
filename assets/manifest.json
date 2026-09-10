@@ -20,7 +20,7 @@
       "assetId": 122240540563593,
       "uploadedAt": "2026-09-10T02:38:06.082267+00:00",
       "sha256": "016f1e63615957a2a71d9c71464515869ac9ec6cfcd2cfed5383732af9ec8109",
-      "exportSha256": "74fc7587763635ac0600b613ed2b156ded0d5bdc69880c1be0feedf0e6158206"
+      "exportSha256": "af2ae5a5e0f1928a8022485eb135ccfe4bee72ee541c15e8dd8d8ba6e3ebb6eb"
     },
     "Gravestone": {
       "zone": "Props",
@@ -40,7 +40,7 @@
       "assetId": 136583765279249,
       "uploadedAt": "2026-09-10T02:38:06.082521+00:00",
       "sha256": "27d7e2177ecef046d40dbf9981f1c82d5e656f2b9f6622ccdcac43713dd1e6c5",
-      "exportSha256": "0f243349f28c8438ea92541605d4181a9137230d5c593b80a28d018e28cf2a4f"
+      "exportSha256": "0f69e464975163dcb4e494afa9be61086dbe068e986811277c5ddd746b68e601"
     },
     "PineTree": {
       "zone": "Props",
@@ -61,7 +61,7 @@
       "assetId": 115634389395822,
       "uploadedAt": "2026-09-10T02:38:06.082887+00:00",
       "sha256": "9744516b2495a46b0e0548aabe9b40e01764fd3a159780dd75bb11cae81c0fce",
-      "exportSha256": "6f1512438337c7efc4458f78a06b9980e154820922b724029d03bf19488c9064"
+      "exportSha256": "cc498740f42e9ed98abc70be5b6fbf3fd52ab951a03874bade1b8fdf65f1b29b"
     },
     "DeadTree": {
       "zone": "Props",
@@ -81,7 +81,7 @@
       "assetId": 76444404897817,
       "uploadedAt": "2026-09-10T02:38:06.083173+00:00",
       "sha256": "bdbf45de75f6c3c064fc8e649c52f6421de61614cb9c5602f7e4827b476da6d1",
-      "exportSha256": "40e3dbbce80a50c70b801c8e37b0ad81517f548cf0e33f3f6f1ff6905e612770"
+      "exportSha256": "a0369ee442008c81b8e34a2507ef59ccd0c697f3661615519082695777527a5b"
     },
     "Pumpkin": {
       "zone": "Props",
@@ -103,7 +103,7 @@
       "assetId": 88455361663381,
       "uploadedAt": "2026-09-10T02:38:06.083424+00:00",
       "sha256": "106e537c203a2d3ad5cdef149ca30dd21ae87349995d0b1b2b6f006cfbdbe307",
-      "exportSha256": "8c80048a7421728b2b109c799d308165727fcf81494ea93e9681e3506a7be389"
+      "exportSha256": "80203bb4391937bcae3136ea1619be39e06cf1a456693cc79106e257cb27e0bc"
     },
     "GhostFountain": {
       "zone": "Plaza",
@@ -127,7 +127,7 @@
       "assetId": 106922798333990,
       "uploadedAt": "2026-09-10T02:38:06.083843+00:00",
       "sha256": "8ae06fec0103fe833954294bed99b66243d761b384ef135778e36f3a7ad3dd6e",
-      "exportSha256": "5be723e69bfa6bbe9fcbd44c5b9c020e66f7ae42c5691a7a75e1408efb1a7aac"
+      "exportSha256": "5dd4886096f20a0c3636e3cc9fd4840cb5f70b77789c82af64c11aa3955df54c"
     },
     "ChamberPortal": {
       "zone": "Plaza",
@@ -149,7 +149,7 @@
       "assetId": 126465059915313,
       "uploadedAt": "2026-09-10T02:38:06.084125+00:00",
       "sha256": "92cde25d8ab304748265bfd66fc98551be5c2361c94c9749f82786f9aa6b5f2c",
-      "exportSha256": "0a2ace5360b99602d152bcc24790a3f9a01407b5fff54ad82afce1e83fbf3c5b"
+      "exportSha256": "e5ed9535220cbf63d5f25280cae905c00417cc1d410ef5c20e9c95217a4b74fc"
     },
     "RebirthAltar": {
       "zone": "Plaza",
@@ -171,7 +171,7 @@
       "assetId": 117043793736449,
       "uploadedAt": "2026-09-10T02:38:06.084440+00:00",
       "sha256": "bbfb8b985e2e625f442b5eadedc1f498c97d976bb5edcef35eef175490fead7c",
-      "exportSha256": "6504500e7aa83f7df33d1d3d70498b9f216a921c9dba06fc610d3c47ae9d79b9"
+      "exportSha256": "3403330fee5a868e514d14ed2e0abfacdfa3ba560d9c7a1147f44a7e04acb8d5"
     },
     "NoticeBoard": {
       "zone": "Plaza",
@@ -193,7 +193,7 @@
       "assetId": 132306502866809,
       "uploadedAt": "2026-09-10T02:38:06.084672+00:00",
       "sha256": "95a63ccd85d2413f007669c8f77a569c80c83b7bd83db78d524b27cced3f56ff",
-      "exportSha256": "16bec055292a326a8ddfdfce938a9d1cc1691bd0e82f63ff052284ab5c58a9d4"
+      "exportSha256": "35345696bf1135e24bc690dbbc503cf4e002d36ac28e6fad1580f6ebab77aec2"
     },
     "WelcomeSign": {
       "zone": "Plaza",
@@ -215,7 +215,7 @@
       "assetId": 95106154151130,
       "uploadedAt": "2026-09-10T02:38:06.084897+00:00",
       "sha256": "99c68f95bf20bd9662e4c2648b6695a196377734b76708e43e51f2d15eb6be83",
-      "exportSha256": "e2241093008e0dc98af98ada243ddee62cb403e002d3c30b66be0ce0baa9bda4"
+      "exportSha256": "077087360270ca6b58507b87705ea29ad167ecd5ab6afcbe6c1b133e0d0115c1"
     },
     "HauntShowcase": {
       "zone": "Haunts",
@@ -239,7 +239,70 @@
       "assetId": 0,
       "uploadedAt": null,
       "sha256": null,
-      "exportSha256": "34e5527b6e96733a26fced04d0996a5b39da246230c108b98fef88361cdae967"
+      "exportSha256": "0cd8c1b18c11461933a49f113c70b4a481fbb8c8a7cd65436089723e094617f4"
+    },
+    "MansionHill": {
+      "zone": "Mansion",
+      "footprint": [
+        91.00001,
+        15.3,
+        70.5
+      ],
+      "roles": [
+        "Ground",
+        "Stone"
+      ],
+      "triangleBudget": 3000,
+      "triangles": 436,
+      "meshCount": 2,
+      "geometrySha256": "c8e2ac21af4040a0ef67a167c9d8dd683452875fcdd14acae5a5b7d585b3d1f3",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "ac69c9dac527fd98329ec0eaf56b4438be7a7f781e2113100b1624aa7dd55691"
+    },
+    "MansionFacade": {
+      "zone": "Mansion",
+      "footprint": [
+        126.20001,
+        66.45,
+        34.5
+      ],
+      "roles": [
+        "Foliage",
+        "Glow",
+        "Metal",
+        "Roof",
+        "Stone",
+        "Wood"
+      ],
+      "triangleBudget": 18000,
+      "triangles": 1884,
+      "meshCount": 6,
+      "geometrySha256": "25e18103f9d8b98b2615606ff9f547e749f59f31b5ef3dd0de30f76ccac228e1",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "7c78df5cebb978bed14e3f8181414dcb5671e4c2b4205c1cf05df8848522d29a"
+    },
+    "Boulder": {
+      "zone": "Mansion",
+      "footprint": [
+        4.004,
+        2.6,
+        3.9831
+      ],
+      "roles": [
+        "Stone"
+      ],
+      "triangleBudget": 200,
+      "triangles": 76,
+      "meshCount": 1,
+      "geometrySha256": "e031f38e6a5434887f18a893663345bb6c0fdd2725cc76b527798865849dcbc8",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "6d602a0def4ca6238085bec3ac838bbfd53574ca8c714d1138cc7edb34e3e389"
     }
   }
 }
