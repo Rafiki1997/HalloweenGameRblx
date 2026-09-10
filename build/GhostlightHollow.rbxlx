@@ -166,7 +166,7 @@ return {
     MansionHill={Id=133984575959280, Footprint=Vector3.new(91.00001, 15.3, 70.5), Roles={"Ground", "Stone"}},
     MarketStall={Id=111031379890133, Footprint=Vector3.new(8.8, 6.6, 6.0), Roles={"Accent", "Glow", "Roof", "Wood"}},
     NoticeBoard={Id=132306502866809, Footprint=Vector3.new(8.52254, 7.12481, 1.6), Roles={"Collision", "Roof", "Stone", "Wood"}},
-    OakCask={Id=0, Footprint=Vector3.new(2.06, 2.6, 1.95918), Roles={"Metal", "Wood"}},
+    OakCask={Id=121112502527701, Footprint=Vector3.new(2.06, 2.6, 1.95918), Roles={"Metal", "Wood"}},
     PineTree={Id=115634389395822, Footprint=Vector3.new(8.21162, 17.07149, 7.92104), Roles={"Collision", "Foliage", "Wood"}},
     Pumpkin={Id=88455361663381, Footprint=Vector3.new(2.8628, 2.29155, 2.87657), Roles={"Accent", "Collision", "Glow", "Wood"}},
     RebirthAltar={Id=117043793736449, Footprint=Vector3.new(12.2, 7.0, 12.2), Roles={"Accent", "Collision", "Glow", "Stone"}},
