@@ -21,9 +21,13 @@ PALETTE = {'Stone': (51,49,65), 'Wood': (62,43,58), 'Metal': (43,40,57), 'Roof':
            'Collision': (220,50,80)}
 BUDGETS = {'StreetLamp':300, 'Gravestone':150, 'PineTree':400, 'DeadTree':600, 'Pumpkin':300,
            'GhostFountain':4000, 'ChamberPortal':2500, 'RebirthAltar':2000, 'NoticeBoard':600, 'WelcomeSign':300,
-           'HauntShowcase':6000, 'MansionHill':3000, 'MansionFacade':18000, 'Boulder':200}
+           'HauntShowcase':6000, 'MansionHill':3000, 'MansionFacade':18000, 'Boulder':200,
+           'ShopHouse':5000, 'Caretaker':1200, 'MarketStall':800, 'Barrel':200, 'Crate':100,
+           'GraveyardFence':2200, 'Crypt':1800, 'GravestoneCross':150, 'GravestoneObelisk':150}
 ZONES = {'GhostFountain':'Plaza', 'ChamberPortal':'Plaza', 'RebirthAltar':'Plaza', 'NoticeBoard':'Plaza', 'WelcomeSign':'Plaza',
-         'HauntShowcase':'Haunts', 'MansionHill':'Mansion', 'MansionFacade':'Mansion', 'Boulder':'Mansion'}
+         'HauntShowcase':'Haunts', 'MansionHill':'Mansion', 'MansionFacade':'Mansion', 'Boulder':'Mansion',
+         'ShopHouse':'Town', 'Caretaker':'Town', 'MarketStall':'Town', 'Barrel':'Town', 'Crate':'Town',
+         'GraveyardFence':'Graveyard', 'Crypt':'Graveyard', 'GravestoneCross':'Graveyard', 'GravestoneObelisk':'Graveyard'}
 ASSET = None
 
 
@@ -466,12 +470,125 @@ def boulder():
     loft('Stone', rings)
 
 
+def prism_y(role_name, y0, y1, profile):
+    """Closed prism: a polygon in the XZ plane extruded from y0 to y1 (roofs whose ridge runs along Y)."""
+    n = len(profile)
+    vertices = [(x, y0, z) for x, z in profile] + [(x, y1, z) for x, z in profile]
+    faces = [tuple(range(n)), tuple(reversed(range(n, 2*n)))]
+    for i in range(n):
+        j = (i+1) % n
+        faces.append((i, j, n+j, n+i))
+    return mesh_object(role_name, vertices, faces)
+
+
+def shop_house():
+    # Front is -Y. Stone ground floor, jettied timber upper floor, pitched roof with a front dormer.
+    box('Stone', (0, 0, .3), (22, 18, .6))                            # plinth
+    box('Stone', (0, 0, 3.8), (20, 16, 6))                            # ground floor z .6..6.6
+    box('Wood', (0, -.4, 9.7), (22, 17.6, 6.2))                       # jettied upper floor
+    box('Roof', (0, -9.3, 6.7), (22.6, 1.0, .4))                      # jetty ledge
+    for x in (-9.4, -3.2, 3.2, 9.4): box('Roof', (x, -9.25, 9.7), (.5, .3, 6.2))     # timber studs
+    box('Roof', (0, -9.25, 12.6), (22, .3, .5))                        # timber head beam
+    prism_x('Roof', -11.8, 11.8, [(-9.6, 12.8), (9.6, 12.8), (0, 18.6)])
+    box('Wood', (0, -7.4, 14.6), (3.6, 3.2, 3.0))                      # dormer body
+    prism_y('Roof', -9.3, -5.7, [(-2.2, 16.0), (2.2, 16.0), (0, 17.8)])
+    arched_window('Glow', 0, -9.1, 14.2, 1.6, 2.4)                    # dormer window
+    box('Stone', (5.6, 3.0, 17.6), (1.5, 1.5, 4.4))                     # chimney
+    box('Wood', (-4.2, -8.2, 3.3), (3.2, .3, 5.0))                      # door
+    box('Stone', (-4.2, -8.9, .85), (4.0, 1.4, .5))                     # step
+    box('Glow', (3.6, -8.2, 4.1), (6.4, .3, 3.6))                       # shop window
+    for x in (-8.4, 3.6):                                              # timber frame around the shop window / door
+        box('Roof', (x, -8.3, 4.1), (.35, .35, 4.2))
+    for x in (-5.5, 5.5): box('Glow', (x, -9.4, 10.1), (2.0, .3, 2.6))  # upper windows
+    box('Metal', (7.4, -9.9, 8.9), (.2, 1.4, .2))                       # lantern bracket
+    box('Glow', (7.4, -10.5, 8.2), (.7, .7, .9))                        # hanging lantern
+    box('Metal', (-4.2, -9.9, 8.9), (.2, 1.4, .2))                      # sign rod
+    box('Wood', (-4.2, -10.4, 7.9), (4.4, .3, 1.7))                     # hanging sign board
+
+
+def caretaker():
+    # Cloaked figure carrying a lantern. Body Wood, face Glow, lantern Metal and Glow.
+    turned('Wood', [(0, 1.0), (.5, 1.05), (2.8, .8), (3.5, .62), (4.0, .55)], sides=8)
+    turned('Wood', [(3.7, .6), (4.4, .68), (5.0, .35)], sides=8)     # hood
+    turned('Glow', [(3.95, .3), (4.25, .36), (4.55, .26)], sides=8).location = (0, -.22, 0)
+    sweep([(.55, -.2, 3.1), (1.0, -.7, 2.6), (1.15, -.95, 2.2)], [.26, .2, .14], 6)
+    sweep([(-.55, -.1, 3.1), (-.9, -.4, 2.4), (-1.0, -.5, 1.9)], [.26, .2, .14], 6)
+    box('Metal', (1.15, -.95, 1.75), (.12, .12, .8))                   # lantern handle
+    box('Metal', (1.15, -.95, 1.25), (.5, .5, .1)); box('Metal', (1.15, -.95, .55), (.5, .5, .1))
+    box('Glow', (1.15, -.95, .9), (.4, .4, .6))
+
+
+def market_stall():
+    for x, y in ((-3.5, -2.2), (3.5, -2.2), (-3.5, 2.2), (3.5, 2.2)):
+        box('Wood', (x, y, 2.5), (.4, .4, 5.0))
+    box('Wood', (0, 0, 2.4), (7.6, 4.0, .35))                          # table
+    box('Wood', (0, 0, 1.4), (7.0, 3.6, .25))                          # shelf
+    prism_x('Roof', -4.4, 4.4, [(-3.0, 5.0), (3.0, 5.0), (0, 6.6)])    # canopy
+    for x, y in ((-2.4, .3), (-.6, -.5), (1.4, .4), (2.8, -.6)):
+        turned('Accent', [(2.58, .15), (2.75, .55), (3.2, .6), (3.55, .35), (3.65, .12)], sides=8).location = (x, y, 0)
+    box('Glow', (3.2, -2.2, 4.6), (.5, .5, .7))                        # lantern
+
+
+def barrel():
+    turned('Wood', [(0, .78), (.4, .95), (1.3, 1.0), (2.2, .95), (2.6, .78)], sides=10, smooth=True)
+    for z in (.55, 2.05):
+        turned('Metal', [(z-.08, 1.03), (z+.08, 1.03)], sides=10)   # hoops sit just outside the staves
+
+
+def crate():
+    box('Wood', (0, 0, .9), (1.8, 1.8, 1.8))
+    for z in (.12, 1.68):
+        box('Metal', (0, 0, z), (1.9, 1.9, .12))
+    for x, y in ((-.9, -.9), (.9, -.9), (-.9, .9), (.9, .9)):
+        box('Metal', (x, y, .9), (.14, .14, 1.9))
+
+
+def graveyard_fence():
+    # Lot 70 x 50, front (gate) on -Y toward the plaza. Posts every 7, two rails, pickets every 2.5.
+    def run(a, b):
+        fence_run(a, b, post_every=7.0, picket_every=2.5)
+    run((-35, -25), (-4.5, -25)); run((4.5, -25), (35, -25))
+    run((-35, -25), (-35, 25)); run((35, -25), (35, 25)); run((-35, 25), (35, 25))
+    for x in (-4.5, 4.5):
+        box('Stone', (x, -25, 2.6), (1.6, 1.6, 5.2))
+        box('Accent', (x, -25, 5.6), (.8, .8, .7))
+    # Two gate leaves swung inward.
+    for sx in (-1, 1):
+        leaf = box('Metal', (sx*3.0, -23.6, 1.9), (3.4, .12, 3.0)); leaf.rotation_euler = (0, 0, sx*.9)
+        for k in range(4):
+            pk = box('Metal', (sx*3.0+sx*(k-1.5)*.8*math.cos(.9), -23.6-(k-1.5)*.8*math.sin(.9)*sx*sx, 1.9), (.1, .1, 3.2))
+            pk.rotation_euler = (0, 0, sx*.9)
+
+
+def crypt():
+    box('Stone', (0, 0, .4), (10, 12, .8))                             # plinth
+    box('Stone', (0, .5, 3.2), (8, 10, 4.8))                           # body z .8..5.6
+    prism_x('Roof', -4.6, 4.6, [(-5.6, 5.5), (5.6, 5.5), (0, 8.4)])
+    box('Roof', (0, -4.6, 2.9), (2.4, .3, 4.2))                        # door
+    box('Stone', (0, -5.2, 1.0), (3.4, 1.2, .4))                       # step
+    box('Stone', (0, -4.7, 5.3), (3.6, .5, .6))                        # lintel
+    box('Foliage', (-3.2, -4.55, 3.2), (1.2, .3, 4.6))                 # ivy
+    box('Glow', (0, -4.7, 6.4), (.5, .3, .5))                          # lamp over the door
+
+
+def gravestone_cross():
+    loft('Stone', [[(x*s, y*s, z) for x, y in [(-1.0, -.5), (1.0, -.5), (1.0, .5), (-1.0, .5)]] for z, s in [(0, .95), (.3, 1)]])
+    box('Stone', (0, 0, 1.9), (.55, .4, 3.2))
+    box('Stone', (0, 0, 2.6), (1.8, .4, .5))
+
+
+def gravestone_obelisk():
+    turned('Stone', [(0, 1.05), (.35, 1.05), (.35, .8), (2.9, .5), (3.3, .12)], sides=4, phase=math.pi/4)
+
+
 BUILDERS = {'StreetLamp':street_lamp,'Gravestone':gravestone,'PineTree':pine,
             'DeadTree':dead_tree,'Pumpkin':pumpkin,
             'GhostFountain':ghost_fountain,'ChamberPortal':chamber_portal,'RebirthAltar':rebirth_altar,
             'NoticeBoard':notice_board,'WelcomeSign':welcome_sign,
             'HauntShowcase':haunt_showcase,
-            'MansionHill':mansion_hill,'MansionFacade':mansion_facade,'Boulder':boulder}
+            'MansionHill':mansion_hill,'MansionFacade':mansion_facade,'Boulder':boulder,
+            'ShopHouse':shop_house,'Caretaker':caretaker,'MarketStall':market_stall,'Barrel':barrel,'Crate':crate,
+            'GraveyardFence':graveyard_fence,'Crypt':crypt,'GravestoneCross':gravestone_cross,'GravestoneObelisk':gravestone_obelisk}
 
 
 def finalize(collection):

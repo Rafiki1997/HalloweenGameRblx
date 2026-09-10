@@ -42,7 +42,8 @@ local function path(parent,a,b,width)
 end
 function W.build()
     local loadNames={}
-    for _,name in {'StreetLamp','Gravestone','PineTree','DeadTree','Pumpkin','GhostFountain','ChamberPortal','RebirthAltar','NoticeBoard','WelcomeSign','HauntShowcase','MansionHill','MansionFacade','Boulder'} do
+    for _,name in {'StreetLamp','Gravestone','PineTree','DeadTree','Pumpkin','GhostFountain','ChamberPortal','RebirthAltar','NoticeBoard','WelcomeSign','HauntShowcase','MansionHill','MansionFacade','Boulder',
+        'ShopHouse','Caretaker','MarketStall','Barrel','Crate','GraveyardFence','Crypt','GravestoneCross','GravestoneObelisk'} do
         if Assets.configured(name) then table.insert(loadNames,name) end
     end
     Assets.preload(loadNames)
@@ -211,7 +212,39 @@ function W.build()
         W.MansionDoor=part(facade,'MansionEntrance',Vector3.new(10,14,1),Vector3.new(0,8,-195),purple,Enum.Material.Neon)
         sign(root,Vector3.new(0,17,-179),'THE HAUNTED MANSION\nEnter • Hunt • Return')
     end
-    W.Upgrades=sign(root,Vector3.new(-42,4,30),'THE WORKSHOP\nVacuum & Haunt Upgrades',warm)
+    -- Asset meshes face Roblox +Z (their Blender -Y front). Yaw +90 degrees turns that front toward +X.
+    local faceEast=CFrame.Angles(0,math.pi/2,0)
+    local faceWest=CFrame.Angles(0,-math.pi/2,0)
+    local function anchor(name,cf)
+        local a=V.part(root,name,Vector3.new(0.5,0.5,0.5),cf,stone); a.Transparency=1; a.CanCollide=false; a.CanQuery=false; return a
+    end
+    local function blocker(name,size,cf)
+        local b=V.part(root,name,size,cf,stone); b.Transparency=1; b.CanQuery=false; return b
+    end
+    if Assets.configured('ShopHouse') then
+        -- Shop row on the west side, fronts toward the plaza, north of the path to the eighth Haunt.
+        -- The mesh bounding box is centred 1.1 studs in front of the building block (hanging sign and lantern).
+        local shops={{z=48,name='THE WORKSHOP\nVacuum & Haunt Upgrades'},{z=71,name='THE HOLLOW INN\nRooms for the restless'},{z=94,name='CURIOSITIES\nOddments & charms'}}
+        for k,shop in shops do
+            Assets.place('ShopHouse',root,CFrame.new(-52,-0.5,shop.z)*faceEast,{Accent=warm})
+            blocker('ShopCollision'..k,Vector3.new(17.6,19,22),CFrame.new(-52.7,9,shop.z))
+            local board=anchor('ShopSign'..k,CFrame.new(-42.7,7.4,shop.z+4.2))
+            V.label(board,shop.name,warm,220,60).Parent.StudsOffset=Vector3.new(0,1.6,0)
+            if k==1 then
+                W.Upgrades=V.part(root,'WorkshopDoor',Vector3.new(0.6,5,3.2),CFrame.new(-44.6,2.8,shop.z+4.2),warm,Enum.Material.Neon)
+                W.Upgrades.Transparency=1; W.Upgrades.CanQuery=false
+            end
+        end
+        for _,z in {62,84} do
+            if Assets.configured('MarketStall') then Assets.place('MarketStall',root,CFrame.new(-38,-0.5,z)*faceEast,{Accent=Color3.fromRGB(255,140,60)}) end
+            blocker('StallCollision',Vector3.new(4.4,2.6,8),CFrame.new(-38,0.8,z))
+        end
+        if Assets.configured('Barrel') then for _,z in {56,68.5,100} do Assets.place('Barrel',root,CFrame.new(-41.5,-0.5,z)) end end
+        if Assets.configured('Crate') then for _,c in {{-41.5,-0.5,90},{-39.6,-0.5,91.9},{-41.5,1.3,90}} do Assets.place('Crate',root,CFrame.new(c[1],c[2],c[3])) end end
+        if Assets.configured('Pumpkin') then for _,c in {{-35.5,-0.5,58},{-35.2,-0.5,66.5},{-35.6,-0.5,80}} do Assets.place('Pumpkin',root,CFrame.new(c[1],c[2],c[3])) end end
+    else
+        W.Upgrades=sign(root,Vector3.new(-42,4,30),'THE WORKSHOP\nVacuum & Haunt Upgrades',warm)
+    end
     -- The legacy REBIRTH ALTAR sign is gone; it overlapped the altar built further down.
     if Assets.configured('NoticeBoard') then
         local board=Assets.place('NoticeBoard',root,CFrame.new(0,-0.5,62))
@@ -221,10 +254,18 @@ function W.build()
         W.Leaderboard=sign(root,Vector3.new(0,5,62),'HOLLOW HUNTERS',warm)
     end
     W.Leaderboard.Label.Size=UDim2.fromOffset(330,170)
-    for _,x in {-47,47} do
-        local npc=part(root,'Caretaker',Vector3.new(2,3,1),Vector3.new(x,2,36),Color3.fromRGB(63,45,84))
-        local head=part(root,'CaretakerHead',Vector3.new(1.5,1.5,1.5),Vector3.new(x,4.3,36),warm); head.Shape=Enum.PartType.Ball
-        V.label(npc,if x<0 then 'MIRA • EQUIPMENT' else 'ORIN • REBIRTH',warm,180,45)
+    if Assets.configured('Caretaker') then
+        for _,npc in {{x=-40,z=50,cf=faceEast,text='MIRA • EQUIPMENT'},{x=47,z=36,cf=faceWest,text='ORIN • REBIRTH'}} do
+            Assets.place('Caretaker',root,CFrame.new(npc.x,-0.5,npc.z)*npc.cf,{Accent=warm})
+            blocker('CaretakerCollision',Vector3.new(2.2,5,2.2),CFrame.new(npc.x,2,npc.z))
+            V.label(anchor('CaretakerName',CFrame.new(npc.x,5.2,npc.z)),npc.text,warm,180,45)
+        end
+    else
+        for _,x in {-47,47} do
+            local npc=part(root,'Caretaker',Vector3.new(2,3,1),Vector3.new(x,2,36),Color3.fromRGB(63,45,84))
+            local head=part(root,'CaretakerHead',Vector3.new(1.5,1.5,1.5),Vector3.new(x,4.3,36),warm); head.Shape=Enum.PartType.Ball
+            V.label(npc,if x<0 then 'MIRA • EQUIPMENT' else 'ORIN • REBIRTH',warm,180,45)
+        end
     end
     local rng=Random.new(1047)
     for i=1,58 do
@@ -241,16 +282,54 @@ function W.build()
             for j=1,3 do local crown=part(root,'Pine',Vector3.new(14-j*2,8,14-j*2),pos+Vector3.new(0,8+j*4,0),Color3.fromRGB(25,43,43),Enum.Material.Grass); crown.Shape=Enum.PartType.Ball end
         end
     end
-    for i=1,15 do
-        local pos=Vector3.new(130+(i%5)*7,1.4,100+math.floor(i/5)*9)
-        if Assets.configured('Gravestone') then
-            Assets.place('Gravestone',root,CFrame.new(pos.X,-.5,pos.Z))
-        else
-            part(root,'Gravestone',Vector3.new(3,4,1),pos,Color3.fromRGB(86,86,102))
+    if Assets.configured('GraveyardFence') then
+        -- Fenced lot 50 (x) by 70 (z) centred at (150,105); the gate faces west toward the plaza.
+        Assets.place('GraveyardFence',root,CFrame.new(150,-0.5,105)*faceWest,{Accent=Color3.fromRGB(80,220,140)})
+        blocker('GraveFenceW1',Vector3.new(0.6,3.4,30.5),CFrame.new(125,1.2,85.25))
+        blocker('GraveFenceW2',Vector3.new(0.6,3.4,30.5),CFrame.new(125,1.2,124.75))
+        blocker('GraveFenceE',Vector3.new(0.6,3.4,70),CFrame.new(175,1.2,105))
+        blocker('GraveFenceN',Vector3.new(50,3.4,0.6),CFrame.new(150,1.2,70))
+        blocker('GraveFenceS',Vector3.new(50,3.4,0.6),CFrame.new(150,1.2,140))
+        for _,z in {100.5,109.5} do blocker('GraveGatePost',Vector3.new(1.6,5.2,1.6),CFrame.new(125,2.1,z)) end
+        local shapes={'Gravestone','GravestoneCross','GravestoneObelisk'}
+        local k=0
+        for _,z in {88,106,124} do
+            for x=137,167,6 do
+                k+=1
+                local shape=shapes[(k%3)+1]
+                if Assets.configured(shape) then Assets.place(shape,root,CFrame.new(x,-0.5,z)*faceWest) end
+            end
         end
+        if Assets.configured('Crypt') then
+            for _,z in {80,130} do
+                Assets.place('Crypt',root,CFrame.new(168,-0.5,z)*faceWest)
+                blocker('CryptCollision',Vector3.new(10.5,6,8.5),CFrame.new(168,2.5,z))
+            end
+        end
+        if Assets.configured('DeadTree') then
+            for _,c in {{140,78},{161,76},{140,134},{158,136}} do Assets.place('DeadTree',root,CFrame.new(c[1],-0.5,c[2])) end
+        end
+        for _,m in {{146,0.2,90,44,26},{156,0.3,120,36,28},{136,0.25,108,20,18}} do
+            local mist=part(root,'GraveMist',Vector3.new(m[4],0.25,m[5]),Vector3.new(m[1],m[2],m[3]),Color3.fromRGB(150,160,180),Enum.Material.SmoothPlastic)
+            mist.Transparency=0.85; mist.CanCollide=false; mist.CanQuery=false; mist.CastShadow=false
+        end
+        for _,x in {128,133} do
+            local l=Instance.new('PointLight'); l.Color=Color3.fromRGB(120,220,160); l.Range=14; l.Brightness=0.6
+            l.Parent=anchor('GraveLight',CFrame.new(x,4,x==128 and 100 or 110))
+        end
+        sign(root,Vector3.new(122,4,113),'THE QUIET GARDEN',Color3.fromRGB(170,187,206))
+    else
+        for i=1,15 do
+            local pos=Vector3.new(130+(i%5)*7,1.4,100+math.floor(i/5)*9)
+            if Assets.configured('Gravestone') then
+                Assets.place('Gravestone',root,CFrame.new(pos.X,-.5,pos.Z))
+            else
+                part(root,'Gravestone',Vector3.new(3,4,1),pos,Color3.fromRGB(86,86,102))
+            end
+        end
+        sign(root,Vector3.new(146,3,93),'THE QUIET GARDEN',Color3.fromRGB(170,187,206))
     end
     if Assets.configured('Pumpkin') then Assets.place('Pumpkin',root,CFrame.new(47,-0.5,26)) end
-    sign(root,Vector3.new(146,3,93),'THE QUIET GARDEN',Color3.fromRGB(170,187,206))
     for floor,info in C.Floors do
         local center=Vector3.new((floor-1)*150,0,-450)
         local area=Instance.new('Model'); area.Name='Floor'..floor; area.Parent=root
