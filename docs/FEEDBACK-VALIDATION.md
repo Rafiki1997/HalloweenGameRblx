@@ -111,6 +111,13 @@ Rough idle times implied by those numbers, for your judgement on "not so easy":
 4. **Attack text promises a dodge that does not exist.** See Ghost attacks above.
 5. **Hologram is per-Haunt, not per-ghost.** See Income hologram above.
 6. **Objective text can touch the stats box** when it wraps to two lines.
+7. **FIXED 2026-09-09 evening: every nav panel opened empty.** Studio logged `Main:112` and `Main:83`
+   "attempt to index nil with 'Visible'". The panel renderer referenced `actions` and `captureBox` before
+   those locals were declared, so they were nil globals. Declarations moved above the renderer, and
+   `tools/verify.py` now runs `tools/lint_luau.py`, which fails the build on this class of bug and on
+   unknown globals. Re-test: open HAUNT, MANSION, UPGRADES, REBIRTH and confirm each lists rows.
+8. **FIXED 2026-09-09 evening: flaky acceptance check 19.** The fixture now polls for each expected
+   state (up to 6 s) instead of waiting a fixed 0.5 s. Re-test: run the Acceptance place twice.
 
 ## Part D. Device emulation (Studio Test tab, Device dropdown)
 

@@ -79,6 +79,13 @@ make('UIListLayout',nav,{FillDirection=Enum.FillDirection.Vertical,Padding=UDim.
 local panel=frame(gui,UDim2.fromOffset(650,460),UDim2.fromScale(0.5,0.52)); panel.AnchorPoint=Vector2.new(0.5,0.5); panel.Visible=false
 panel.ZIndex=5
 make('UIStroke',panel,{Color=purple,Thickness=1,Transparency=0.45})
+-- Declared before render() and the close button below reference them; a later `local` would compile as a nil global.
+local captureBox=frame(gui,UDim2.new(0.65,0,0,76),UDim2.new(0.5,0,1,-151)); captureBox.AnchorPoint=Vector2.new(0.5,0); captureBox.Visible=false
+local captureText=label(captureBox,'',UDim2.new(1,-16,0,37),UDim2.fromOffset(8,2),15,mint); captureText.TextXAlignment=Enum.TextXAlignment.Center
+local track=frame(captureBox,UDim2.new(1,-20,0,18),UDim2.fromOffset(10,45),Color3.fromRGB(66,49,83))
+local bar=frame(track,UDim2.fromScale(0,1),UDim2.new(),mint)
+local actions=frame(gui,UDim2.fromOffset(104,122),UDim2.new(1,-116,1,-200)); actions.BackgroundTransparency=1
+button(actions,'LIGHT [F]',UDim2.fromOffset(104,42),UDim2.new(),function() send('Flashlight') end,amber)
 local title=label(panel,'',UDim2.new(1,-76,0,46),UDim2.fromOffset(16,2),21,purple)
 button(panel,'×',UDim2.fromOffset(42,38),UDim2.new(1,-50,0,7),function() panel.Visible=false; currentPanel=nil; actions.Visible=true end)
 local list=make('ScrollingFrame',panel,{Size=UDim2.new(1,-20,1,-64),Position=UDim2.fromOffset(10,54),BackgroundTransparency=1,BorderSizePixel=0,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y,ScrollBarThickness=4,ScrollBarImageColor3=purple})
@@ -155,12 +162,6 @@ local function render(name)
     end
 end
 for _,name in {'Haunt','Collection','Mansion','Upgrades','Rebirth'} do button(nav,string.upper(name),UDim2.new(1,-8,0,46),UDim2.new(),function() render(name) end) end
-local captureBox=frame(gui,UDim2.new(0.65,0,0,76),UDim2.new(0.5,0,1,-151)); captureBox.AnchorPoint=Vector2.new(0.5,0); captureBox.Visible=false
-local captureText=label(captureBox,'',UDim2.new(1,-16,0,37),UDim2.fromOffset(8,2),15,mint); captureText.TextXAlignment=Enum.TextXAlignment.Center
-local track=frame(captureBox,UDim2.new(1,-20,0,18),UDim2.fromOffset(10,45),Color3.fromRGB(66,49,83))
-local bar=frame(track,UDim2.fromScale(0,1),UDim2.new(),mint)
-local actions=frame(gui,UDim2.fromOffset(104,122),UDim2.new(1,-116,1,-200)); actions.BackgroundTransparency=1
-button(actions,'LIGHT [F]',UDim2.fromOffset(104,42),UDim2.new(),function() send('Flashlight') end,amber)
 local function wildGhost(id)
     local world=workspace:FindFirstChild('GhostlightWorld')
     local folder=world and world:FindFirstChild('WildGhosts')

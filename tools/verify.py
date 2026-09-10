@@ -7,6 +7,14 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 BIN = ROOT / '.tools/luau'
 failures = []
+import importlib.util
+spec = importlib.util.spec_from_file_location('lint_luau', ROOT / 'tools/lint_luau.py')
+lint = importlib.util.module_from_spec(spec); spec.loader.exec_module(lint)
+problems = lint.lint(lint.default_paths())
+for problem in problems:
+    print(problem)
+if problems:
+    failures.append('scope lint')
 for path in sorted((ROOT / 'src').rglob('*.luau')):
     run = subprocess.run([str(BIN / 'luau-compile.exe'), str(path), '--null'], capture_output=True, text=True)
     if run.returncode:
@@ -33,4 +41,4 @@ if any('RuntimeTestStatus' in source for source in packed):
 if failures:
     print('FAILED:', failures)
     sys.exit(1)
-print(f'PASS: {len(paths)} Luau scripts compile; packaged sources match exactly.')
+print(f'PASS: {len(paths)} Luau scripts compile, scope lint clean; packaged sources match exactly.')

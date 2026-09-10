@@ -35,7 +35,7 @@ Profiles use UpdateAsync leases, token validation, retries, autosaves, and leave
 - `docs/BUILD-BRIEF.md`: the supplied specification.
 - `docs/PLAYTEST.md`: runtime acceptance checklist and known limits.
 
-Build with `python tools/build_place.py`. Run `python tools/verify.py` after installing the official [Luau Windows binaries](https://github.com/luau-lang/luau/releases) in `.tools/luau`. The local verifier compiles scripts, runs the rule tests, and checks that the place contains the exact source files.
+Build with `python tools/build_place.py`. Run `python tools/verify.py` after installing the official [Luau Windows binaries](https://github.com/luau-lang/luau/releases) in `.tools/luau`. The local verifier lints every script for file-level locals used before their declaration and for unknown globals (both are nil at runtime in Roblox), compiles scripts, runs the rule tests, and checks that the place contains the exact source files.
 
 For repeatable single-player engine tests, run `python tools/build_place.py --test`, open `build/GhostlightHollow.Acceptance.rbxlx`, and press Play. The test runner prints its results to Studio Output. This separate place contains test-only setup and remote controls; do not publish it. The pre-feedback baseline passed 26 checks, alongside ten local rule-test groups; rerun it after future behavior changes. Multiplayer and published persistence remain release checks.
 
