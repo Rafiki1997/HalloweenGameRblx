@@ -89,7 +89,9 @@ function Loader.place(name,parent,cf,options)
     if math.abs(factor-1)>.02 then model:ScaleTo(model:GetScale()*factor) end
     local bounds,size=model:GetBoundingBox()
     local base=bounds*CFrame.new(0,-size.Y/2,0)
-    model:PivotTo(cf*base:Inverse()*model:GetPivot())
+    -- Roblox's FBX importer turns models 180 degrees about Y so the file's +Z front faces Roblox's -Z forward.
+    -- Assets are authored with their fronts toward +Z in the file, so turn them back here.
+    model:PivotTo(cf*CFrame.Angles(0,math.pi,0)*base:Inverse()*model:GetPivot())
     for _,p in model:GetDescendants() do
         if not p:IsA('BasePart') then continue end
         local role=p.Name:match('_([%a]+)$')
