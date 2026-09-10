@@ -1,0 +1,6 @@
+.tools/
+__pycache__/
+*.rbxl.lock
+*.rbxlx.lock
+build/*.Acceptance.rbxlx
+build/studio-check.png

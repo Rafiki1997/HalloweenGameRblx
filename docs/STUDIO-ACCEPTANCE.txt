@@ -1,0 +1,27 @@
+ACCEPTANCE PASS: player joined
+ACCEPTANCE PASS: profile loaded and vacuum equipped
+ACCEPTANCE PASS: eight plots and six mansion areas created
+ACCEPTANCE PASS: 42 wild ghosts spawned
+ACCEPTANCE PASS: spawn above town ground
+ACCEPTANCE PASS: client HUD loaded
+ACCEPTANCE PASS: locked area request rejected
+ACCEPTANCE PASS: client entered foyer
+ACCEPTANCE PASS: server capture reaches completion: mothlight
+ACCEPTANCE PASS: capture ownership and discovery recorded once
+ACCEPTANCE PASS: client returned home
+ACCEPTANCE PASS: deposit frees bag and displays ghost
+ACCEPTANCE PASS: flashlight toggles through validated client request
+ACCEPTANCE PASS: placed ghost earns real server income
+ACCEPTANCE PASS: duplicate placement rejected
+ACCEPTANCE PASS: upgrade changes live movement speed
+ACCEPTANCE PASS: haunt upgrade expands slots
+ACCEPTANCE PASS: floor unlock charges and persists in profile
+ACCEPTANCE PASS: chamber server session entered
+ACCEPTANCE PASS: client camera enters top-down mode
+ACCEPTANCE PASS: autonomous chamber discovery grants once
+ACCEPTANCE PASS: chamber exits and cleans its models
+ACCEPTANCE PASS: client camera restores after chamber exit
+ACCEPTANCE PASS: rebirth resets temporary progression
+ACCEPTANCE PASS: rebirth keeps collection and increases multiplier
+ACCEPTANCE PASS: Studio practice save path completes
+ACCEPTANCE COMPLETE: 26 checks passed. DataStore network and multiplayer checks remain separate.

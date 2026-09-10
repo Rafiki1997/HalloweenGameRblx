@@ -1,0 +1,9 @@
+{
+  "name": "Ghostlight Hollow",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": { "Ghostlight": { "$path": "src/shared" } },
+    "ServerScriptService": { "GhostlightServer": { "$path": "src/server" } },
+    "StarterPlayer": { "StarterPlayerScripts": { "GhostlightClient": { "$path": "src/client" } } }
+  }
+}
