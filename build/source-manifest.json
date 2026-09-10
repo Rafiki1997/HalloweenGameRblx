@@ -4,7 +4,7 @@
   "src/server/Hunting.luau": "d5cf0a695399950119efbd3235b317ffc7ae5290309aa79461e290af8b131e9f",
   "src/server/Main.server.luau": "36fd6fbd370833d3c2e7e85d5c7c59dc95ca305d781ebc2f201ddd5073ab07db",
   "src/server/Profiles.luau": "217ebb2424ae55bc7adc81e2dabc24a4363073d3c40a421ffe88088f377c361e",
-  "src/server/World.luau": "f5352bcafeff105c85ea34f22ea0fbea718b0de7ffb941c4849758869da82260",
+  "src/server/World.luau": "28c5f5fadd7f3ae6df2d2de12860b124b19102cf28e1ff6840516dfb625ceab2",
   "src/shared/AssetIds.luau": "e58849e3965f70209a8ed9810b6a9e81303ca6c6e02681dc94a3fb419970a998",
   "src/shared/Assets/Loader.luau": "a24f6274c07087d6549a7fac0b3ca57c7bba2809160efe2e729afdb389e554cf",
   "src/shared/Config.luau": "fe6ddd117982b9021e80b0d5556a82444093ab45b60f6f1495e4deb2297adc37",
