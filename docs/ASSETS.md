@@ -6,16 +6,16 @@ otherwise `World.build()` keeps the primitive version of that piece.
 
 | Asset | Zone | Triangles | Meshes | Footprint X,Y,Z (studs) | Roles | Status | Preview |
 | --- | --- | ---: | ---: | --- | --- | --- | --- |
-| Crypt | Graveyard | 92 / 1800 | 4 | 10.0, 8.4, 12.0 | Foliage, Glow, Roof, Stone | uploaded 139694357551178 | [front](../assets/previews/Crypt_front.png) [top](../assets/previews/Crypt_top.png) |
+| Crypt | Graveyard | 400 / 1800 | 4 | 10.1, 8.7, 12.0 | Foliage, Glow, Roof, Stone | uploaded 139694357551178 | [front](../assets/previews/Crypt_front.png) [top](../assets/previews/Crypt_top.png) |
 | GravestoneCross | Graveyard | 36 / 150 | 1 | 2.0, 3.5, 1.0 | Stone | uploaded 140340291491005 | [front](../assets/previews/GravestoneCross_front.png) [top](../assets/previews/GravestoneCross_top.png) |
 | GravestoneObelisk | Graveyard | 36 / 150 | 1 | 1.5, 3.3, 1.5 | Stone | uploaded 114583084841642 | [front](../assets/previews/GravestoneObelisk_front.png) [top](../assets/previews/GravestoneObelisk_top.png) |
 | GraveyardFence | Graveyard | 1776 / 2200 | 3 | 70.4, 6.0, 51.0 | Accent, Metal, Stone | uploaded 88029584944856 | [front](../assets/previews/GraveyardFence_front.png) [top](../assets/previews/GraveyardFence_top.png) |
-| HauntShowcase | Haunts | 2120 / 6000 | 6 | 46.4, 20.0, 42.1 | Accent, Foliage, Metal, Roof, Stone, Wood | uploaded 125731043348668 | [front](../assets/previews/HauntShowcase_front.png) [top](../assets/previews/HauntShowcase_top.png) |
+| HauntShowcase | Haunts | 3584 / 6000 | 6 | 46.4, 21.2, 42.4 | Accent, Foliage, Metal, Roof, Stone, Wood | uploaded 125731043348668 | [front](../assets/previews/HauntShowcase_front.png) [top](../assets/previews/HauntShowcase_top.png) |
 | Boulder | Mansion | 76 / 200 | 1 | 4.0, 2.6, 4.0 | Stone | uploaded 104059816112501 | [front](../assets/previews/Boulder_front.png) [top](../assets/previews/Boulder_top.png) |
-| MansionFacade | Mansion | 1884 / 18000 | 6 | 126.2, 66.5, 34.5 | Foliage, Glow, Metal, Roof, Stone, Wood | uploaded 117527253688421 | [front](../assets/previews/MansionFacade_front.png) [top](../assets/previews/MansionFacade_top.png) |
+| MansionFacade | Mansion | 5424 / 18000 | 6 | 126.2, 66.5, 36.2 | Foliage, Glow, Metal, Roof, Stone, Wood | uploaded 117527253688421 | [front](../assets/previews/MansionFacade_front.png) [top](../assets/previews/MansionFacade_top.png) |
 | MansionHill | Mansion | 436 / 3000 | 2 | 91.0, 15.3, 70.5 | Ground, Stone | uploaded 133984575959280 | [front](../assets/previews/MansionHill_front.png) [top](../assets/previews/MansionHill_top.png) |
-| ChamberPortal | Plaza | 564 / 2500 | 4 | 16.2, 16.3, 16.2 | Accent, Collision, Glow, Stone | uploaded 126465059915313 | [front](../assets/previews/ChamberPortal_front.png) [top](../assets/previews/ChamberPortal_top.png) |
-| GhostFountain | Plaza | 1352 / 4000 | 6 | 25.5, 16.3, 25.5 | Accent, Collision, Glow, Metal, Stone, Water | uploaded 106922798333990 | [front](../assets/previews/GhostFountain_front.png) [top](../assets/previews/GhostFountain_top.png) |
+| ChamberPortal | Plaza | 720 / 2500 | 5 | 16.2, 16.9, 16.2 | Accent, Collision, Glow, Metal, Stone | uploaded 126465059915313 | [front](../assets/previews/ChamberPortal_front.png) [top](../assets/previews/ChamberPortal_top.png) |
+| GhostFountain | Plaza | 1988 / 4000 | 6 | 25.7, 16.3, 25.7 | Accent, Collision, Glow, Metal, Stone, Water | uploaded 106922798333990 | [front](../assets/previews/GhostFountain_front.png) [top](../assets/previews/GhostFountain_top.png) |
 | NoticeBoard | Plaza | 120 / 600 | 4 | 8.5, 7.1, 1.6 | Collision, Roof, Stone, Wood | uploaded 132306502866809 | [front](../assets/previews/NoticeBoard_front.png) [top](../assets/previews/NoticeBoard_top.png) |
 | RebirthAltar | Plaza | 852 / 2000 | 4 | 12.2, 7.0, 12.2 | Accent, Collision, Glow, Stone | uploaded 117043793736449 | [front](../assets/previews/RebirthAltar_front.png) [top](../assets/previews/RebirthAltar_top.png) |
 | WelcomeSign | Plaza | 72 / 300 | 4 | 2.9, 5.8, 0.6 | Collision, Glow, Metal, Wood | uploaded 95106154151130 | [front](../assets/previews/WelcomeSign_front.png) [top](../assets/previews/WelcomeSign_top.png) |
@@ -23,12 +23,12 @@ otherwise `World.build()` keeps the primitive version of that piece.
 | Gravestone | Props | 148 / 150 | 2 | 2.9, 3.1, 1.3 | Collision, Stone | uploaded 136583765279249 | [front](../assets/previews/Gravestone_front.png) [top](../assets/previews/Gravestone_top.png) |
 | PineTree | Props | 360 / 400 | 3 | 8.2, 17.1, 7.9 | Collision, Foliage, Wood | uploaded 115634389395822 | [front](../assets/previews/PineTree_front.png) [top](../assets/previews/PineTree_top.png) |
 | Pumpkin | Props | 280 / 300 | 4 | 2.9, 2.3, 2.9 | Accent, Collision, Glow, Wood | uploaded 88455361663381 | [front](../assets/previews/Pumpkin_front.png) [top](../assets/previews/Pumpkin_top.png) |
-| StreetLamp | Props | 252 / 300 | 3 | 1.2, 8.6, 1.1 | Collision, Glow, Metal | uploaded 122240540563593 | [front](../assets/previews/StreetLamp_front.png) [top](../assets/previews/StreetLamp_top.png) |
+| StreetLamp | Props | 336 / 600 | 3 | 1.9, 8.9, 1.1 | Collision, Glow, Metal | uploaded 122240540563593 | [front](../assets/previews/StreetLamp_front.png) [top](../assets/previews/StreetLamp_top.png) |
 | Caretaker | Town | 276 / 1200 | 3 | 2.5, 5.0, 2.2 | Glow, Metal, Wood | uploaded 83052712222180 | [front](../assets/previews/Caretaker_front.png) [top](../assets/previews/Caretaker_top.png) |
 | Crate | Town | 84 / 100 | 2 | 1.9, 1.9, 1.9 | Metal, Wood | uploaded 116239622920482 | [front](../assets/previews/Crate_front.png) [top](../assets/previews/Crate_top.png) |
 | MarketStall | Town | 396 / 800 | 4 | 8.8, 6.6, 6.0 | Accent, Glow, Roof, Wood | uploaded 111031379890133 | [front](../assets/previews/MarketStall_front.png) [top](../assets/previews/MarketStall_top.png) |
 | OakCask | Town | 168 / 200 | 2 | 2.1, 2.6, 2.0 | Metal, Wood | uploaded 121112502527701 | [front](../assets/previews/OakCask_front.png) [top](../assets/previews/OakCask_top.png) |
-| ShopHouse | Town | 328 / 5000 | 5 | 23.6, 19.8, 20.4 | Glow, Metal, Roof, Stone, Wood | uploaded 75167034499776 | [front](../assets/previews/ShopHouse_front.png) [top](../assets/previews/ShopHouse_top.png) |
+| ShopHouse | Town | 832 / 5000 | 5 | 24.7, 20.1, 20.8 | Glow, Metal, Roof, Stone, Wood | uploaded 75167034499776 | [front](../assets/previews/ShopHouse_front.png) [top](../assets/previews/ShopHouse_top.png) |
 
 ## Rebuild, preview, upload, harvest (PowerShell, project directory)
 

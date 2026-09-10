@@ -19,7 +19,7 @@ PALETTE = {'Stone': (51,49,65), 'Wood': (62,43,58), 'Metal': (43,40,57), 'Roof':
            'Glow': (255,188,104), 'Foliage': (25,43,43), 'Accent': (255,140,60),
            'Glass': (120,160,220), 'Water': (80,205,255), 'Ground': (29,43,42),
            'Collision': (220,50,80)}
-BUDGETS = {'StreetLamp':300, 'Gravestone':150, 'PineTree':400, 'DeadTree':600, 'Pumpkin':300,
+BUDGETS = {'StreetLamp':600, 'Gravestone':150, 'PineTree':400, 'DeadTree':600, 'Pumpkin':300,
            'GhostFountain':4000, 'ChamberPortal':2500, 'RebirthAltar':2000, 'NoticeBoard':600, 'WelcomeSign':300,
            'HauntShowcase':6000, 'MansionHill':3000, 'MansionFacade':18000, 'Boulder':200,
            'ShopHouse':5000, 'Caretaker':1200, 'MarketStall':800, 'OakCask':200, 'Crate':100,
@@ -127,6 +127,7 @@ def street_lamp():
     turned('Metal',[(7.37,.64),(7.50,.69),(7.59,.62),(7.79,.38),(8.10,.13)],sides=4,phase=math.pi/4)
     turned('Metal',[(8.03,.14),(8.22,.19),(8.60,.015)],sides=4,phase=math.pi/4)
     box('Collision',(0,0,2.95),(.55,.55,5.9))
+    lamp_details()
 
 
 def gravestone():
@@ -266,6 +267,7 @@ def ghost_fountain():
         box('Glow',(x,y,1.25),(.5,.5,.5))
     taper('Collision',(0,0,.85),1.7,12.6,12.6,16)
     taper('Collision',(0,0,3.2),3.0,4.95,4.95,12)
+    fountain_details()
 
 
 def chamber_portal():
@@ -284,6 +286,7 @@ def chamber_portal():
     disc2 = turned('Accent',[(-.1,3.7),(.1,3.7)],sides=16); disc2.rotation_euler=(math.pi/2,0,0); disc2.location=(0,-.15,5.3)
     taper('Collision',(0,0,.5),1.0,8.1,8.1,16)
     for x in (-5.6,5.6): box('Collision',(x,0,5.5),(2.3,2.7,9.0))
+    portal_details()
 
 
 def rebirth_altar():
@@ -383,6 +386,7 @@ def haunt_showcase():
     for sx in (-1, 1):
         box('Foliage', (sx*21.5, 6, 2.1), (1.9, 26, 2.2))
         box('Foliage', (sx*13.2, 18.5, 2.0), (17.4, 1.8, 2.0))
+    haunt_details()
 
 
 def arched_window(role_name, x, y, z, width, height, depth=.24, facing='-Y'):
@@ -461,6 +465,7 @@ def mansion_facade():
         for x, h in ((36, 30), (39, 22), (14, 18)):
             box('Foliage', (sx*x, -13.2, h/2+1), (1.6, .35, h))
         box('Foliage', (sx*61.5, -6, 20), (.35, 8, 36))
+    mansion_details()
 
 
 def boulder():
@@ -505,6 +510,7 @@ def shop_house():
     box('Glow', (7.4, -10.5, 8.2), (.7, .7, .9))                        # hanging lantern
     box('Metal', (-4.2, -9.9, 8.9), (.2, 1.4, .2))                      # sign rod
     box('Wood', (-4.2, -10.4, 7.9), (4.4, .3, 1.7))                     # hanging sign board
+    shop_details()
 
 
 def caretaker():
@@ -570,6 +576,7 @@ def crypt():
     box('Stone', (0, -4.7, 5.3), (3.6, .5, .6))                        # lintel
     box('Foliage', (-3.2, -4.55, 3.2), (1.2, .3, 4.6))                 # ivy
     box('Glow', (0, -4.7, 6.4), (.5, .3, .5))                          # lamp over the door
+    crypt_details()
 
 
 def gravestone_cross():
@@ -581,6 +588,170 @@ def gravestone_cross():
 def gravestone_obelisk():
     turned('Stone', [(0, 1.05), (.35, 1.05), (.35, .8), (2.9, .5), (3.3, .12)], sides=4, phase=math.pi/4)
 
+
+
+# ---------------------------------------------------------------- Level B detail helpers
+def tiled_slope(role_name, x0, x1, eave, ridge, rows, thickness=.22, overhang=.4, ridge_y=None):
+    """Rows of overlapping tile boards on a roof slope. eave/ridge are (y, z) in the YZ profile."""
+    ey, ez = eave; ry, rz = ridge
+    dy, dz = ry-ey, rz-ez
+    length = math.hypot(dy, dz); dy, dz = dy/length, dz/length
+    ny, nz = dz, -dy                                   # perpendicular; flip to point away from the roof interior
+    interior_y = ridge_y if ridge_y is not None else ry
+    if ny*(ey-interior_y) < 0: ny, nz = -ny, -nz
+    angle = math.atan2(dz, dy)
+    row = length/rows
+    for i in range(rows):
+        t = row*(i+.5)
+        cy = ey+dy*t+ny*(thickness/2+.02); cz = ez+dz*t+nz*(thickness/2+.02)
+        obj = box(role_name, ((x0+x1)/2, cy, cz), (x1-x0+2*overhang, row*1.22, thickness))
+        obj.rotation_euler = (angle, 0, 0)
+    cap = box(role_name, ((x0+x1)/2, ry, rz+.12), (x1-x0+2*overhang+.3, 1.0, .34))
+
+
+def window_surround(role_name, x, y, z, width, height, depth=.3, t=.3, facing='Y', sill=True):
+    """Jambs, head and sill around a pane centred at x,z with its base at z. facing 'Y' for ±Y walls, 'X' for ±X."""
+    if facing == 'Y':
+        box(role_name, (x-width/2-t/2, y, z+height/2), (t, depth, height+t))
+        box(role_name, (x+width/2+t/2, y, z+height/2), (t, depth, height+t))
+        box(role_name, (x, y, z+height+t/2), (width+2*t, depth, t))
+        if sill: box(role_name, (x, y, z-.12), (width+2*t+.4, depth+.25, .24))
+    else:
+        box(role_name, (x, y-width/2-t/2, z+height/2), (depth, t, height+t))
+        box(role_name, (x, y+width/2+t/2, z+height/2), (depth, t, height+t))
+        box(role_name, (x, y, z+height+t/2), (depth, width+2*t, t))
+        if sill: box(role_name, (x, y, z-.12), (depth+.25, width+2*t+.4, .24))
+
+
+def quoins(role_name, x, y, z0, z1, step=1.5, size=1.1, depth=.2):
+    """Alternating corner blocks up a wall corner at (x, y), proud of both faces."""
+    k = 0
+    z = z0+size/2
+    while z+size/2 <= z1:
+        if k % 2 == 0: box(role_name, (x, y, z), (size+depth, size*.7+depth, size*.9))
+        else: box(role_name, (x, y, z), (size*.7+depth, size+depth, size*.9))
+        z += step; k += 1
+
+
+def battlements(role_name, cx, cy, z, half, merlon=2.0, gap=1.4, height=1.8, depth=1.4):
+    """Merlons around a square tower top of half-width `half`."""
+    n = int((2*half)//(merlon+gap))+1
+    for i in range(n):
+        off = -half+merlon/2+i*(merlon+gap)
+        if off+merlon/2 > half: break
+        box(role_name, (cx+off, cy-half+depth/2, z+height/2), (merlon, depth, height))
+        box(role_name, (cx+off, cy+half-depth/2, z+height/2), (merlon, depth, height))
+        box(role_name, (cx-half+depth/2, cy+off, z+height/2), (depth, merlon, height))
+        box(role_name, (cx+half-depth/2, cy+off, z+height/2), (depth, merlon, height))
+
+
+def haunt_details():
+    # Tiled roof over the flat prism (front eave y -9.6, back eave y -21.4, ridge y -15.5 at z 18.7).
+    tiled_slope('Roof', -16.8, 16.8, (-9.6, 11.85), (-15.5, 18.7), 7)
+    tiled_slope('Roof', -16.8, 16.8, (-21.4, 11.85), (-15.5, 18.7), 7)
+    box('Stone', (9.2, -13.6, 20.1), (2.3, 2.3, .4))                 # chimney cap
+    turned('Stone', [(20.3, .45), (21.2, .5)], sides=8).location = (9.2, -13.6, 0)
+    # Window surrounds, timber studs and braces on the jettied upper floor.
+    for x in (-10.5, -5.5, 5.5, 10.5): window_surround('Roof', x, -10.86, 3.1, 1.8, 2.4, depth=.3)
+    for x in (-11, -6, 0, 6, 11): window_surround('Roof', x, -10.56, 8.5, 1.6, 2.2, depth=.3)
+    for sx in (-1, 1):
+        for y in (-18.2, -13.2): window_surround('Roof', sx*15.82, y, 8.6, 1.5, 2.0, depth=.3, facing='X')
+        for x in (13.6, 8.5, 3.0): box('Roof', (sx*x, -10.66, 9.5), (.36, .28, 4.9))
+        brace = box('Roof', (sx*11.1, -10.66, 9.6), (.3, .26, 3.6)); brace.rotation_euler = (0, sx*.62, 0)
+    box('Roof', (0, -10.66, 11.95), (31.6, .28, .4))                   # head beam under the eave
+    # Door surround, porch posts and a small pitched hood over the door.
+    window_surround('Stone', 0, -10.9, 1.0, 2.7, 4.2, depth=.5, t=.45, sill=False)
+    for x in (-2.3, 2.3): box('Wood', (x, -8.9, 3.4), (.4, .4, 4.8))
+    prism_y('Roof', -9.4, -7.9, [(-3.4, 5.8), (3.4, 5.8), (0, 7.4)])
+    for sx in (-1, 1):
+        quoins('Stone', sx*15.0, -11.0, 1.0, 7.0)
+        quoins('Stone', sx*15.0, -20.0, 1.0, 7.0)
+    # Accent light band under every pedestal cap so the yard carries the plot colour.
+    for j in range(20):
+        x = ((j % 5)-2)*6; y = 5-(j//5)*5
+        box('Accent', (x, y, 2.08), (3.34, 3.34, .12))
+
+
+def shop_details():
+    tiled_slope('Roof', -11.8, 11.8, (-9.6, 12.8), (0, 18.6), 6)
+    tiled_slope('Roof', -11.8, 11.8, (9.6, 12.8), (0, 18.6), 6)
+    box('Stone', (5.6, 3.0, 19.95), (2.0, 2.0, .35))                  # chimney cap
+    window_surround('Roof', 3.6, -8.2, 2.3, 6.4, 3.6, depth=.32)
+    for x in (-5.5, 5.5):
+        window_surround('Roof', x, -9.4, 8.8, 2.0, 2.6, depth=.32)
+        for sx in (-1, 1): box('Wood', (x+sx*1.55, -9.45, 10.1), (.7, .18, 2.6))    # shutters
+    window_surround('Roof', 0, -9.1, 14.2, 1.6, 2.4, depth=.28, sill=False)
+    awning = box('Roof', (3.6, -9.3, 6.35), (7.4, 1.9, .18)); awning.rotation_euler = (.55, 0, 0)
+    for sx in (-1, 1):
+        brace = box('Roof', (sx*8.6, -9.28, 10.2), (.3, .26, 3.3)); brace.rotation_euler = (0, sx*.7, 0)
+        box('Roof', (sx*10.95, -9.25, 9.7), (.42, .35, 6.2))         # corner posts
+    window_surround('Stone', -4.2, -8.25, .8, 3.2, 5.0, depth=.42, t=.4, sill=False)
+
+
+def mansion_details():
+    # Central gable tiles, tower battlements, string courses, quoins, window surrounds, porch steps, spire bands.
+    tiled_slope('Roof', -41, 41, (-14, 40), (0, 52), 8)
+    tiled_slope('Roof', -41, 41, (14, 40), (0, 52), 8)
+    for sx in (-1, 1):
+        battlements('Stone', sx*51, 0, 51.2, 11.8)
+        for z, r in ((54.5, 8.6), (58.5, 5.6), (62.0, 2.8)):
+            for k in range(4):
+                a = k*math.pi/2
+                ring = box('Roof', (sx*51+r*math.cos(a), r*math.sin(a), z), (.5, 2*r+.5 if k % 2 == 0 else .5, .5))
+                ring.rotation_euler = (0, 0, 0)
+        for z in (8, 20, 32): window_surround('Stone', sx*51, -13.15, z, 3.2, 6.5, depth=.5, t=.45)
+        quoins('Stone', sx*62.0, -13.0, 1, 48, step=1.7, size=1.3)
+        quoins('Stone', sx*40.0, -13.0, 1, 39, step=1.7, size=1.3)
+    for z in (13.4, 25.4): box('Stone', (0, -13.5, z), (82, .9, .7))                       # string courses
+    for x in (-30, -20, 20, 30): window_surround('Stone', x, -13.15, 4, 3.6, 7, depth=.5, t=.45)
+    for x in (-30, -20, -10, 10, 20, 30):
+        window_surround('Stone', x, -13.15, 17, 3.2, 6, depth=.5, t=.45)
+        window_surround('Stone', x, -13.15, 29, 3.2, 6, depth=.5, t=.45)
+    window_surround('Stone', 0, -13.15, 17, 5, 8, depth=.5, t=.5, sill=False)
+    for k, (y, h) in enumerate(((-21.4, .5), (-20.4, 1.0), (-19.4, 1.5))):                # porch steps
+        box('Stone', (0, y, h/2), (34-k*2, 1.0, h))
+    for x in (-3.4, 3.4): box('Metal', (x, -13.7, 7), (.35, .2, 12))                       # door iron bands
+    box('Metal', (0, -13.75, 10.2), (10, .2, .35))
+
+
+def crypt_details():
+    tiled_slope('Roof', -4.6, 4.6, (-5.6, 5.5), (0, 8.4), 4, thickness=.18, overhang=.3)
+    tiled_slope('Roof', -4.6, 4.6, (5.6, 5.5), (0, 8.4), 4, thickness=.18, overhang=.3)
+    window_surround('Stone', 0, -4.7, 1.0, 2.4, 4.2, depth=.5, t=.4, sill=False)
+    for x in (-3.2, 3.2):
+        turned('Stone', [(.8, .5), (1.1, .6), (1.9, .45), (2.2, .55), (2.4, .2)], sides=8).location = (x, -5.0, 0)
+
+
+def fountain_details():
+    for i in range(16):
+        a = 2*math.pi*i/16
+        rib = box('Stone', (12.15*math.cos(a), 12.15*math.sin(a), .85), (.55, .7, 1.5)); rib.rotation_euler = (0, 0, a)
+    turned('Stone', [(1.6, 12.55), (1.85, 12.85), (2.0, 12.5)], sides=16)                  # lip moulding
+    for i in range(12):
+        a = 2*math.pi*i/12
+        rib = box('Stone', (4.8*math.cos(a), 4.8*math.sin(a), 4.1), (.35, .45, 1.1)); rib.rotation_euler = (0, 0, a)
+    # Chains sagging between the eight bollards.
+    pts = ring_of(8, 13.4, math.pi/8)
+    for i in range(8):
+        (x0, y0), (x1, y1) = pts[i], pts[(i+1) % 8]
+        sweep([(x0, y0, 1.45), ((x0+x1)/2, (y0+y1)/2, 1.05), (x1, y1, 1.45)], [.09, .09, .09], 5, 'Metal')
+
+
+def portal_details():
+    for i in (1, 3, 5, 7, 9):
+        t = math.pi*(i+.5)/11
+        rune = box('Accent', (6.55*math.cos(t), -1.25, 10.0+6.55*math.sin(t)), (.7, .12, .7)); rune.rotation_euler = (0, -t, 0)
+    for x in (-5.6, 5.6):
+        box('Metal', (x, -1.6, 7.2), (.25, .5, .25))
+        box('Glow', (x, -1.9, 6.6), (.55, .55, .75))
+    for x, y in ring_of(4, 6.6, math.pi/4):
+        box('Accent', (x, y, 1.02), (1.2, 1.2, .08))
+
+
+def lamp_details():
+    for sx in (-1, 1):
+        sweep([(sx*.3, 0, 5.4), (sx*.9, 0, 5.9), (sx*.75, 0, 6.5)], [.07, .06, .05], 5, 'Metal')
+    turned('Metal', [(8.55, .12), (8.75, .2), (8.95, .06)], sides=6)
 
 BUILDERS = {'StreetLamp':street_lamp,'Gravestone':gravestone,'PineTree':pine,
             'DeadTree':dead_tree,'Pumpkin':pumpkin,
