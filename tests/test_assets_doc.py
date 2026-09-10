@@ -21,7 +21,7 @@ class AssetsDocTests(unittest.TestCase):
             'Arch':{'zone':'Plaza','footprint':[16.2,16.3,16.2],'roles':['Stone'],'triangleBudget':2500,'triangles':564,'meshCount':4,'assetId':0,'uploadedAt':None},
         }}
         text=generator.generate(manifest)
-        rows={line.split('|')[1].strip():line for line in text.splitlines() if line.startswith('| ') and not line.startswith('| Asset')}
+        rows={line.split('|')[1].strip():line for line in text.splitlines() if line.startswith('| ') and line.split('|')[1].strip() not in ('Asset','---')}
         self.assertEqual(set(rows),{'Lamp','Arch'})
         self.assertIn('uploaded 1234567',rows['Lamp']); self.assertIn('252 / 300',rows['Lamp'])
         self.assertIn('not uploaded',rows['Arch']); self.assertIn('Plaza',rows['Arch'])
