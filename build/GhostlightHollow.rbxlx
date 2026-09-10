@@ -115,11 +115,14 @@ function Loader.place(name,parent,cf,options)
         Loader.LampCalibrated=true
         print('StreetLamp imported extents:',extent,'expected:',target)
     end
+    -- Blender metres are Roblox studs, so this factor is 1 unless an export went wrong. A proportion drift
+    -- is only a warning: a place file built before an asset was re-uploaded must still show the asset.
     local factor=target.Y/extent.Y
     if math.abs(extent.X*factor/target.X-1)&gt;.02 or math.abs(extent.Z*factor/target.Z-1)&gt;.02 then
-        model:Destroy(); warning(name,'nonuniform footprint mismatch'); return fallback(name,parent,cf)
+        warning(name,string.format('footprint differs from manifest (loaded %.1f x %.1f x %.1f, expected %.1f x %.1f x %.1f); placing anyway',
+            extent.X,extent.Y,extent.Z,target.X,target.Y,target.Z))
     end
-    model:ScaleTo(model:GetScale()*factor)
+    if math.abs(factor-1)&gt;.02 then model:ScaleTo(model:GetScale()*factor) end
     local bounds,size=model:GetBoundingBox()
     local base=bounds*CFrame.new(0,-size.Y/2,0)
     model:PivotTo(cf*base:Inverse()*model:GetPivot())
