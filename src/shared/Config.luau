@@ -1,6 +1,6 @@
 local C = {}
 C.Title = 'GHOSTLIGHT HOLLOW'
-C.MaxPlayers = 8
+C.MaxPlayers = 7
 C.Version = 1
 C.SaveKey = 'GhostlightHollow_v1'
 C.StudioPersistence = false

@@ -26,12 +26,135 @@
       <Properties>
         <string name="Name">Ghostlight</string>
       </Properties>
-      <Item class="ModuleScript" referent="RBX22341c7b35e14e1cd9c19793f098eca07b49bd73">
+      <Item class="Folder" referent="RBX7b47d2fd17edb522cbf56387f5d855629cf9461e">
+        <Properties>
+          <string name="Name">Assets</string>
+        </Properties>
+        <Item class="ModuleScript" referent="RBXe520874520946052a0e3e82341fb2c59da4feffe">
+          <Properties>
+            <string name="Name">Loader</string>
+            <ProtectedString name="Source">-- Server-only, one request per asset. Collection mesh names carry material roles.
+local InsertService=game:GetService('InsertService')
+local Ids=require(script.Parent.Parent.AssetIds)
+local Loader={}
+local cache={}
+local pending={}
+local warned={}
+local palette={
+    Stone={51,49,65},Wood={62,43,58},Roof={39,30,57},Metal={43,40,57},
+    Glass={120,160,220},Glow={255,188,104},Accent={255,140,60},
+    Foliage={25,43,43},Ground={29,43,42},Water={80,205,255},Collision={51,49,65},
+}
+local function warning(name,reason)
+    if warned[name] then return end
+    warned[name]=true
+    warn(string.format('Asset load failed: %s ID=%s: %s',name,tostring(Ids[name] and Ids[name].Id),tostring(reason)))
+end
+function Loader.configured(name)
+    return Ids[name]~=nil and Ids[name].Id&gt;0
+end
+function Loader.preload(names)
+    local deadline=os.clock()+12
+    for _,name in names do
+        if cache[name]~=nil or pending[name] then continue end
+        if not Loader.configured(name) then cache[name]=false; warning(name,'not uploaded'); continue end
+        pending[name]=true
+        task.spawn(function()
+            local ok,model=pcall(function() return InsertService:LoadAsset(Ids[name].Id) end)
+            if ok and model and model:IsA('Model') and model:FindFirstChildWhichIsA('BasePart',true) then
+                for _,item in model:GetDescendants() do
+                    if item:IsA('LuaSourceContainer') then item:Destroy() end
+                end
+                if pending[name] then cache[name]=model else model:Destroy() end
+            else
+                if typeof(model)=='Instance' then model:Destroy() end
+                cache[name]=false
+                warning(name,ok and 'empty asset' or model)
+            end
+            pending[name]=nil
+        end)
+    end
+    while os.clock()&lt;deadline do
+        local waiting=false
+        for _,name in names do if pending[name] then waiting=true; break end end
+        if not waiting then break end
+        task.wait()
+    end
+    for _,name in names do
+        if pending[name] then
+            pending[name]=nil; cache[name]=false; warning(name,'12-second preload timeout')
+        end
+    end
+end
+local function fallback(name,parent,cf)
+    local model=Instance.new('Model'); model.Name=name..'_Unavailable'
+    local p=Instance.new('Part'); p.Name='Placeholder'; p.Size=Ids[name].Footprint
+    p.CFrame=cf*CFrame.new(0,p.Size.Y/2,0); p.Color=Color3.fromRGB(32,29,43)
+    p.Anchored=true; p.Parent=model
+    local gui=Instance.new('BillboardGui'); gui.Size=UDim2.fromOffset(180,40); gui.StudsOffset=Vector3.new(0,3,0); gui.Parent=p
+    local label=Instance.new('TextLabel'); label.Size=UDim2.fromScale(1,1); label.BackgroundTransparency=1
+    label.Text='Asset unavailable: '..name; label.TextColor3=Color3.fromRGB(255,188,104); label.TextScaled=true; label.Parent=gui
+    model.Parent=parent
+    return model
+end
+function Loader.place(name,parent,cf,options)
+    assert(Ids[name],'Unknown asset '..name)
+    if not cache[name] then warning(name,'no cached model'); return fallback(name,parent,cf) end
+    local model=cache[name]:Clone(); model.Name=name
+    local target=Ids[name].Footprint
+    local extent=model:GetExtentsSize()
+    if name=='StreetLamp' and not Loader.LampCalibrated then
+        Loader.LampCalibrated=true
+        print('StreetLamp imported extents:',extent,'expected:',target)
+    end
+    local factor=target.Y/extent.Y
+    if math.abs(extent.X*factor/target.X-1)&gt;.02 or math.abs(extent.Z*factor/target.Z-1)&gt;.02 then
+        model:Destroy(); warning(name,'nonuniform footprint mismatch'); return fallback(name,parent,cf)
+    end
+    model:ScaleTo(model:GetScale()*factor)
+    local bounds,size=model:GetBoundingBox()
+    local base=bounds*CFrame.new(0,-size.Y/2,0)
+    model:PivotTo(cf*base:Inverse()*model:GetPivot())
+    for _,p in model:GetDescendants() do
+        if not p:IsA('BasePart') then continue end
+        local role=p.Name:match('_([%a]+)$')
+        if not palette[role] then
+            model:Destroy(); warning(name,'unexpected role suffix: '..p.Name); return fallback(name,parent,cf)
+        end
+        p.Anchored=true
+        p.CanCollide=role=='Collision'; p.CanQuery=role=='Collision'; p.CanTouch=false
+        p.Transparency=if role=='Collision' then 1 elseif role=='Glass' then .4 elseif role=='Water' then .5 else 0
+        p.Material=if role=='Glow' or role=='Accent' then Enum.Material.Neon else Enum.Material.SmoothPlastic
+        p.Color=if role=='Accent' and options and options.Accent then options.Accent else Color3.fromRGB(table.unpack(palette[role]))
+    end
+    model.Parent=parent
+    return model
+end
+return Loader
+</ProtectedString>
+          </Properties>
+        </Item>
+      </Item>
+      <Item class="ModuleScript" referent="RBX8ef3d0b24c276bc061cc130a8fb1e64126017d14">
+        <Properties>
+          <string name="Name">AssetIds</string>
+          <ProtectedString name="Source">-- Generated by tools/gen_asset_ids.py. Do not hand-edit.
+return {
+    DeadTree={Id=0, Footprint=Vector3.new(6.34299, 10.54509, 4.04853), Roles={"Collision", "Wood"}},
+    Gravestone={Id=0, Footprint=Vector3.new(3.0, 3.2, 1.6), Roles={"Collision", "Stone"}},
+    PineTree={Id=0, Footprint=Vector3.new(8.86327, 17.0, 8.72862), Roles={"Collision", "Foliage", "Wood"}},
+    Pumpkin={Id=0, Footprint=Vector3.new(2.916, 2.46633, 2.608), Roles={"Accent", "Collision", "Glow", "Wood"}},
+    StreetLamp={Id=0, Footprint=Vector3.new(1.44, 8.7, 1.44), Roles={"Collision", "Glow", "Metal"}},
+}
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="RBX23c315f645e5b2dc6172c3ab2636b222a1f69843">
         <Properties>
           <string name="Name">Config</string>
           <ProtectedString name="Source">local C = {}
 C.Title = 'GHOSTLIGHT HOLLOW'
-C.MaxPlayers = 8
+C.MaxPlayers = 7
 C.Version = 1
 C.SaveKey = 'GhostlightHollow_v1'
 C.StudioPersistence = false
@@ -81,7 +204,7 @@ return C
 </ProtectedString>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="RBX11ad8079bf1d37472eaf0ad720f48a372245f16f">
+      <Item class="ModuleScript" referent="RBX8026ef5478f73d16106a6be4cf591768b23eccf9">
         <Properties>
           <string name="Name">Rules</string>
           <ProtectedString name="Source">local Config = if script then require(script.Parent.Config) else require('./Config')
@@ -217,7 +340,7 @@ return R
 </ProtectedString>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="RBXdaf3fdb51b15e8fb9eb8d48565c2fa9fc8b267cc">
+      <Item class="ModuleScript" referent="RBX934570645631dd5f62d0bd1fb54803ce96e2c02d">
         <Properties>
           <string name="Name">Visuals</string>
           <ProtectedString name="Source">local Config=require(script.Parent.Config)
@@ -766,7 +889,7 @@ local function joined(player)
     if closing then player:Kick('Server restarting. Please rejoin.'); return end
     local index
     for i,plot in World.Plots do if not plot.Owner then index=i; plot.Owner=player; plots[player]=i; break end end
-    if not index then player:Kick('All eight Haunts are occupied. Please join another server.'); return end
+    if not index then player:Kick('All seven Haunts are occupied. Please join another server.'); return end
     local data=Profiles.load(player)
     if not data or not player.Parent then
         if World.Plots[index].Owner==player then World.Plots[index].Owner=nil end
@@ -835,7 +958,7 @@ game:BindToClose(function()
     local deadline=os.clock()+25
     while remaining&gt;0 and os.clock()&lt;deadline do task.wait(0.1) end
 end)
-print('Ghostlight Hollow server ready: eight Haunts, six mansion areas, fourteen ghosts.')
+print('Ghostlight Hollow server ready: seven Haunts, six mansion areas, fourteen ghosts.')
 </ProtectedString>
           <bool name="Disabled">false</bool>
         </Properties>
@@ -939,6 +1062,7 @@ return P
           <ProtectedString name="Source">local Shared=game:GetService('ReplicatedStorage'):WaitForChild('Ghostlight')
 local V=require(Shared.Visuals)
 local C=require(Shared.Config)
+local Assets=require(Shared.Assets.Loader)
 local W={Plots={},Areas={},Switches={}}
 local stone=Color3.fromRGB(51,49,65)
 local wood=Color3.fromRGB(62,43,58)
@@ -954,6 +1078,14 @@ local function prompt(p,text,object,callback)
 end
 W.prompt=prompt
 local function lamp(parent,pos)
+    if Assets.configured('StreetLamp') then
+        local model=Assets.place('StreetLamp',parent,CFrame.new(pos))
+        local glow=model:FindFirstChild('StreetLamp_Glow',true)
+        if glow then
+            local light=Instance.new('PointLight'); light.Color=warm; light.Brightness=1.4; light.Range=19; light.Parent=glow
+        end
+        return
+    end
     part(parent,'LampPost',Vector3.new(0.4,7,0.4),pos+Vector3.new(0,3.5,0))
     local glow=part(parent,'Lantern',Vector3.new(1,1.6,1),pos+Vector3.new(0,7.5,0),warm,Enum.Material.Neon)
     local light=Instance.new('PointLight'); light.Color=warm; light.Brightness=1.4; light.Range=19; light.Parent=glow
@@ -970,6 +1102,12 @@ local function path(parent,a,b,width)
     p.CFrame=CFrame.lookAt(mid,b)
 end
 function W.build()
+    local loadNames={}
+    for _,name in {'StreetLamp','Gravestone','PineTree','DeadTree','Pumpkin'} do
+        if Assets.configured(name) then table.insert(loadNames,name) end
+    end
+    Assets.preload(loadNames)
+    local buildStarted=os.clock()
     local root=Instance.new('Folder'); root.Name='GhostlightWorld'; root.Parent=workspace; W.Root=root
     local lighting=game:GetService('Lighting')
     lighting.ClockTime=0.5; lighting.Brightness=1.6; lighting.Ambient=Color3.fromRGB(40,32,67); lighting.OutdoorAmbient=Color3.fromRGB(61,65,103)
@@ -1047,18 +1185,32 @@ function W.build()
         V.label(npc,if x&lt;0 then 'MIRA • EQUIPMENT' else 'ORIN • REBIRTH',warm,180,45)
     end
     local rng=Random.new(1047)
+    local convertedTrees=0
     for i=1,58 do
         local a=rng:NextNumber(0,math.pi*2); local r=rng:NextNumber(165,195)
         local pos=Vector3.new(math.cos(a)*r,0,math.sin(a)*r)
         if math.abs(pos.X)&gt;24 or pos.Z&gt;0 then
+            -- First upload batch stays below the original 120 MeshPart cap.
+            -- Replace two trees until the full-town instance budget is resolved.
+            local meshName=if convertedTrees==0 then 'PineTree' else 'DeadTree'
+            if convertedTrees&lt;2 and Assets.configured(meshName) then
+                Assets.place(meshName,root,CFrame.new(pos))
+                convertedTrees+=1
+                continue
+            end
             part(root,'TreeTrunk',Vector3.new(2,11,2),pos+Vector3.new(0,5,0),wood,Enum.Material.Wood)
             for j=1,3 do local crown=part(root,'Pine',Vector3.new(14-j*2,8,14-j*2),pos+Vector3.new(0,8+j*4,0),Color3.fromRGB(25,43,43),Enum.Material.Grass); crown.Shape=Enum.PartType.Ball end
         end
     end
     for i=1,15 do
         local pos=Vector3.new(130+(i%5)*7,1.4,100+math.floor(i/5)*9)
-        part(root,'Gravestone',Vector3.new(3,4,1),pos,Color3.fromRGB(86,86,102))
+        if Assets.configured('Gravestone') then
+            Assets.place('Gravestone',root,CFrame.new(pos.X,-.5,pos.Z))
+        else
+            part(root,'Gravestone',Vector3.new(3,4,1),pos,Color3.fromRGB(86,86,102))
+        end
     end
+    if Assets.configured('Pumpkin') then Assets.place('Pumpkin',root,CFrame.new(47,0,26)) end
     sign(root,Vector3.new(146,3,93),'THE QUIET GARDEN',Color3.fromRGB(170,187,206))
     for floor,info in C.Floors do
         local center=Vector3.new((floor-1)*150,0,-450)
@@ -1131,6 +1283,12 @@ function W.build()
             if l.Enabled then l.Brightness=0.15; task.wait(0.12); l.Brightness=0.9 end
         end
     end)
+    local parts,meshes,lights=0,0,0
+    for _,item in root:GetDescendants() do
+        if item:IsA('MeshPart') then meshes+=1 elseif item:IsA('BasePart') then parts+=1 end
+        if item:IsA('Light') then lights+=1 end
+    end
+    print(string.format('World.build %.3fs excluding preload: %d primitive parts, %d MeshParts, %d lights including interiors',os.clock()-buildStarted,parts,meshes,lights))
     return W
 end
 return W

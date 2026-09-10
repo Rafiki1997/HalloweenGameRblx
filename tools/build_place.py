@@ -15,6 +15,9 @@ def item(parent, cls, name):
     return node, props
 
 def sources(parent, folder):
+    for child in sorted(p for p in folder.iterdir() if p.is_dir()):
+        node, _ = item(parent, 'Folder', child.name)
+        sources(node, child)
     for path in sorted(folder.glob('*.luau')):
         if path.name.endswith('.server.luau'):
             cls, name = 'Script', path.name.removesuffix('.server.luau')

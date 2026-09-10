@@ -1,6 +1,7 @@
 local Shared=game:GetService('ReplicatedStorage'):WaitForChild('Ghostlight')
 local V=require(Shared.Visuals)
 local C=require(Shared.Config)
+local Assets=require(Shared.Assets.Loader)
 local W={Plots={},Areas={},Switches={}}
 local stone=Color3.fromRGB(51,49,65)
 local wood=Color3.fromRGB(62,43,58)
@@ -16,6 +17,14 @@ local function prompt(p,text,object,callback)
 end
 W.prompt=prompt
 local function lamp(parent,pos)
+    if Assets.configured('StreetLamp') then
+        local model=Assets.place('StreetLamp',parent,CFrame.new(pos))
+        local glow=model:FindFirstChild('StreetLamp_Glow',true)
+        if glow then
+            local light=Instance.new('PointLight'); light.Color=warm; light.Brightness=1.4; light.Range=19; light.Parent=glow
+        end
+        return
+    end
     part(parent,'LampPost',Vector3.new(0.4,7,0.4),pos+Vector3.new(0,3.5,0))
     local glow=part(parent,'Lantern',Vector3.new(1,1.6,1),pos+Vector3.new(0,7.5,0),warm,Enum.Material.Neon)
     local light=Instance.new('PointLight'); light.Color=warm; light.Brightness=1.4; light.Range=19; light.Parent=glow
@@ -32,6 +41,12 @@ local function path(parent,a,b,width)
     p.CFrame=CFrame.lookAt(mid,b)
 end
 function W.build()
+    local loadNames={}
+    for _,name in {'StreetLamp','Gravestone','PineTree','DeadTree','Pumpkin'} do
+        if Assets.configured(name) then table.insert(loadNames,name) end
+    end
+    Assets.preload(loadNames)
+    local buildStarted=os.clock()
     local root=Instance.new('Folder'); root.Name='GhostlightWorld'; root.Parent=workspace; W.Root=root
     local lighting=game:GetService('Lighting')
     lighting.ClockTime=0.5; lighting.Brightness=1.6; lighting.Ambient=Color3.fromRGB(40,32,67); lighting.OutdoorAmbient=Color3.fromRGB(61,65,103)
@@ -109,18 +124,32 @@ function W.build()
         V.label(npc,if x<0 then 'MIRA • EQUIPMENT' else 'ORIN • REBIRTH',warm,180,45)
     end
     local rng=Random.new(1047)
+    local convertedTrees=0
     for i=1,58 do
         local a=rng:NextNumber(0,math.pi*2); local r=rng:NextNumber(165,195)
         local pos=Vector3.new(math.cos(a)*r,0,math.sin(a)*r)
         if math.abs(pos.X)>24 or pos.Z>0 then
+            -- First upload batch stays below the original 120 MeshPart cap.
+            -- Replace two trees until the full-town instance budget is resolved.
+            local meshName=if convertedTrees==0 then 'PineTree' else 'DeadTree'
+            if convertedTrees<2 and Assets.configured(meshName) then
+                Assets.place(meshName,root,CFrame.new(pos))
+                convertedTrees+=1
+                continue
+            end
             part(root,'TreeTrunk',Vector3.new(2,11,2),pos+Vector3.new(0,5,0),wood,Enum.Material.Wood)
             for j=1,3 do local crown=part(root,'Pine',Vector3.new(14-j*2,8,14-j*2),pos+Vector3.new(0,8+j*4,0),Color3.fromRGB(25,43,43),Enum.Material.Grass); crown.Shape=Enum.PartType.Ball end
         end
     end
     for i=1,15 do
         local pos=Vector3.new(130+(i%5)*7,1.4,100+math.floor(i/5)*9)
-        part(root,'Gravestone',Vector3.new(3,4,1),pos,Color3.fromRGB(86,86,102))
+        if Assets.configured('Gravestone') then
+            Assets.place('Gravestone',root,CFrame.new(pos.X,-.5,pos.Z))
+        else
+            part(root,'Gravestone',Vector3.new(3,4,1),pos,Color3.fromRGB(86,86,102))
+        end
     end
+    if Assets.configured('Pumpkin') then Assets.place('Pumpkin',root,CFrame.new(47,0,26)) end
     sign(root,Vector3.new(146,3,93),'THE QUIET GARDEN',Color3.fromRGB(170,187,206))
     for floor,info in C.Floors do
         local center=Vector3.new((floor-1)*150,0,-450)
@@ -193,6 +222,12 @@ function W.build()
             if l.Enabled then l.Brightness=0.15; task.wait(0.12); l.Brightness=0.9 end
         end
     end)
+    local parts,meshes,lights=0,0,0
+    for _,item in root:GetDescendants() do
+        if item:IsA('MeshPart') then meshes+=1 elseif item:IsA('BasePart') then parts+=1 end
+        if item:IsA('Light') then lights+=1 end
+    end
+    print(string.format('World.build %.3fs excluding preload: %d primitive parts, %d MeshParts, %d lights including interiors',os.clock()-buildStarted,parts,meshes,lights))
     return W
 end
 return W

@@ -1,5 +1,10 @@
 # Ghostlight Hollow implementation
 
+Town mesh pipeline update: five deterministic Blender props, FBX exports, previews, ID harvesting,
+generated AssetIds and a server loader are implemented. Packaging now recurses through shared
+subfolders. Uploaded IDs are still pending; World preserves primitive props until IDs are supplied.
+See ASSETS.md for upload instructions and the limited 117-MeshPart first-batch layout.
+
 The user-approved build brief is BUILD-BRIEF.md. Visual references are the three HalloweenGameImage PNGs supplied by the user. This is a new project; use original part-built assets with blue/purple moonlight and warm lanterns.
 
 Architecture: shared configuration and pure rules; server services for profiles, world, hunts, plots, chamber and requests; client HUD and effects. Clients send intentions only. A Python packager produces an openable rbxlx containing the same sources as the Rojo project. World geometry is generated deterministically on server startup.

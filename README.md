@@ -20,7 +20,7 @@ The bottom navigation scrolls horizontally on narrow screens. PC mouse, touch ac
 
 Studio defaults to an explicitly labeled **practice session with no persistence**. This permits testing an unpublished place without a DataStore failure blocking entry.
 
-Published Roblox servers use server-side DataStores automatically. Publish to your own new experience and set the server size to **8 players**. For persistent Studio testing, use a separate test experience, enable Studio API access, and set `StudioPersistence = true` in `src/shared/Config.luau`, then rebuild. Production load failures never fall back to an empty writable profile.
+Published Roblox servers use server-side DataStores automatically. Publish to your own new experience and set the server size to **7 players**. For persistent Studio testing, use a separate test experience, enable Studio API access, and set `StudioPersistence = true` in `src/shared/Config.luau`, then rebuild. Production load failures never fall back to an empty writable profile.
 
 Profiles use UpdateAsync leases, token validation, retries, autosaves, and leave/shutdown saves. Verify these against a published test experience before release. DataStore implementation reference: [Roblox Data stores](https://create.roblox.com/docs/cloud-services/data-stores).
 
@@ -39,4 +39,4 @@ Build with `python tools/build_place.py`. Run `python tools/verify.py` after ins
 
 For repeatable single-player engine tests, run `python tools/build_place.py --test`, open `build/GhostlightHollow.Acceptance.rbxlx`, and press Play. The test runner prints its results to Studio Output. This separate place contains test-only setup and remote controls; do not publish it. The pre-feedback baseline passed 26 checks, alongside ten local rule-test groups; rerun it after future behavior changes. Multiplayer and published persistence remain release checks.
 
-No purchased models or uploaded custom asset IDs are required. Sounds use bundled Roblox effects where available; footsteps use Roblox's standard character audio. Original custom models, bespoke sound design and runtime balance tuning remain polish work.
+The town mesh pipeline uses the creator's own meshes listed in `assets/manifest.json`, uploaded with the Roblox Blender add-on. To publish under another account or group, clear the IDs from the manifest, re-upload under that creator, and regenerate `AssetIds.luau`. The first five props are modelled; upload is pending and the game retains its original props until their IDs are recorded. See `docs/ASSETS.md` for commands and status. Sounds use bundled Roblox effects where available; footsteps use Roblox's standard character audio.

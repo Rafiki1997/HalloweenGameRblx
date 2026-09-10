@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "StreetLamp": {
+      "zone": "Props",
+      "footprint": [
+        1.44,
+        8.7,
+        1.44
+      ],
+      "roles": [
+        "Collision",
+        "Glow",
+        "Metal"
+      ],
+      "triangleBudget": 300,
+      "triangles": 188,
+      "meshCount": 3,
+      "geometrySha256": "e3b97e9b5540cfb451ddf50972830038c5adc82f1d4713cad51241a7dc4220a0",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "ec2d8a304c8d9117da3ddb24861b6c60e985e5bdfc20c137e18fb4b5bc636001"
+    },
+    "Gravestone": {
+      "zone": "Props",
+      "footprint": [
+        3.0,
+        3.2,
+        1.6
+      ],
+      "roles": [
+        "Collision",
+        "Stone"
+      ],
+      "triangleBudget": 150,
+      "triangles": 80,
+      "meshCount": 2,
+      "geometrySha256": "7ec7b4a2da618bafb4e342212b6e58cce57757a70541f43460cbc8305cde9c17",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "01554ce6b3b12de6775ee0c936c956069d4d7316439fd77af3e3315e27f9dd38"
+    },
+    "PineTree": {
+      "zone": "Props",
+      "footprint": [
+        8.86327,
+        17.0,
+        8.72862
+      ],
+      "roles": [
+        "Collision",
+        "Foliage",
+        "Wood"
+      ],
+      "triangleBudget": 400,
+      "triangles": 132,
+      "meshCount": 3,
+      "geometrySha256": "a8ae27eb788d31591f8ff625e62b43b46b123252943e070191b3cd3c42a75259",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "15577ed482cf3b4688ea289e646174df77f2f489308c834d3129349ebc77c658"
+    },
+    "DeadTree": {
+      "zone": "Props",
+      "footprint": [
+        6.34299,
+        10.54509,
+        4.04853
+      ],
+      "roles": [
+        "Collision",
+        "Wood"
+      ],
+      "triangleBudget": 600,
+      "triangles": 392,
+      "meshCount": 2,
+      "geometrySha256": "615b36b21f53fb88c31bfce447877613414b39c0c1d5cbd781ee67d3b6ce9650",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "97c06b8dcf6a993e7914b4fcdff8739438ed4a2698207be18860e5b7dc252a32"
+    },
+    "Pumpkin": {
+      "zone": "Props",
+      "footprint": [
+        2.916,
+        2.46633,
+        2.608
+      ],
+      "roles": [
+        "Accent",
+        "Collision",
+        "Glow",
+        "Wood"
+      ],
+      "triangleBudget": 300,
+      "triangles": 300,
+      "meshCount": 4,
+      "geometrySha256": "17b3894d481af074784418519be0fe32a963699fed3b11aeff9fc7f8181d3b87",
+      "assetId": 0,
+      "uploadedAt": null,
+      "sha256": null,
+      "exportSha256": "f0758a3eaf4c180061e617c385744d2563740a0e5cc5ce14130d2cc3045e52a5"
+    }
+  }
+}

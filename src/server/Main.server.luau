@@ -181,7 +181,7 @@ local function joined(player)
     if closing then player:Kick('Server restarting. Please rejoin.'); return end
     local index
     for i,plot in World.Plots do if not plot.Owner then index=i; plot.Owner=player; plots[player]=i; break end end
-    if not index then player:Kick('All eight Haunts are occupied. Please join another server.'); return end
+    if not index then player:Kick('All seven Haunts are occupied. Please join another server.'); return end
     local data=Profiles.load(player)
     if not data or not player.Parent then
         if World.Plots[index].Owner==player then World.Plots[index].Owner=nil end
@@ -250,4 +250,4 @@ game:BindToClose(function()
     local deadline=os.clock()+25
     while remaining>0 and os.clock()<deadline do task.wait(0.1) end
 end)
-print('Ghostlight Hollow server ready: eight Haunts, six mansion areas, fourteen ghosts.')
+print('Ghostlight Hollow server ready: seven Haunts, six mansion areas, fourteen ghosts.')

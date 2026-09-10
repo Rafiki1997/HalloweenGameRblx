@@ -1,5 +1,14 @@
 # Runtime acceptance checks
 
+## Mesh pipeline checks (first batch)
+
+- [ ] Upload all five collections, save town.blend, harvest IDs, regenerate AssetIds and rebuild.
+- [ ] Check StreetLamp raw extents and role names before trusting scale compensation.
+- [ ] Confirm 26 mesh lamps, 15 mesh gravestones, two mesh trees and one pumpkin appear.
+- [ ] Confirm visible meshes do not collide; simple collision boxes block only their intended area.
+- [ ] Repeat 26 runtime checks after upload with no asset-load warnings and inspect screenshots.
+- [ ] Confirm first-batch count is 117 MeshParts including collision meshes.
+
 Local verification is not a substitute for Roblox playtesting. A pre-feedback single-client Studio baseline passed 26 automated checks (see STUDIO-ACCEPTANCE.txt). The next run should repeat that fixture against this feedback pass. It used starter capture power, server-driven chase/click calls into the real hunting service, and client RemoteEvent requests for travel, deposit, upgrades, flashlight, chamber and rebirth. The fixture grants money/unlocks to reach late systems and accelerates one chamber reward; this is functional testing, not a balance or manual-input playthrough. Test controls are absent from the shipped place.
 
 Ten local rule-test groups also pass. All nine production scripts compile and the packaged sources match. Desktop startup was inspected. The checklist below deliberately remains open for complete manual release acceptance, including feel, visual quality, multiplayer and real DataStores.
