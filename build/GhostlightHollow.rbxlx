@@ -1684,13 +1684,19 @@ local function sign(parent,pos,text,color)
     V.label(p,text,color or purple,240,65)
     return p
 end
+-- Raised cobblestone walkway. Its top sits at y 0.5, flush with the plaza disc and the Haunt plinths and a full stud
+-- proud of the nominal ground, so it stays visible however smooth Terrain rounds the surface; the slab reaches down
+-- to y -0.7 so no gap opens beneath it. A slate curb runs along each side.
 local function path(parent,a,b,width)
+    local w=width or 12
+    a=Vector3.new(a.X,0,a.Z); b=Vector3.new(b.X,0,b.Z)
     local mid=(a+b)/2
-    local p=part(parent,'Path',Vector3.new(width or 12,0.3,(a-b).Magnitude),mid,Color3.fromRGB(86,76,94),Enum.Material.Cobblestone)
-    p.CFrame=CFrame.lookAt(mid,b)
+    local length=(a-b).Magnitude
+    local p=part(parent,'Path',Vector3.new(w,1.2,length),mid,Color3.fromRGB(86,76,94),Enum.Material.Cobblestone)
+    p.CFrame=CFrame.lookAt(mid,b)*CFrame.new(0,-0.1,0)
     for _,side in {-1,1} do
-        local edge=part(parent,'PathEdging',Vector3.new(.35,.18,(a-b).Magnitude),mid,Color3.fromRGB(57,53,69),Enum.Material.Slate)
-        edge.CFrame=p.CFrame*CFrame.new(side*((width or 12)/2+.18),-.04,0)
+        local edge=part(parent,'PathEdging',Vector3.new(.4,.35,length),mid,Color3.fromRGB(57,53,69),Enum.Material.Slate)
+        edge.CFrame=p.CFrame*CFrame.new(side*(w/2+.2),.6,0)
         edge.CanCollide=false; edge.CanQuery=false
     end
 end
@@ -1819,7 +1825,7 @@ function W.build()
             end
         end
         W.Plots[plotNumber]={Model=model,CF=cf,Slots=slots,Label=label,IncomeLabel=incomeLabel,Deposit=deposit,ChamberDoor=chamber,SpireOffset=spireOffset,Owner=nil,Displays={}}
-        path(root,Vector3.new(center.X,0.1,center.Z)*0.26,center,12)
+        path(root,center*0.295,center,12)
         local plinthTop=if meshHaunts then 0.5 else 1
         lamp(root,(cf*CFrame.new(-19,plinthTop,-15)).Position)
         lamp(root,(cf*CFrame.new(19,plinthTop,-15)).Position)
@@ -1828,7 +1834,7 @@ function W.build()
     if Assets.configured('MansionHill') and Assets.configured('MansionFacade') then
         -- Hill mesh: front edge at z -130, lower terrace top y 1.4, stair and flank slopes from z -144 to -157, upper terrace
         -- top y 11.8 to z -200. Walkable collision is primitive so the climb never depends on mesh collision fidelity.
-        path(root,Vector3.new(0,0.2,-30),Vector3.new(0,0.2,-129),18)
+        path(root,Vector3.new(0,0,-34),Vector3.new(0,0,-129),18)
         for z=-45,-120,-25 do lamp(root,Vector3.new(-13,-0.5,z)); lamp(root,Vector3.new(13,-0.5,z)) end
         Assets.place('MansionHill',root,CFrame.new(0,-0.5,-165))
         local function blocker(name,size,cf)
@@ -1858,7 +1864,7 @@ function W.build()
             end
         end
     else
-        path(root,Vector3.new(0,0.2,-30),Vector3.new(0,0.2,-180),18)
+        path(root,Vector3.new(0,0,-34),Vector3.new(0,0,-180),18)
         for z=-45,-170,-25 do lamp(root,Vector3.new(-13,-0.5,z)); lamp(root,Vector3.new(13,-0.5,z)) end
         local facade=Instance.new('Model'); facade.Name='MansionExterior'; facade.Parent=root
         part(facade,'EntranceSteps',Vector3.new(70,2,40),Vector3.new(0,0,-181))
@@ -2131,6 +2137,14 @@ function W.build()
     end
     print(string.format('World.build %.3fs excluding preload: %d primitive parts, %d MeshParts, %d lights including interiors; landscape %d columns in %d chunks (%.2fs), %d hillside pines, %d silhouettes',
         os.clock()-buildStarted,parts,meshes,lights,landscape.columns,landscape.chunks,landscape.seconds,meshPines,silhouettes))
+    -- Where smooth Terrain actually renders the nominal y -0.5 ground; read this from the Studio log after a Play.
+    local probe=RaycastParams.new(); probe.FilterType=Enum.RaycastFilterType.Include; probe.FilterDescendantsInstances={workspace.Terrain}
+    local function surface(x,z)
+        local hit=workspace:Raycast(Vector3.new(x,30,z),Vector3.new(0,-60,0),probe)
+        return if hit then hit.Position.Y else -99
+    end
+    print(string.format('Landscape surface probe (nominal -0.50): plaza edge %.2f, Haunt approach %.2f, mansion avenue %.2f, graveyard %.2f, hill %.2f',
+        surface(0,60),surface(20,54),surface(0,-100),surface(150,105),surface(0,-232)))
     return W
 end
 return W
