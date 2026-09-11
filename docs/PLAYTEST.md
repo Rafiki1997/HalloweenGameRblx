@@ -35,6 +35,8 @@ four decimals (no scale compensation needed), role names survived import, 275 Me
 - [x] Play: the `World.build` line reports the landscape chunk count and its build time. Verified in the
       Halooweenie place 2026-09-10 20:09 after a Rojo sync: 28,224 columns in 64 chunks in 0.45 s, 1,003 primitive
       parts, 441 MeshParts, 12 hillside pines, 130 silhouettes, no errors.
+- [x] Probes verified in Halooweenie 2026-09-10 20:51: surface -0.50 at plaza edge, Haunt approach, mansion avenue and
+      graveyard; hill 28.65; walkway probe met `Path at 0.50` over Haunt 1 and the avenue.
 - [ ] Spawn: level ground across the plaza, walkways, plots, shops, graveyard and mansion avenue; nothing floating or
       sunk. The `Landscape surface probe` line should read -0.50 at the four town spots and the `Walkway probe`
       should meet `Path at 0.50`. Grass blades appear only beyond the tree ring, never through paths or plinths.
