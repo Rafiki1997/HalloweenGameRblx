@@ -30,6 +30,21 @@ four decimals (no scale compensation needed), role names survived import, 275 Me
 - [ ] MeshPart count stays under 500 after the floor-1 spawn settles with several Little Boos alive.
 - [ ] Phone landscape: the relocated objective line and shorter nav buttons fit without touching the stats box.
 
+## Landscape checks (2026-09-10)
+
+- [ ] Play: the `World.build` line reports the landscape chunk count and its build time (expect about 64 chunks, a
+      second or two), MeshParts still under 500, no `WriteVoxels` errors.
+- [ ] Spawn: level ground across the plaza, paths, plots, shops, graveyard and mansion avenue; nothing floating or
+      sunk. Grass blades appear only beyond the tree ring, never through paths or plinths.
+- [ ] Walk from the plaza past a Haunt into the hills: the ground rises gently, mesh pines and dark silhouette
+      pines stand on the slopes, the two knolls (behind the shops, beyond the graveyard) can be climbed.
+- [ ] The rim and the ridge behind the mansion cannot be climbed (character slides back); no route reaches a view
+      of the mansion floor boxes to the north.
+- [ ] Pond south-east of the plaza: water surface visible with reflections, no water anywhere else, no trees
+      standing in the water.
+- [ ] Mansion terrace: the ridge reads as a hillside behind the house; boulders sit on the ground.
+- [ ] Frame rate holds with the terrain and roughly 260 extra silhouette parts.
+
 Local verification is not a substitute for Roblox playtesting. A pre-feedback single-client Studio baseline passed 26 automated checks (see STUDIO-ACCEPTANCE.txt). The next run should repeat that fixture against this feedback pass. It used starter capture power, server-driven chase/click calls into the real hunting service, and client RemoteEvent requests for travel, deposit, upgrades, flashlight, chamber and rebirth. The fixture grants money/unlocks to reach late systems and accelerates one chamber reward; this is functional testing, not a balance or manual-input playthrough. Test controls are absent from the shipped place.
 
 Ten local rule-test groups also pass. All nine production scripts compile and the packaged sources match. Desktop startup was inspected. The checklist below deliberately remains open for complete manual release acceptance, including feel, visual quality, multiplayer and real DataStores.

@@ -2,6 +2,7 @@ local Shared=game:GetService('ReplicatedStorage'):WaitForChild('Ghostlight')
 local V=require(Shared.Visuals)
 local C=require(Shared.Config)
 local Assets=require(Shared.Assets.Loader)
+local Landscape=require(script.Parent.Landscape)
 local W={Plots={},Areas={},Switches={}}
 local stone=Color3.fromRGB(51,49,65)
 local wood=Color3.fromRGB(62,43,58)
@@ -63,7 +64,9 @@ function W.build()
     atm.Color=Color3.fromRGB(112,116,165); atm.Decay=Color3.fromRGB(65,48,94); atm.Parent=lighting
     local bloom=Instance.new('BloomEffect'); bloom.Intensity=0.26; bloom.Size=26; bloom.Threshold=1.6; bloom.Parent=lighting
     local grade=Instance.new('ColorCorrectionEffect'); grade.Brightness=0.06; grade.Contrast=0.08; grade.Saturation=0.06; grade.TintColor=Color3.fromRGB(230,228,255); grade.Parent=lighting
-    part(root,'TownGround',Vector3.new(420,3,420),Vector3.new(0,-2,0),Color3.fromRGB(29,43,42),Enum.Material.Grass)
+    -- Smooth Terrain replaces the flat ground slab: level across everything built here, hills, ridge, rim and pond beyond.
+    local landscape=Landscape.build(root)
+    game:GetService('StarterPlayer').CharacterMaxSlopeAngle=60 -- near hills are walkable; the rim and ridge faces are steeper
     local plaza=part(root,'CircularPlaza',Vector3.new(1,66,66),Vector3.new(0,0,0),stone,Enum.Material.Cobblestone)
     plaza.Shape=Enum.PartType.Cylinder; plaza.CFrame=CFrame.new(0,0,0)*CFrame.Angles(0,0,math.pi/2)
     local spiritBlue=Color3.fromRGB(160,225,255)
@@ -202,8 +205,8 @@ function W.build()
         W.MansionDoor.Transparency=1; W.MansionDoor.CanQuery=false
         V.label(W.MansionDoor,'The Haunted Mansion',purple,240,65).Parent.StudsOffset=Vector3.new(0,10,0)
         if Assets.configured('Boulder') then
-            for _,b in {{-50,-0.5,-140},{52,-0.5,-134},{-53,-0.5,-176},{55,-0.5,-192},{-60,-0.5,-120}} do
-                Assets.place('Boulder',root,CFrame.new(b[1],b[2],b[3]))
+            for _,b in {{-50,-140},{52,-134},{-53,-176},{55,-192},{-60,-120}} do
+                Assets.place('Boulder',root,CFrame.new(b[1],Landscape.height(b[1],b[2]),b[2]))
             end
         end
     else
@@ -280,15 +283,49 @@ function W.build()
     for i=1,58 do
         local a=rng:NextNumber(0,math.pi*2); local r=rng:NextNumber(165,195)
         local pos=Vector3.new(math.cos(a)*r,0,math.sin(a)*r)
-        if math.abs(pos.X)>24 or pos.Z>0 then
+        local ground=Landscape.height(pos.X,pos.Z)
+        if (math.abs(pos.X)>24 or pos.Z>0) and ground>Landscape.WaterLevel+0.5 then
             -- Whole-town MeshPart cap is 500, so every ring tree is a mesh once uploaded: two pines per dead tree.
             local meshName=if i%3==0 then 'DeadTree' else 'PineTree'
             if Assets.configured(meshName) then
-                Assets.place(meshName,root,CFrame.new(pos.X,-0.5,pos.Z))
+                Assets.place(meshName,root,CFrame.new(pos.X,ground,pos.Z))
                 continue
             end
+            pos=Vector3.new(pos.X,ground+0.5,pos.Z)
             part(root,'TreeTrunk',Vector3.new(2,11,2),pos+Vector3.new(0,5,0),wood,Enum.Material.Wood)
             for j=1,3 do local crown=part(root,'Pine',Vector3.new(14-j*2,8,14-j*2),pos+Vector3.new(0,8+j*4,0),Color3.fromRGB(25,43,43),Enum.Material.Grass); crown.Shape=Enum.PartType.Ball end
+        end
+    end
+    -- Hillside woods. A dozen mesh pines stand on the near slopes inside the MeshPart budget; the far slopes and
+    -- the rim carry cheap two-part silhouettes that fog and darkness flatten into a treeline.
+    local function hillSpot(rMin,rMax)
+        for _=1,20 do
+            local a=rng:NextNumber(0,math.pi*2); local r=rng:NextNumber(rMin,rMax)
+            local x,z=math.cos(a)*r,math.sin(a)*r
+            local m=Landscape.material(x,z)
+            if Landscape.outside(x,z)>=30 and m~='Rock' and m~='Mud' and math.abs(x)<Landscape.Bounds-12 and math.abs(z)<Landscape.Bounds-12 then
+                return Vector3.new(x,Landscape.height(x,z),z)
+            end
+        end
+        return nil
+    end
+    local meshPines=0
+    if Assets.configured('PineTree') then
+        for _=1,12 do
+            local spot=hillSpot(200,238)
+            if spot then Assets.place('PineTree',root,CFrame.new(spot)*CFrame.Angles(0,rng:NextNumber(0,math.pi*2),0)); meshPines+=1 end
+        end
+    end
+    local silhouettes=0
+    for _=1,130 do
+        local spot=hillSpot(212,326)
+        if spot then
+            local scale=rng:NextNumber(0.8,1.5)
+            local trunk=part(root,'FarTrunk',Vector3.new(1.2,6,1.2)*scale,spot+Vector3.new(0,3*scale,0),Color3.fromRGB(28,22,34),Enum.Material.Wood)
+            local crown=part(root,'FarPine',Vector3.new(7,15,7)*scale,spot+Vector3.new(0,11*scale,0),Color3.fromRGB(19,31,33),Enum.Material.Grass)
+            crown.Shape=Enum.PartType.Ball
+            for _,p in {trunk,crown} do p.CanCollide=false; p.CanQuery=false; p.CastShadow=false end
+            silhouettes+=1
         end
     end
     if Assets.configured('GraveyardFence') then
@@ -444,7 +481,8 @@ function W.build()
         if item:IsA('MeshPart') then meshes+=1 elseif item:IsA('BasePart') then parts+=1 end
         if item:IsA('Light') then lights+=1 end
     end
-    print(string.format('World.build %.3fs excluding preload: %d primitive parts, %d MeshParts, %d lights including interiors',os.clock()-buildStarted,parts,meshes,lights))
+    print(string.format('World.build %.3fs excluding preload: %d primitive parts, %d MeshParts, %d lights including interiors; landscape %d columns in %d chunks (%.2fs), %d hillside pines, %d silhouettes',
+        os.clock()-buildStarted,parts,meshes,lights,landscape.columns,landscape.chunks,landscape.seconds,meshPines,silhouettes))
     return W
 end
 return W

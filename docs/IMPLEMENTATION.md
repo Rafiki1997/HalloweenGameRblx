@@ -33,6 +33,23 @@ only for the aimed ghost); plot signs, shop signs and HUD strings were shortened
 paths gained stone edging. `tools/review_ghosts.studio.luau` renders all fifteen species in a Studio client
 and asserts capture geometry, part budgets, cloning and scaling.
 
+Landscape (2026-09-10): the flat 420-stud ground slab is gone. `src/server/Landscape.luau` holds a pure, deterministic
+height function (integer-hash value noise, no `math.noise`) and a material classifier, plus `build()`, which writes
+Roblox smooth Terrain in 84-stud chunks with `WriteVoxels` at the native 4-stud voxel over a 672-stud square. The
+protected footprint (plaza and Haunt ring disc r 150, mansion avenue and hill, graveyard lot) stays exactly at
+y -0.5 so every existing placement is untouched; beyond a 45-stud blend the ground rolls at 7 to 21 studs with two
+lookout knolls (behind the shops, beyond the graveyard), a rock-faced ridge stands behind the mansion, a wandering
+rim of 55 to 80 studs closes the hollow and hides the mansion floor boxes to the north, and one dell south-east of
+the plaza holds a pond with a flat bed at y -8 and water at y -1.5. The town floor is LeafyGrass (no animated
+blades under paths), the hills are Grass with `Terrain.Decoration`, steep faces are Rock, crests Basalt, the pond bed
+Mud. `StarterPlayer.CharacterMaxSlopeAngle` is 60, so the near hills walk while the rim and ridge faces (over 60
+degrees) act as walls; invisible WorldEdge parts back that up at the square's edge. Ring trees and boulders sample
+the height; twelve mesh pines stand on the near slopes inside the MeshPart budget and about 130 two-part silhouette
+pines fill the far slopes. `tests/Landscape.spec.luau` pins the level footprint, walkable grades, ridge and rim
+steepness, pond extent, materials and voxel occupancy; `tools/render_landscape.py` draws a shaded plan
+(`assets/previews/landscape-plan.png`) from the real module. Mansion floors (z -450) and the chamber (z -720) lie
+outside the terrain square.
+
 `tools/verify.py` also runs `tools/lint_luau.py`, which fails on a file-level local used before its
 declaration and on unknown globals; both are nil at runtime in Roblox and slipped past the compiler
 once (the HUD panels opened empty on 2026-09-09).
@@ -46,7 +63,7 @@ Decisions: seven social plots (the eighth blocked the mansion approach), six sep
 Implementation sequence:
 - [x] Pure rules and tests: capture, inventory/deposit/slots, upgrade costs, unlocks, rebirth, reward eligibility.
 - [x] Core hunting: tool, wandering/resisting ghosts, authoritative click capture, escape, client suction finale.
-- [x] World: circular town, seven plots, six mansion wings, fixed atmospheric lighting, flashlight and decor; mesh town from Blender assets.
+- [x] World: circular town, seven plots, six mansion wings, fixed atmospheric lighting, flashlight and decor; mesh town from Blender assets; smooth-terrain landscape around the level footprint.
 - [x] Economy: placement, income, equipment and haunt upgrades, floor access, rebirth.
 - [x] Chamber: miniature rooms, autonomous hunters, periodic server rewards, top-down camera.
 - [x] Profiles implemented: lease-based UpdateAsync, retries, autosave, leave/shutdown protection, safe Studio memory mode. Published network validation remains pending.

@@ -25,9 +25,10 @@ for path in sorted((ROOT / 'tests').glob('RuntimeAcceptance*.luau')):
     if run.returncode:
         failures.append(str(path))
         print(run.stdout, run.stderr)
-run = subprocess.run([str(BIN / 'luau.exe'), 'tests/Rules.spec.luau'], cwd=ROOT)
-if run.returncode:
-    failures.append('rules')
+for path in sorted((ROOT / 'tests').glob('*.spec.luau')):
+    run = subprocess.run([str(BIN / 'luau.exe'), path.relative_to(ROOT).as_posix()], cwd=ROOT)
+    if run.returncode:
+        failures.append(path.name)
 tree = ET.parse(ROOT / 'build/GhostlightHollow.rbxlx')
 packed = [node.text for node in tree.findall('.//ProtectedString[@name="Source"]')]
 paths = list((ROOT / 'src').rglob('*.luau'))
