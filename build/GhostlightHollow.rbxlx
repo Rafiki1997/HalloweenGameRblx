@@ -2143,7 +2143,7 @@ function W.build()
         local hit=workspace:Raycast(Vector3.new(x,30,z),Vector3.new(0,-60,0),probe)
         return if hit then hit.Position.Y else -99
     end
-    print(string.format('Landscape surface probe (nominal -0.50): plaza edge %.2f, Haunt approach %.2f, mansion avenue %.2f, graveyard %.2f, hill %.2f',
+    print(string.format('Landscape surface probe (nominal ground -0.50, walkway top 0.50): plaza edge %.2f, Haunt approach %.2f, mansion avenue %.2f, graveyard %.2f, hill %.2f',
         surface(0,60),surface(20,54),surface(0,-100),surface(150,105),surface(0,-232)))
     return W
 end
