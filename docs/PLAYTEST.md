@@ -35,8 +35,9 @@ four decimals (no scale compensation needed), role names survived import, 275 Me
 - [x] Play: the `World.build` line reports the landscape chunk count and its build time. Verified in the
       Halooweenie place 2026-09-10 20:09 after a Rojo sync: 28,224 columns in 64 chunks in 0.45 s, 1,003 primitive
       parts, 441 MeshParts, 12 hillside pines, 130 silhouettes, no errors.
-- [ ] Spawn: level ground across the plaza, paths, plots, shops, graveyard and mansion avenue; nothing floating or
-      sunk. Grass blades appear only beyond the tree ring, never through paths or plinths.
+- [ ] Spawn: level ground across the plaza, walkways, plots, shops, graveyard and mansion avenue; nothing floating or
+      sunk. The `Landscape surface probe` line should read -0.50 at the four town spots and the `Walkway probe`
+      should meet `Path at 0.50`. Grass blades appear only beyond the tree ring, never through paths or plinths.
 - [ ] Walk from the plaza past a Haunt into the hills: the ground rises gently, mesh pines and dark silhouette
       pines stand on the slopes, the two knolls (behind the shops, beyond the graveyard) can be climbed.
 - [ ] The rim and the ridge behind the mansion cannot be climbed (character slides back); no route reaches a view

@@ -35,12 +35,12 @@ and asserts capture geometry, part budgets, cloning and scaling.
 
 Landscape (2026-09-10): the flat 420-stud ground slab is gone. `src/server/Landscape.luau` holds a pure, deterministic
 height function (integer-hash value noise, no `math.noise`) and a material classifier, plus `build()`, which writes
-Roblox smooth Terrain in 84-stud chunks with `WriteVoxels` at the native 4-stud voxel over a 672-stud square. The
+Roblox smooth Terrain in 84-stud chunks with `WriteVoxels` at the native 4-stud voxel over a 672-stud square. Measured 2026-09-10: the layer addressed at y0 in a `WriteVoxels` region renders as the cell spanning y0+2 to y0+6 (and likewise in x and z), so `Landscape.CellShift`/`layerBottom` apply that half-cell offset; without it the whole landscape sat two studs high and buried the walkways. The
 protected footprint (plaza and Haunt ring disc r 150, mansion avenue and hill, graveyard lot) stays exactly at
 y -0.5 so every existing placement is untouched; beyond a 45-stud blend the ground rolls at 7 to 21 studs with two
 lookout knolls (behind the shops, beyond the graveyard), a rock-faced ridge stands behind the mansion, a wandering
 rim of 55 to 80 studs closes the hollow and hides the mansion floor boxes to the north, and one dell south-east of
-the plaza holds a pond with a flat bed at y -8 and water at y -1.5. The town floor is LeafyGrass (no animated
+the plaza holds a pond with a flat bed at y -6 and water at y -2 (both voxel boundaries). The town floor is LeafyGrass (no animated
 blades under paths), the hills are Grass with grass decoration (set in the place file by `build_place.py`; the property is not scriptable), steep faces are Rock, crests Basalt, the pond bed
 Mud. `StarterPlayer.CharacterMaxSlopeAngle` is 60, so the near hills walk while the rim and ridge faces (over 60
 degrees) act as walls; invisible WorldEdge parts back that up at the square's edge. Ring trees and boulders sample
