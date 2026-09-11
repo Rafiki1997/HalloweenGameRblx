@@ -2147,6 +2147,13 @@ function W.build()
         end
         print(string.format('Landscape surface probe (nominal ground -0.50, walkway top 0.50): plaza edge %.2f, Haunt approach %.2f, mansion avenue %.2f, graveyard %.2f, hill %.2f',
             surface(0,60),surface(20,54),surface(0,-100),surface(150,105),surface(0,-232)))
+        -- What a ray meets first above a walkway: the Path part means it is visible, Terrain means it is buried.
+        local function first(x,z)
+            local hit=workspace:Raycast(Vector3.new(x,30,z),Vector3.new(0,-60,0))
+            return if hit then string.format('%s at %.2f',hit.Instance.Name,hit.Position.Y) else 'nothing'
+        end
+        local h1=W.Plots[1].CF.Position*0.6
+        print('Walkway probe: Haunt 1 path '..first(h1.X,h1.Z)..'; mansion avenue '..first(0,-80)..'; plaza centre '..first(0,12))
     end)
     return W
 end
