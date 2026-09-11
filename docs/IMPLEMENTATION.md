@@ -41,7 +41,7 @@ y -0.5 so every existing placement is untouched; beyond a 45-stud blend the grou
 lookout knolls (behind the shops, beyond the graveyard), a rock-faced ridge stands behind the mansion, a wandering
 rim of 55 to 80 studs closes the hollow and hides the mansion floor boxes to the north, and one dell south-east of
 the plaza holds a pond with a flat bed at y -8 and water at y -1.5. The town floor is LeafyGrass (no animated
-blades under paths), the hills are Grass with `Terrain.Decoration`, steep faces are Rock, crests Basalt, the pond bed
+blades under paths), the hills are Grass with grass decoration (set in the place file by `build_place.py`; the property is not scriptable), steep faces are Rock, crests Basalt, the pond bed
 Mud. `StarterPlayer.CharacterMaxSlopeAngle` is 60, so the near hills walk while the rim and ridge faces (over 60
 degrees) act as walls; invisible WorldEdge parts back that up at the square's edge. Ring trees and boulders sample
 the height; twelve mesh pines stand on the near slopes inside the MeshPart budget and about 130 two-part silhouette

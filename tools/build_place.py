@@ -38,7 +38,8 @@ def build():
     ET.SubElement(root, 'External').text = 'nil'
     workspace, props = item(root, 'Workspace', 'Workspace')
     ET.SubElement(props, 'bool', {'name': 'StreamingEnabled'}).text = 'false'
-    item(workspace, 'Terrain', 'Terrain')
+    _, terrain_props = item(workspace, 'Terrain', 'Terrain')
+    ET.SubElement(terrain_props, 'bool', {'name': 'Decoration'}).text = 'true'  # grass blades on Grass terrain; not scriptable
     _, lighting_props = item(root, 'Lighting', 'Lighting')
     ET.SubElement(lighting_props, 'token', {'name': 'Technology'}).text = '4'  # Enum.Technology.Future: shadowed point lights, specular
     rep, _ = item(root, 'ReplicatedStorage', 'ReplicatedStorage')

@@ -2,7 +2,7 @@
   "src/client/Main.client.luau": "04100b03df13226de3d42f20296c238f863082e5c681ab748977e555b755f5f5",
   "src/server/Chamber.luau": "b57b08e1e9b38f8ddc3931431129bfb8d1d9e9ff9490160fd1913d446a4fbb1a",
   "src/server/Hunting.luau": "d5cf0a695399950119efbd3235b317ffc7ae5290309aa79461e290af8b131e9f",
-  "src/server/Landscape.luau": "1fd27fa6d6a6630f5bc02cad59621e206c7551cdeb1678602235ecc2a66fc4a9",
+  "src/server/Landscape.luau": "354147ed2e5d0b33213e4f06ad79a779f2fa70da4f054ac7abdb6cd70a6a2543",
   "src/server/Main.server.luau": "8e6a23b216a4cedb24a768977ab59d9cdb08a36d7977cbbc6e7befb7f58a6915",
   "src/server/Profiles.luau": "217ebb2424ae55bc7adc81e2dabc24a4363073d3c40a421ffe88088f377c361e",
   "src/server/World.luau": "24b574721d77c310850f609b818a9b6e49b8aa78229933a32ced13b8d63c92d9",

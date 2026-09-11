@@ -131,7 +131,8 @@ function Landscape.build(root)
     terrain:Clear()
     for name, rgb in COLORS do terrain:SetMaterialColor(Enum.Material[name], Color3.fromRGB(rgb[1], rgb[2], rgb[3])) end
     terrain.WaterColor = Color3.fromRGB(38, 58, 112); terrain.WaterTransparency = 0.55; terrain.WaterReflectance = 0.35
-    terrain.WaterWaveSize = 0.08; terrain.WaterWaveSpeed = 6; terrain.Decoration = true
+    terrain.WaterWaveSize = 0.08; terrain.WaterWaveSpeed = 6
+    -- Terrain.Decoration (grass blades) is not scriptable; tools/build_place.py sets it in the place file.
     local enums = {}
     local function enum(name)
         local e = enums[name]
