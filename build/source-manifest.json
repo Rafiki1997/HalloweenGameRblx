@@ -1,13 +1,16 @@
 {
-  "src/client/Main.client.luau": "9aed046eb2867461cb172cecb1879ed7e2b42f3fd501110ddb371deed6740422",
+  "src/client/Main.client.luau": "04100b03df13226de3d42f20296c238f863082e5c681ab748977e555b755f5f5",
   "src/server/Chamber.luau": "b57b08e1e9b38f8ddc3931431129bfb8d1d9e9ff9490160fd1913d446a4fbb1a",
   "src/server/Hunting.luau": "d5cf0a695399950119efbd3235b317ffc7ae5290309aa79461e290af8b131e9f",
-  "src/server/Main.server.luau": "36fd6fbd370833d3c2e7e85d5c7c59dc95ca305d781ebc2f201ddd5073ab07db",
+  "src/server/Main.server.luau": "8e6a23b216a4cedb24a768977ab59d9cdb08a36d7977cbbc6e7befb7f58a6915",
   "src/server/Profiles.luau": "217ebb2424ae55bc7adc81e2dabc24a4363073d3c40a421ffe88088f377c361e",
-  "src/server/World.luau": "fe37ab20d9735252ab68a6778bb1a9b36a70622e01b37effc95a634ae7f2d248",
+  "src/server/World.luau": "6bc5239377eb8e23fcc0bb88e76bfca23bdd5469901c77a2fa5937302a87652f",
   "src/shared/AssetIds.luau": "e540278c009f09243c12a79a7653ae36ebe505557edbdf187b9a5b2354f6d5ce",
   "src/shared/Assets/Loader.luau": "6b76372496623c133fdc91a635fded3e577a26db227fe3e033ef388526ae822a",
-  "src/shared/Config.luau": "fe6ddd117982b9021e80b0d5556a82444093ab45b60f6f1495e4deb2297adc37",
+  "src/shared/Config.luau": "cf05f6e686495e72f3d1194e22633619f9e862d29809837f64f861ec839fe296",
+  "src/shared/GhostModels.luau": "0d32a2cbe7717e300072b45658e23c8d3f4e6c74e4f55a6aa891d5de62b89c82",
+  "src/shared/GhostStyle.luau": "9b38a3eebe9ff249221c4a23248ab6bfaa0b712408a3954fbcd11bf2c050352e",
+  "src/shared/LabelVisibility.luau": "992f4f2e97146fde9b7c9e8519f09fe59a015b315270e2990ef5affb8fd75d37",
   "src/shared/Rules.luau": "255a2104f1cb26a8d00f8cf3f80007748235a6a2fe4074c9035904f2a09b87fb",
-  "src/shared/Visuals.luau": "ffb85a9331cf25afce6d7d65a99b4bebeeec28bf44ec6320338c676b4a9f57d1"
+  "src/shared/Visuals.luau": "49598df65e4e6fd70641dfbf3b8e52be183db26a31e0db8aaabc17e8faa9a794"
 }

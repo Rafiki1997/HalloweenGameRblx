@@ -34,14 +34,14 @@ end
 local function corner(obj,radius) make('UICorner',obj,{CornerRadius=UDim.new(0,radius or 9)}) end
 local function frame(parent,size,pos,color)
     local obj=make('Frame',parent,{Size=size,Position=pos,BackgroundColor3=color or bg,BorderSizePixel=0})
-    corner(obj)
+    corner(obj,12)
     return obj
 end
 local function label(parent,text,size,pos,fontSize,color)
     return make('TextLabel',parent,{Size=size,Position=pos,BackgroundTransparency=1,Text=text,TextColor3=color or ink,Font=Enum.Font.GothamMedium,TextSize=fontSize or 17,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true})
 end
 local function button(parent,text,size,pos,callback,color)
-    local b=make('TextButton',parent,{Size=size,Position=pos,Text=text,TextColor3=bg,BackgroundColor3=color or purple,Font=Enum.Font.GothamBold,TextSize=16,TextWrapped=true,BorderSizePixel=0,AutoButtonColor=true})
+    local b=make('TextButton',parent,{Size=size,Position=pos,Text=text,TextColor3=if color then bg else ink,BackgroundColor3=color or Color3.fromRGB(57,43,79),Font=Enum.Font.GothamMedium,TextSize=15,TextWrapped=true,BorderSizePixel=0,AutoButtonColor=true})
     corner(b)
     b.Activated:Connect(callback)
     return b
@@ -65,8 +65,8 @@ local cash=label(top,'GHOSTLIGHT HOLLOW',UDim2.new(1,-16,0,35),UDim2.fromOffset(
 local income=label(top,'Loading your Haunt…',UDim2.new(1,-16,0,36),UDim2.fromOffset(10,47),16,mint)
 local capacity=label(top,'VACUUM 0/3',UDim2.new(1,-16,0,25),UDim2.fromOffset(10,88),14,ink)
 local rebirths=label(top,'REBIRTHS 0',UDim2.new(1,-16,0,25),UDim2.fromOffset(10,115),14,purple)
-local objective=label(gui,'Loading…',UDim2.new(1,-32,0,42),UDim2.fromOffset(16,89),15,ink)
-objective.TextStrokeTransparency=0.45
+local objective=label(gui,'Loading…',UDim2.new(1,-220,0,42),UDim2.fromOffset(206,16),14,ink)
+objective.TextStrokeTransparency=0.7
 local toast=frame(gui,UDim2.new(1,-32,0,72),UDim2.new(0,16,0.5,-36)); toast.Visible=false; toast.ZIndex=8
 local toastText=label(toast,'',UDim2.new(1,-24,1,-12),UDim2.fromOffset(12,6),19,amber); toastText.TextXAlignment=Enum.TextXAlignment.Center; toastText.ZIndex=9
 local function notify(text,color)
@@ -99,8 +99,12 @@ local function row(text,caption,callback,color,height,ghostId)
     if ghostId then
         local vp=make('ViewportFrame',f,{Size=UDim2.fromOffset(62,70),Position=UDim2.fromOffset(3,7),BackgroundTransparency=1,Ambient=Color3.fromRGB(200,200,220),LightColor=Color3.new(1,1,1)})
         local wm=Instance.new('WorldModel'); wm.Parent=vp
-        V.ghost(ghostId,wm,CFrame.new(),0.9,false)
-        local cam=Instance.new('Camera'); cam.CFrame=CFrame.lookAt(Vector3.new(0,1,-9),Vector3.new(0,0,0)); cam.FieldOfView=48; cam.Parent=vp; vp.CurrentCamera=cam
+        local preview=V.ghost(ghostId,wm,CFrame.new(),0.9,false)
+        local bounds,size=preview:GetBoundingBox()
+        local distance=math.max(size.Y,size.X/(62/70))*.56/math.tan(math.rad(24))+size.Z*.5
+        local cam=Instance.new('Camera'); cam.CFrame=CFrame.lookAt(bounds.Position+Vector3.new(0,0,-distance),bounds.Position)
+        cam.FieldOfView=48; cam.Parent=vp; vp.CurrentCamera=cam
+        vp.Ambient=Color3.fromRGB(110,115,140); vp.LightDirection=Vector3.new(-1,-1,2)
         offset=70
     end
     label(f,text,UDim2.new(1,-offset-(caption and 105 or 12),1,-12),UDim2.fromOffset(offset,6),15,color or ink)
@@ -161,7 +165,7 @@ local function render(name)
         end)
     end
 end
-for _,name in {'Haunt','Collection','Mansion','Upgrades','Rebirth'} do button(nav,string.upper(name),UDim2.new(1,-8,0,46),UDim2.new(),function() render(name) end) end
+for _,name in {'Haunt','Collection','Mansion','Upgrades','Rebirth'} do button(nav,name,UDim2.new(1,-8,0,40),UDim2.new(),function() render(name) end) end
 local function wildGhost(id)
     local world=workspace:FindFirstChild('GhostlightWorld')
     local folder=world and world:FindFirstChild('WildGhosts')
@@ -187,6 +191,11 @@ local function aimedGhost()
     end
     return best
 end
+require(Shared.LabelVisibility).start(player,function()
+    if currentPanel then return nil end
+    local id=targetId or aimedGhost()
+    return id and wildGhost(id) or nil
+end)
 local vacuumButton
 local function click()
     if currentPanel or chamberCenter then return end
@@ -273,13 +282,13 @@ remote.OnClientEvent:Connect(function(event,data)
         capacity.Text='VACUUM '..#p.Bag..'/'..Rules.capacity(p); rebirths.Text='REBIRTHS '..p.Rebirths
         local floor=player:GetAttribute('Floor') or 0
         if chamberCenter then objective.Text='HAUNT CHAMBER • Your ghosts are hunting.'
-        elseif #p.Bag>=Rules.capacity(p) then objective.Text='VACUUM FULL → HAUNT → GO HOME → DEPOSIT'
+        elseif #p.Bag>=Rules.capacity(p) then objective.Text='Vacuum full · Return home to deposit'
         elseif #p.Placed==0 and #p.Bag>0 then objective.Text='Return to your Haunt and DEPOSIT to start earning.'
-        elseif floor>0 then objective.Text='Click repeatedly • Chase resisting ghosts • F: flashlight • Q: release'
-        elseif state.Income==0 then objective.Text='Your Haunt: Plot '..(state.Plot or '?')..' • MANSION → ENTER to hunt your first ghost.'
+        elseif floor>0 then objective.Text='Click to capture · F: light · Q: release'
+        elseif state.Income==0 then objective.Text='Enter the mansion to catch your first ghost'
         elseif p.Floor<6 then objective.Text='Next area: '..C.Floors[p.Floor+1].Name..' • '..money(C.Floors[p.Floor+1].Cost)
         else objective.Text='Explore the Catacombs or work toward your next rebirth.' end
-        if data.Practice then objective.Text..='  [Studio practice — no saves]' end
+        if data.Practice then objective.Text..='  · Practice' end
         if chamberCenter then chamberText.Text=#p.Placed..' HUNTERS\nDiscoveries: '..p.ChamberDiscoveries end
         local signature=p.HauntLevel..':'..p.Floor..':'..p.Rebirths..':'..#p.Bag..':'..table.concat(p.Placed,',')
         for _,name in C.UpgradeNames do signature..=':'..p.Upgrades[name] end
@@ -330,6 +339,11 @@ end)
 local function resize()
     local viewport=workspace.CurrentCamera.ViewportSize
     panel.Size=UDim2.fromOffset(math.min(690,viewport.X-24),math.max(180,math.min(540,viewport.Y-170)))
+    top.Position=UDim2.fromOffset(12,64)
+    nav.Position=UDim2.fromOffset(12,218)
+    nav.Size=UDim2.fromOffset(176,math.max(90,math.min(245,viewport.Y-310)))
+    objective.Position=UDim2.fromOffset(206,16)
+    objective.Size=UDim2.fromOffset(math.max(120,viewport.X-226),42)
     captureBox.Size=UDim2.fromOffset(math.min(420,viewport.X-145),76)
     captureBox.Position=UDim2.new(0.5,-45,1,-151)
 end

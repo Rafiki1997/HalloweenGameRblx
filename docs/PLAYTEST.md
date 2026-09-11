@@ -19,6 +19,17 @@ four decimals (no scale compensation needed), role names survived import, 275 Me
       sign by the gate, nothing intersecting the tree ring.
 - [ ] Phone portrait and landscape: HUD still fits (independent of meshes) and frame rate holds.
 
+## Ghost restyle and label checks (2026-09-10)
+
+- [x] Little Boo loads from asset 130914286159636 and spawns on floor 1. User validated it in a Studio play
+      test on 2026-09-10; the server printed "fifteen ghosts" with no "Little Boo model unavailable" warning.
+- [ ] COLLECTION previews frame every one of the 15 species fully (wings, antlers, flames, Little Boo's hem).
+- [ ] Placed ghosts on plot pedestals and chamber hunters use the restyled models, faces toward the walkway.
+- [ ] Labels: only nearby signs show, none overlap on screen, a ghost's name appears only while aimed at it,
+      and the shortened plot sign plus separate "$N / sec" hologram read correctly.
+- [ ] MeshPart count stays under 500 after the floor-1 spawn settles with several Little Boos alive.
+- [ ] Phone landscape: the relocated objective line and shorter nav buttons fit without touching the stats box.
+
 Local verification is not a substitute for Roblox playtesting. A pre-feedback single-client Studio baseline passed 26 automated checks (see STUDIO-ACCEPTANCE.txt). The next run should repeat that fixture against this feedback pass. It used starter capture power, server-driven chase/click calls into the real hunting service, and client RemoteEvent requests for travel, deposit, upgrades, flashlight, chamber and rebirth. The fixture grants money/unlocks to reach late systems and accelerates one chamber reward; this is functional testing, not a balance or manual-input playthrough. Test controls are absent from the shipped place.
 
 Ten local rule-test groups also pass. All nine production scripts compile and the packaged sources match. Desktop startup was inspected. The checklist below deliberately remains open for complete manual release acceptance, including feel, visual quality, multiplayer and real DataStores.

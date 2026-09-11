@@ -6,6 +6,22 @@ local function check(name, test)
     count += 1
     print('PASS ' .. name)
 end
+check('Little Boo joins the existing roster and survives capture, deposit and save reconciliation', function()
+    local species=0
+    for _ in Config.Ghosts do species+=1 end
+    assert(species==15)
+    assert(Config.Ghosts.mothlight and Config.Ghosts.door_to_nowhere)
+    local g=Config.Ghosts.little_boo
+    assert(g and g.Shape=='ReferenceGhost' and g.Rarity==1 and g.Weight>0)
+    assert(table.find(g.Areas,1))
+    local p=Rules.newProfile()
+    assert(Rules.captureReward(p,'little_boo'))
+    Rules.deposit(p)
+    assert(Rules.place(p,'little_boo'))
+    p=Rules.reconcile(p)
+    assert(p.Owned.little_boo==1 and p.Discovered.little_boo and p.Placed[1]=='little_boo')
+    assert(Rules.income(p)==g.Income)
+end)
 check('clicks matter and capture never progresses on a timer', function()
     assert(Rules.capture(0.5, 0, 1, 1, 1) < 0.5)
     assert(Rules.capture(0, 1, 1, 1, 0) > 0)

@@ -23,6 +23,7 @@ C.MaxUpgrade = 6
 C.Capture = {Range=24, BreakRange=38, ClickInterval=0.09, IdleTimeout=2.5, Tick=0.1, AttackInterval=4.5, AttackRange=12, AttackDamage=0.7}
 C.ChamberInterval = 35
 C.Ghosts = {
+    little_boo={Name='Little Boo',Rarity=1,Income=3,Shape='ReferenceGhost',Weight=30},
     mothlight={Name='Mothlight',Rarity=1,Income=3,Shape='Moth',Weight=65},
     teacup_trembler={Name='Teacup Trembler',Rarity=1,Income=4,Shape='Cup',Weight=45},
     lantern_lurker={Name='Lantern Lurker',Rarity=2,Income=10,Shape='Lantern',Weight=28},

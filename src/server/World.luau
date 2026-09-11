@@ -39,6 +39,11 @@ local function path(parent,a,b,width)
     local mid=(a+b)/2
     local p=part(parent,'Path',Vector3.new(width or 12,0.3,(a-b).Magnitude),mid,Color3.fromRGB(86,76,94),Enum.Material.Cobblestone)
     p.CFrame=CFrame.lookAt(mid,b)
+    for _,side in {-1,1} do
+        local edge=part(parent,'PathEdging',Vector3.new(.35,.18,(a-b).Magnitude),mid,Color3.fromRGB(57,53,69),Enum.Material.Slate)
+        edge.CFrame=p.CFrame*CFrame.new(side*((width or 12)/2+.18),-.04,0)
+        edge.CanCollide=false; edge.CanQuery=false
+    end
 end
 function W.build()
     local loadNames={}
@@ -123,7 +128,7 @@ function W.build()
             hologram.Transparency=1; hologram.CanCollide=false; hologram.CanQuery=false
             incomeLabel=V.label(hologram,'$/SEC • $0',Color3.fromRGB(131,255,225),210,48)
             deposit=p('Deposit',Vector3.new(5,0.4,5),Vector3.new(-11,0.7,-12),Color3.fromRGB(82,219,190),Enum.Material.Neon)
-            V.label(deposit,'DEPOSIT\nCaptured ghosts',Color3.fromRGB(153,255,223),140,45)
+            V.label(deposit,'Deposit ghosts',Color3.fromRGB(153,255,223),140,45)
             chamber=p('ChamberDoor',Vector3.new(5,7,0.5),Vector3.new(11,4.5,14),purple,Enum.Material.Neon)
             chamber.Transparency=1; chamber.CanCollide=false; chamber.CanQuery=false
             for j=1,20 do
@@ -150,7 +155,7 @@ function W.build()
             hologram.Transparency=1
             incomeLabel=V.label(hologram,'$/SEC • $0',Color3.fromRGB(131,255,225),210,48)
             deposit=p('Deposit',Vector3.new(5,0.4,5),Vector3.new(-11,1.2,-10),Color3.fromRGB(82,219,190),Enum.Material.Neon)
-            V.label(deposit,'DEPOSIT\nCaptured ghosts',Color3.fromRGB(153,255,223),140,45)
+            V.label(deposit,'Deposit ghosts',Color3.fromRGB(153,255,223),140,45)
             chamber=p('ChamberDoor',Vector3.new(5,7,0.5),Vector3.new(11,4.5,14),purple,Enum.Material.Neon)
             V.label(chamber,'HAUNT CHAMBER',purple,170,45)
             chamber.Transparency=1; chamber.CanCollide=false
@@ -195,7 +200,7 @@ function W.build()
         for _,x in {-11,-5,5,11} do blocker('PorchColumn',Vector3.new(2.2,12.6,2.2),CFrame.new(x,18.1,-167.3)) end
         W.MansionDoor=V.part(root,'MansionEntrance',Vector3.new(10,14,1),CFrame.new(0,18.8,-172.5),purple,Enum.Material.Neon)
         W.MansionDoor.Transparency=1; W.MansionDoor.CanQuery=false
-        V.label(W.MansionDoor,'THE HAUNTED MANSION\nEnter • Hunt • Return',purple,240,65).Parent.StudsOffset=Vector3.new(0,10,0)
+        V.label(W.MansionDoor,'The Haunted Mansion',purple,240,65).Parent.StudsOffset=Vector3.new(0,10,0)
         if Assets.configured('Boulder') then
             for _,b in {{-50,-0.5,-140},{52,-0.5,-134},{-53,-0.5,-176},{55,-0.5,-192},{-60,-0.5,-120}} do
                 Assets.place('Boulder',root,CFrame.new(b[1],b[2],b[3]))
@@ -214,7 +219,7 @@ function W.build()
         end
         for x=-24,24,12 do for y=12,30,12 do part(facade,'GlowingWindow',Vector3.new(4,7,0.3),Vector3.new(x,y,-195.8),warm,Enum.Material.Neon) end end
         W.MansionDoor=part(facade,'MansionEntrance',Vector3.new(10,14,1),Vector3.new(0,8,-195),purple,Enum.Material.Neon)
-        sign(root,Vector3.new(0,17,-179),'THE HAUNTED MANSION\nEnter • Hunt • Return')
+        sign(root,Vector3.new(0,17,-179),'The Haunted Mansion')
     end
     -- Asset meshes face Roblox +Z (their Blender -Y front). Yaw +90 degrees turns that front toward +X.
     local faceEast=CFrame.Angles(0,math.pi/2,0)
@@ -228,7 +233,7 @@ function W.build()
     if Assets.configured('ShopHouse') then
         -- Shop row on the west side, fronts toward the plaza, north of the path to the eighth Haunt.
         -- The mesh bounding box is centred 1.1 studs in front of the building block (hanging sign and lantern).
-        local shops={{z=48,name='THE WORKSHOP\nVacuum & Haunt Upgrades'},{z=71,name='THE HOLLOW INN\nRooms for the restless'},{z=94,name='CURIOSITIES\nOddments & charms'}}
+        local shops={{z=48,name='The Workshop'},{z=71,name='The Hollow Inn'},{z=94,name='Curiosities'}}
         for k,shop in shops do
             Assets.place('ShopHouse',root,CFrame.new(-52,-0.5,shop.z)*faceEast,{Accent=warm})
             blocker('ShopCollision'..k,Vector3.new(17.6,19,22),CFrame.new(-52.7,9,shop.z))
@@ -247,7 +252,7 @@ function W.build()
         if Assets.configured('Crate') then for _,c in {{-41.5,-0.5,90},{-39.6,-0.5,91.9},{-41.5,1.3,90}} do Assets.place('Crate',root,CFrame.new(c[1],c[2],c[3])) end end
         if Assets.configured('Pumpkin') then for _,c in {{-35.5,-0.5,58},{-35.2,-0.5,66.5},{-35.6,-0.5,80}} do Assets.place('Pumpkin',root,CFrame.new(c[1],c[2],c[3])) end end
     else
-        W.Upgrades=sign(root,Vector3.new(-42,4,30),'THE WORKSHOP\nVacuum & Haunt Upgrades',warm)
+        W.Upgrades=sign(root,Vector3.new(-42,4,30),'The Workshop',warm)
     end
     -- The legacy REBIRTH ALTAR sign is gone; it overlapped the altar built further down.
     if Assets.configured('NoticeBoard') then
@@ -384,14 +389,14 @@ function W.build()
             portalGlow.Color=portalCyan; portalHome=portalGlow.CFrame
             portalLight=Instance.new('PointLight'); portalLight.Color=portalCyan; portalLight.Range=22; portalLight.Brightness=3; portalLight.Shadows=true; portalLight.Parent=portalGlow
         end
-        V.label(W.ChamberPortal,'HAUNT CHAMBER\nAFK PORTAL',Color3.fromRGB(131,255,225),210,60).Parent.StudsOffset=Vector3.new(0,9,0)
+        V.label(W.ChamberPortal,'Haunt Chamber',Color3.fromRGB(131,255,225),210,60).Parent.StudsOffset=Vector3.new(0,9,0)
     else
         local portalBase=part(root,'ChamberPortalBase',Vector3.new(16,1,16),Vector3.new(0,0.7,40),Color3.fromRGB(54,38,83),Enum.Material.Cobblestone)
         portalBase.Shape=Enum.PartType.Cylinder; portalBase.CFrame=CFrame.new(0,0.7,40)*CFrame.Angles(0,0,math.pi/2)
         portalGlow=part(root,'ChamberPortal',Vector3.new(8,12,1),Vector3.new(0,7,40),portalCyan,Enum.Material.Neon)
         portalGlow.Transparency=0.25; portalHome=portalGlow.CFrame
         portalLight=Instance.new('PointLight'); portalLight.Color=portalCyan; portalLight.Range=22; portalLight.Brightness=3; portalLight.Parent=portalGlow
-        V.label(portalGlow,'HAUNT CHAMBER\nAFK PORTAL',Color3.fromRGB(131,255,225),210,60)
+        V.label(portalGlow,'Haunt Chamber',Color3.fromRGB(131,255,225),210,60)
         W.ChamberPortal=portalGlow
     end
     local orbAmber=Color3.fromRGB(255,197,111)
@@ -403,7 +408,7 @@ function W.build()
             orb.Color=orbAmber
             local altarLight=Instance.new('PointLight'); altarLight.Color=orbAmber; altarLight.Range=18; altarLight.Brightness=2; altarLight.Parent=orb
         end
-        V.label(W.RebirthAltar,'REBIRTH ALTAR\nPermanent bonus',orbAmber,190,55).Parent.StudsOffset=Vector3.new(0,6,0)
+        V.label(W.RebirthAltar,'Rebirth Altar',orbAmber,190,55).Parent.StudsOffset=Vector3.new(0,6,0)
         W.RebirthAltarPrompt=prompt(W.RebirthAltar,'View rebirth','Altar')
     else
         local altarBase=part(root,'RebirthAltarBase',Vector3.new(12,2,12),Vector3.new(42,1,30),Color3.fromRGB(62,45,81),Enum.Material.Marble)
@@ -412,7 +417,7 @@ function W.build()
         W.RebirthAltar.Shape=Enum.PartType.Cylinder; W.RebirthAltar.CFrame=CFrame.new(42,4,30)*CFrame.Angles(0,0,math.pi/2)
         local altarOrb=part(root,'RebirthOrb',Vector3.new(2.2,2.2,2.2),Vector3.new(42,8,30),orbAmber,Enum.Material.Neon); altarOrb.Shape=Enum.PartType.Ball
         local altarLight=Instance.new('PointLight'); altarLight.Color=orbAmber; altarLight.Range=18; altarLight.Brightness=2; altarLight.Parent=altarOrb
-        V.label(W.RebirthAltar,'REBIRTH ALTAR\nPermanent bonus',orbAmber,190,55)
+        V.label(W.RebirthAltar,'Rebirth Altar',orbAmber,190,55)
         W.RebirthAltarPrompt=prompt(altarOrb,'View rebirth','Altar')
     end
     W.ChamberPortalPrompt=prompt(W.ChamberPortal,'Enter chamber','AFK hunting')

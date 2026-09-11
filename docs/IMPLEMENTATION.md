@@ -18,6 +18,21 @@ across all 23 assets). Uploads run headless with `tools/blender/upload_via_addon
 Roblox add-on's own Open Cloud client and falls back to its browser login when the saved token is stale.
 Level C (baked PBR textures embedded in the FBX) remains optional and undecided.
 
+Ghost restyle and readability pass (2026-09-10): the fourteen procedural ghosts moved out of `Visuals.luau`
+into `src/shared/GhostStyle.luau` (solid chibi bodies, glossy eyes, themed accessories, glow reserved for
+magical details; one model serves hunts, plots, chamber hunters and inventory previews, whose cameras now
+frame the full silhouette). A fifteenth species, Little Boo (`little_boo`, Common, floor 1, weight 30), is the
+first mesh ghost: `tools/blender/build_reference_ghost.py` builds it from the user's NewGhostSprite reference
+(six material meshes, 12,704 triangles), it was uploaded as asset 130914286159636, and
+`src/shared/GhostModels.luau` loads it once on the server with InsertService into
+`ReplicatedStorage.Ghostlight.GhostModelTemplates`; if Roblox cannot deliver the asset, Little Boo leaves the
+spawn pool and the roster still starts. Each instance adds six MeshParts, so the 500 MeshPart budget needs
+rechecking with a full floor-1 spawn. World labels stay server-owned text but are client-filtered by
+`src/shared/LabelVisibility.luau` (per-label read distance, at most four on screen, no overlaps, ghost names
+only for the aimed ghost); plot signs, shop signs and HUD strings were shortened, nav buttons quietened, and
+paths gained stone edging. `tools/review_ghosts.studio.luau` renders all fifteen species in a Studio client
+and asserts capture geometry, part budgets, cloning and scaling.
+
 `tools/verify.py` also runs `tools/lint_luau.py`, which fails on a file-level local used before its
 declaration and on unknown globals; both are nil at runtime in Roblox and slipped past the compiler
 once (the HUD panels opened empty on 2026-09-09).
@@ -26,7 +41,7 @@ The user-approved build brief is BUILD-BRIEF.md. Visual references are the three
 
 Architecture: shared configuration and pure rules; server services for profiles, world, hunts, plots, chamber and requests; client HUD and effects. Clients send intentions only. A Python packager produces an openable rbxlx containing the same sources as the Rojo project. World geometry is generated deterministically on server startup.
 
-Decisions: seven social plots (the eighth blocked the mansion approach), six separately gated mansion wings, two original ghosts per rarity, one dollar currency. Captures immediately record discovery and ownership but remain in the vacuum until deposited. Rebirth preserves owned ghosts and discovery, clears equipment and slots, and increases income by 0.5x. Chamber runs only while connected and in chamber mode, with placed ghosts as hunters. No offline reward or artificial anti-idle behavior.
+Decisions: seven social plots (the eighth blocked the mansion approach), six separately gated mansion wings, two original ghosts per rarity plus Little Boo as a third Common (fifteen species), one dollar currency. Captures immediately record discovery and ownership but remain in the vacuum until deposited. Rebirth preserves owned ghosts and discovery, clears equipment and slots, and increases income by 0.5x. Chamber runs only while connected and in chamber mode, with placed ghosts as hunters. No offline reward or artificial anti-idle behavior.
 
 Implementation sequence:
 - [x] Pure rules and tests: capture, inventory/deposit/slots, upgrade costs, unlocks, rebirth, reward eligibility.

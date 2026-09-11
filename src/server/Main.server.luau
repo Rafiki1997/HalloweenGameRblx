@@ -12,6 +12,7 @@ local remote=Instance.new('RemoteEvent'); remote.Name='Action'; remote.Parent=Sh
 local plots={}
 local lastRequest={}
 local closing=false
+require(Shared.GhostModels).prepare()
 World.build()
 local function notice(player,text) remote:FireClient(player,'Notice',text) end
 local function push(player)
@@ -25,10 +26,8 @@ local function refreshPlot(player)
     if not p or not plot then return end
     for _,m in plot.Displays do m:Destroy() end
     table.clear(plot.Displays)
-    local rarest='None yet'; local rarity=0; local discovered=0
-    for id in p.Discovered do discovered+=1; if C.Ghosts[id].Rarity>rarity then rarest=C.Ghosts[id].Name; rarity=C.Ghosts[id].Rarity end end
-    plot.Label.Text=player.DisplayName.."'s HAUNT • LV "..p.HauntLevel..'\nGhosts '..#p.Placed..'/'..C.Slots[p.HauntLevel]..' • $'..Rules.income(p)..'/SEC\nRebirths '..p.Rebirths..' • Collection '..discovered..'/14\nRarest: '..rarest
-    plot.IncomeLabel.Text='$/SEC • $'..Rules.income(p)..'\n'..#p.Placed..' active haunt ghosts'
+    plot.Label.Text=player.DisplayName.."'s Haunt\nLevel "..p.HauntLevel
+    plot.IncomeLabel.Text='$'..Rules.income(p)..' / sec'
     for i,pad in plot.Slots do
         pad.Transparency=if i<=C.Slots[p.HauntLevel] then 0 else 0.8
         pad.Color=if i<=C.Slots[p.HauntLevel] then Color3.fromRGB(105,66,146) else Color3.fromRGB(35,30,46)
@@ -223,7 +222,7 @@ task.spawn(function()
             local ls=player:FindFirstChild('leaderstats')
             if ls then ls.Dollars.Value=math.floor(p.Money); ls.Income.Value=Rules.income(p); ls.Rebirths.Value=p.Rebirths end
             local ownedPlot=plots[player] and World.Plots[plots[player]]
-            if ownedPlot then ownedPlot.IncomeLabel.Text='$/SEC • $'..Rules.income(p)..'\n'..#p.Placed..' active haunt ghosts' end
+            if ownedPlot then ownedPlot.IncomeLabel.Text='$'..Rules.income(p)..' / sec' end
             local root=rootOf(player)
             local floor=player:GetAttribute('Floor') or 0
             if root and not player:GetAttribute('Chamber') then
@@ -251,4 +250,4 @@ game:BindToClose(function()
     local deadline=os.clock()+25
     while remaining>0 and os.clock()<deadline do task.wait(0.1) end
 end)
-print('Ghostlight Hollow server ready: seven Haunts, six mansion areas, fourteen ghosts.')
+print('Ghostlight Hollow server ready: seven Haunts, six mansion areas, fifteen ghosts.')
