@@ -494,7 +494,7 @@ function W.build()
     task.delay(4,function()
         local probe=RaycastParams.new(); probe.FilterType=Enum.RaycastFilterType.Include; probe.FilterDescendantsInstances={workspace.Terrain}
         local function surface(x,z)
-            local hit=workspace:Raycast(Vector3.new(x,30,z),Vector3.new(0,-60,0),probe)
+            local hit=workspace:Raycast(Vector3.new(x,120,z),Vector3.new(0,-150,0),probe)
             return if hit then hit.Position.Y else -99
         end
         print(string.format('Landscape surface probe (nominal ground -0.50, walkway top 0.50): plaza edge %.2f, Haunt approach %.2f, mansion avenue %.2f, graveyard %.2f, hill %.2f',

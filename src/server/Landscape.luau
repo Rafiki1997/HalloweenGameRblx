@@ -5,8 +5,11 @@ local Landscape = {}
 local GROUND = -0.5
 Landscape.Ground = GROUND
 Landscape.Bounds = 336 -- terrain covers x and z in [-336, 336): 168 voxels of 4 studs per axis
-Landscape.WaterLevel = -1.5 -- the only ground below this is the pond floor, so water appears nowhere else
+Landscape.WaterLevel = -2 -- a voxel boundary; the only ground below it is the pond bed, so water appears nowhere else
 Landscape.Pond = {x = 60, z = 215, radius = 30}
+-- Measured in Studio 2026-09-10: the WriteVoxels layer addressed at y0 renders as the cell spanning [y0 + 2, y0 + 6),
+-- and likewise for x and z. Without this shift the whole landscape sat two studs high and buried the walkways.
+Landscape.CellShift = 2
 
 local function smoothstep(a, b, v)
     local t = math.clamp((v - a) / (b - a), 0, 1)
@@ -72,19 +75,20 @@ local function rim(x, z)
     local wander = 24 * fbm(x - 300, z + 300, 180) -- the foot of the rim drifts up to 24 studs so the hollow is not a circle
     return 66 * smoothstep(258 + wander, 292 + wander, r) * (0.85 + 0.3 * fbm(x + 300, z - 300, 120))
 end
--- One dell in the tree ring south-east of the plaza fills with water: the ground eases down to a flat bed at y -8,
--- and the water's edge falls close to the nominal radius whatever the surrounding hills do.
+-- One dell in the tree ring south-east of the plaza fills with water: the ground eases down to a flat bed at y -6
+-- (a voxel boundary, so the bed and the water fill whole cells), and the water's edge falls close to the nominal
+-- radius whatever the surrounding hills do.
 local function pondBlend(x, z)
     local p = Landscape.Pond
     local dist = math.sqrt((x - p.x) ^ 2 + (z - p.z) ^ 2)
-    return 1 - smoothstep(p.radius - 6, p.radius + 16, dist)
+    return 1 - smoothstep(p.radius - 4, p.radius + 18, dist)
 end
 function Landscape.height(x, z)
     local d = outside(x, z)
     if d <= 0 then return GROUND end
     local blend = smoothstep(0, 45, d)
     local h = hills(x, z, d) + math.max(ridge(x, z), rim(x, z))
-    h += (-8 - h) * pondBlend(x, z)
+    h += (-6 - h) * pondBlend(x, z)
     return GROUND + (h - GROUND) * blend
 end
 local function slopeAt(x, z)
@@ -106,15 +110,19 @@ function Landscape.material(x, z)
     if fbm(x + 900, z - 900, 55) > 0.62 then return 'LeafyGrass' end
     return 'Grass'
 end
--- One 4-stud voxel of the column whose ground top is h. Ground fills from below; water takes any cell the ground
--- leaves more than half empty beneath the water level; everything else is air.
-function Landscape.voxel(h, material, y0)
-    local ground = math.clamp((h - y0) / 4, 0, 1)
+-- One 4-stud voxel, spanning [bottom, bottom + 4), of the column whose ground top is h. Ground fills from below;
+-- water takes any cell the ground leaves more than half empty beneath the water level; everything else is air.
+function Landscape.voxel(h, material, bottom)
+    local ground = math.clamp((h - bottom) / 4, 0, 1)
     if ground >= 0.5 then return material, ground end
-    local water = math.clamp((Landscape.WaterLevel - y0) / 4, 0, 1)
+    local water = math.clamp((Landscape.WaterLevel - bottom) / 4, 0, 1)
     if water > ground then return 'Water', water end
     if ground > 0 then return material, ground end
     return 'Air', 0
+end
+-- Bottom of the cell that WriteVoxels layer j (1-based) of a region starting at minY actually occupies.
+function Landscape.layerBottom(minY, j)
+    return minY + (j - 1) * 4 + Landscape.CellShift
 end
 
 -- Roblox-only from here down. Moonlit material palette, then the whole square written in 84-stud chunks.
@@ -147,28 +155,30 @@ function Landscape.build(root)
             for i = 1, n do
                 heights[i], mats[i] = {}, {}
                 for k = 1, n do
-                    local x, z = cx + (i - 0.5) * STEP, cz + (k - 0.5) * STEP
+                    -- Column i covers [cx + (i-1)*4 + shift, cx + i*4 + shift); sample its centre.
+                    local x, z = cx + (i - 0.5) * STEP + Landscape.CellShift, cz + (k - 0.5) * STEP + Landscape.CellShift
                     local h = Landscape.height(x, z)
                     heights[i][k], mats[i][k] = h, Landscape.material(x, z)
                     if h > top then top = h end
                 end
             end
-            local yTop = math.ceil((top + STEP) / STEP) * STEP
-            local ny = (yTop - FLOOR) / STEP
+            -- Layers run from FLOOR up to the first one lying entirely above the highest surface in the chunk.
+            local lastY0 = math.ceil((top - Landscape.CellShift) / STEP) * STEP
+            local ny = (lastY0 - FLOOR) / STEP + 1
             local materials, occupancy = {}, {}
             for i = 1, n do
                 materials[i], occupancy[i] = {}, {}
                 for j = 1, ny do
-                    local y0 = FLOOR + (j - 1) * STEP
+                    local bottom = Landscape.layerBottom(FLOOR, j)
                     local mRow, oRow = {}, {}
                     for k = 1, n do
-                        local name, o = Landscape.voxel(heights[i][k], mats[i][k], y0)
+                        local name, o = Landscape.voxel(heights[i][k], mats[i][k], bottom)
                         mRow[k], oRow[k] = enum(name), o
                     end
                     materials[i][j], occupancy[i][j] = mRow, oRow
                 end
             end
-            terrain:WriteVoxels(Region3.new(Vector3.new(cx, FLOOR, cz), Vector3.new(cx + CHUNK, yTop, cz + CHUNK)), STEP, materials, occupancy)
+            terrain:WriteVoxels(Region3.new(Vector3.new(cx, FLOOR, cz), Vector3.new(cx + CHUNK, FLOOR + ny * STEP, cz + CHUNK)), STEP, materials, occupancy)
             columns += n * n; chunks += 1
         end
     end

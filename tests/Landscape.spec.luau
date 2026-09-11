@@ -126,10 +126,9 @@ end)
 check('a pond fills a dell south-east of town and nowhere else', function()
     local pond = Landscape.Pond
     assert(pond.x == 60 and pond.z == 215 and pond.radius == 30, 'pond matches the dell excluded from the walkability sweep')
-    assert(Landscape.WaterLevel == -1.5, 'water surface sits one stud under the town ground')
+    assert(Landscape.WaterLevel == -2, 'water surface sits on a voxel boundary 1.5 studs under the town ground')
     local floor = Landscape.height(pond.x, pond.z)
-    assert(floor <= Landscape.WaterLevel - 3, 'pond floor should lie at least 3 studs under the water, got ' .. floor)
-    assert(floor >= -8 - 1e-6, 'pond floor should not dig below y -8, got ' .. floor)
+    assert(math.abs(floor - -6) < 1e-6, 'pond bed sits on the voxel boundary at y -6, got ' .. floor)
     for deg = 0, 359, 45 do
         local x = pond.x + math.sin(math.rad(deg)) * pond.radius
         local z = pond.z + math.cos(math.rad(deg)) * pond.radius
@@ -159,26 +158,33 @@ check('surface material follows the ground: leafy turf in town, grass blades on 
     end
     assert(blades, 'the near hills should carry Grass so decoration blades appear somewhere')
 end)
+check('WriteVoxels layers sit half a cell above the region coordinate that addresses them', function()
+    -- Measured in Studio 2026-09-10: a region starting at y -12 rendered its third layer as the cell spanning -2 to 2,
+    -- so the layer addressed at y0 occupies [y0 + 2, y0 + 6).
+    assert(Landscape.CellShift == 2)
+    assert(Landscape.layerBottom(-12, 1) == -10)
+    assert(Landscape.layerBottom(-12, 3) == -2)
+    assert(Landscape.layerBottom(-12, 4) == 2)
+end)
 check('voxel cells carry ground occupancy, water where the ground dips under the water level, and air above', function()
-    local function cell(h, material, y0)
-        local name, occupancy = Landscape.voxel(h, material, y0)
+    local function cell(h, material, bottom)
+        local name, occupancy = Landscape.voxel(h, material, bottom)
         return name .. ':' .. string.format('%.3f', occupancy)
     end
-    -- level town column: solid below, 3.5 of the top cell filled so the surface lands on y -0.5, air above
-    assert(cell(-0.5, 'LeafyGrass', -8) == 'LeafyGrass:1.000')
-    assert(cell(-0.5, 'LeafyGrass', -4) == 'LeafyGrass:0.875')
-    assert(cell(-0.5, 'LeafyGrass', 0) == 'Air:0.000')
-    -- pond centre: mud floor at -8, water up to -1.5
-    assert(cell(-8, 'Mud', -12) == 'Mud:1.000')
-    assert(cell(-8, 'Mud', -8) == 'Water:1.000')
-    assert(cell(-8, 'Mud', -4) == 'Water:0.625')
-    assert(cell(-8, 'Mud', 0) == 'Air:0.000')
+    -- level town column: solid below, 1.5 of the cell spanning -2..2 filled so the surface lands on y -0.5, air above
+    assert(cell(-0.5, 'LeafyGrass', -6) == 'LeafyGrass:1.000')
+    assert(cell(-0.5, 'LeafyGrass', -2) == 'LeafyGrass:0.375')
+    assert(cell(-0.5, 'LeafyGrass', 2) == 'Air:0.000')
+    -- pond centre: mud bed at -6, water filling exactly the cell -6..-2, air from -2 up
+    assert(cell(-6, 'Mud', -10) == 'Mud:1.000')
+    assert(cell(-6, 'Mud', -6) == 'Water:1.000')
+    assert(cell(-6, 'Mud', -2) == 'Air:0.000')
     -- pond bank: a cell more than half ground stays ground, a thinner sliver of ground under water becomes water
-    assert(cell(-5, 'Mud', -8) == 'Mud:0.750')
-    assert(cell(-5, 'Mud', -4) == 'Water:0.625')
-    assert(cell(-3.5, 'Mud', -4) == 'Water:0.625')
+    assert(cell(-3, 'Mud', -6) == 'Mud:0.750')
+    assert(cell(-4.5, 'Mud', -6) == 'Water:1.000')
+    assert(cell(-1, 'Mud', -2) == 'Mud:0.250')
     -- hillside: partial top cell, nothing above
-    assert(cell(9, 'Grass', 8) == 'Grass:0.250')
-    assert(cell(9, 'Grass', 12) == 'Air:0.000')
+    assert(cell(9, 'Grass', 6) == 'Grass:0.750')
+    assert(cell(9, 'Grass', 10) == 'Air:0.000')
 end)
 print(count .. ' landscape groups passed')
