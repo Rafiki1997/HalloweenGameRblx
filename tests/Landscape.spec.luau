@@ -14,7 +14,7 @@ end
 -- Coordinates mirror src/server/World.luau. Every one of these assumes the ground top is y -0.5.
 local landmarks = {
     {0, 0, 'plaza'}, {0, 21, 'spawn'}, {0, 40, 'chamber portal'}, {-12, 50, 'welcome sign'}, {12, 50, 'welcome sign'},
-    {0, 62, 'notice board'}, {-40, 50, 'Mira'}, {47, 36, 'Orin'}, {42, 30, 'rebirth altar'}, {47, 26, 'pumpkin'},
+    {0, 62, 'notice board'}, {-40, 50, 'Mira'}, {38, 46.5, 'Orin'}, {33.5, 40, 'rebirth altar'}, {28.5, 46, 'pumpkin'},
     {-52, 48, 'Workshop'}, {-52, 71, 'Inn'}, {-52, 94, 'Curiosities'}, {-38, 62, 'stall'}, {-38, 84, 'stall'},
     {-41.5, 100, 'cask'}, {-35.5, 58, 'pumpkin'},
     {0, -30, 'mansion path start'}, {0, -129, 'mansion path end'}, {-13, -45, 'avenue lamp'}, {13, -120, 'avenue lamp'},
@@ -186,5 +186,31 @@ check('voxel cells carry ground occupancy, water where the ground dips under the
     -- hillside: partial top cell, nothing above
     assert(cell(9, 'Grass', 6) == 'Grass:0.750')
     assert(cell(9, 'Grass', 10) == 'Air:0.000')
+end)
+check('the rebirth shrine stands clear of every Haunt walkway', function()
+    -- Walkways run from 0.295 x centre to the Haunt centre and are 12 wide plus a 0.4 curb (World.luau).
+    local walkways = {}
+    for _, i in {1, 2, 3, 4, 6, 7, 8} do
+        local angle = math.rad(20 + (i - 1) * 40)
+        local cx, cz = math.sin(angle) * 116, math.cos(angle) * 116
+        table.insert(walkways, {ax = cx * 0.295, az = cz * 0.295, bx = cx, bz = cz})
+    end
+    table.insert(walkways, {ax = 0, az = -34, bx = 0, bz = -129, half = 9.4}) -- mansion avenue, 18 wide
+    local function clearance(x, z)
+        local best = math.huge
+        for _, w in walkways do
+            local dx, dz = w.bx - w.ax, w.bz - w.az
+            local t = math.clamp(((x - w.ax) * dx + (z - w.az) * dz) / (dx * dx + dz * dz), 0, 1)
+            local px, pz = w.ax + dx * t, w.az + dz * t
+            best = math.min(best, math.sqrt((x - px) ^ 2 + (z - pz) ^ 2) - (w.half or 6.4))
+        end
+        return best
+    end
+    -- Coordinates mirror World.luau: altar mesh 12.2 wide, caretaker 2.2, pumpkin 3.1.
+    for _, item in {{33.5, 40, 6.1, 'rebirth altar'}, {38, 46.5, 1.1, 'Orin'}, {28.5, 46, 1.6, 'pumpkin'}} do
+        local gap = clearance(item[1], item[2]) - item[3]
+        assert(gap >= 1, string.format('%s at (%.1f, %.1f) overlaps a walkway by %.1f studs', item[4], item[1], item[2], -gap))
+        flatAt(item[1], item[2], item[4])
+    end
 end)
 print(count .. ' landscape groups passed')

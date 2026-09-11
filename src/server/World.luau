@@ -273,15 +273,16 @@ function W.build()
     end
     W.Leaderboard.Label.Size=UDim2.fromOffset(330,170)
     if Assets.configured('Caretaker') then
-        for _,npc in {{x=-40,z=50,cf=faceEast,text='MIRA • EQUIPMENT'},{x=47,z=36,cf=faceWest,text='ORIN • REBIRTH'}} do
+        for _,npc in {{x=-40,z=50,cf=faceEast,text='MIRA • EQUIPMENT'},{x=38,z=46.5,cf=faceWest,text='ORIN • REBIRTH'}} do
             Assets.place('Caretaker',root,CFrame.new(npc.x,-0.5,npc.z)*npc.cf,{Accent=warm})
             blocker('CaretakerCollision',Vector3.new(2.2,5,2.2),CFrame.new(npc.x,2,npc.z))
             V.label(anchor('CaretakerName',CFrame.new(npc.x,5.2,npc.z)),npc.text,warm,180,45)
         end
     else
-        for _,x in {-47,47} do
-            local npc=part(root,'Caretaker',Vector3.new(2,3,1),Vector3.new(x,2,36),Color3.fromRGB(63,45,84))
-            local head=part(root,'CaretakerHead',Vector3.new(1.5,1.5,1.5),Vector3.new(x,4.3,36),warm); head.Shape=Enum.PartType.Ball
+        for _,spot in {{-47,36},{38,46.5}} do
+            local x,z=spot[1],spot[2]
+            local npc=part(root,'Caretaker',Vector3.new(2,3,1),Vector3.new(x,2,z),Color3.fromRGB(63,45,84))
+            local head=part(root,'CaretakerHead',Vector3.new(1.5,1.5,1.5),Vector3.new(x,4.3,z),warm); head.Shape=Enum.PartType.Ball
             V.label(npc,if x<0 then 'MIRA • EQUIPMENT' else 'ORIN • REBIRTH',warm,180,45)
         end
     end
@@ -381,7 +382,7 @@ function W.build()
         end
         sign(root,Vector3.new(146,3,93),'THE QUIET GARDEN',Color3.fromRGB(170,187,206))
     end
-    if Assets.configured('Pumpkin') then Assets.place('Pumpkin',root,CFrame.new(47,-0.5,26)) end
+    if Assets.configured('Pumpkin') then Assets.place('Pumpkin',root,CFrame.new(28.5,-0.5,46)) end
     for floor,info in C.Floors do
         local center=Vector3.new((floor-1)*150,0,-450)
         local area=Instance.new('Model'); area.Name='Floor'..floor; area.Parent=root
@@ -444,7 +445,8 @@ function W.build()
     end
     local orbAmber=Color3.fromRGB(255,197,111)
     if Assets.configured('RebirthAltar') then
-        local altar=Assets.place('RebirthAltar',root,CFrame.new(42,-0.5,30),{Accent=Color3.fromRGB(169,93,246)})
+        -- The shrine sits in the wedge between the Haunt 1 and Haunt 2 walkways, 12.5 studs clear of both centrelines.
+        local altar=Assets.place('RebirthAltar',root,CFrame.new(33.5,-0.5,40),{Accent=Color3.fromRGB(169,93,246)})
         W.RebirthAltar=altar:FindFirstChild('RebirthAltar_Collision',true) or altar:FindFirstChildWhichIsA('BasePart',true)
         local orb=altar:FindFirstChild('RebirthAltar_Glow',true)
         if orb then
@@ -454,11 +456,11 @@ function W.build()
         V.label(W.RebirthAltar,'Rebirth Altar',orbAmber,190,55).Parent.StudsOffset=Vector3.new(0,6,0)
         W.RebirthAltarPrompt=prompt(W.RebirthAltar,'View rebirth','Altar')
     else
-        local altarBase=part(root,'RebirthAltarBase',Vector3.new(12,2,12),Vector3.new(42,1,30),Color3.fromRGB(62,45,81),Enum.Material.Marble)
-        altarBase.Shape=Enum.PartType.Cylinder; altarBase.CFrame=CFrame.new(42,1,30)*CFrame.Angles(0,0,math.pi/2)
-        W.RebirthAltar=part(root,'RebirthAltar',Vector3.new(4,5,4),Vector3.new(42,4,30),Color3.fromRGB(169,93,246),Enum.Material.Neon)
-        W.RebirthAltar.Shape=Enum.PartType.Cylinder; W.RebirthAltar.CFrame=CFrame.new(42,4,30)*CFrame.Angles(0,0,math.pi/2)
-        local altarOrb=part(root,'RebirthOrb',Vector3.new(2.2,2.2,2.2),Vector3.new(42,8,30),orbAmber,Enum.Material.Neon); altarOrb.Shape=Enum.PartType.Ball
+        local altarBase=part(root,'RebirthAltarBase',Vector3.new(12,2,12),Vector3.new(33.5,1,40),Color3.fromRGB(62,45,81),Enum.Material.Marble)
+        altarBase.Shape=Enum.PartType.Cylinder; altarBase.CFrame=CFrame.new(33.5,1,40)*CFrame.Angles(0,0,math.pi/2)
+        W.RebirthAltar=part(root,'RebirthAltar',Vector3.new(4,5,4),Vector3.new(33.5,4,40),Color3.fromRGB(169,93,246),Enum.Material.Neon)
+        W.RebirthAltar.Shape=Enum.PartType.Cylinder; W.RebirthAltar.CFrame=CFrame.new(33.5,4,40)*CFrame.Angles(0,0,math.pi/2)
+        local altarOrb=part(root,'RebirthOrb',Vector3.new(2.2,2.2,2.2),Vector3.new(33.5,8,40),orbAmber,Enum.Material.Neon); altarOrb.Shape=Enum.PartType.Ball
         local altarLight=Instance.new('PointLight'); altarLight.Color=orbAmber; altarLight.Range=18; altarLight.Brightness=2; altarLight.Parent=altarOrb
         V.label(W.RebirthAltar,'Rebirth Altar',orbAmber,190,55)
         W.RebirthAltarPrompt=prompt(altarOrb,'View rebirth','Altar')
