@@ -8,3 +8,5 @@ build/screens/
 *.blend1
 assets/exports/
 build/GhostlightHollow-*.rbxlx
+assets/ghosts/*/upload-console.log
+assets/ghosts/*/upload-errors.log
