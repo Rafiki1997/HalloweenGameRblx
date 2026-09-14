@@ -33,7 +33,8 @@ def sources(parent, folder):
 def build():
     test_mode = '--test' in sys.argv
     preview_mode = '--preview' in sys.argv
-    destination = OUT.with_name('GhostlightHollow-ReferencePreview.rbxlx') if preview_mode else OUT.with_name('GhostlightHollow.Acceptance.rbxlx') if test_mode else OUT
+    ui_preview = '--ui-preview' in sys.argv
+    destination = OUT.with_name('GhostlightHollow-UIPreview.rbxlx') if ui_preview else OUT.with_name('GhostlightHollow-ReferencePreview.rbxlx') if preview_mode else OUT.with_name('GhostlightHollow.Acceptance.rbxlx') if test_mode else OUT
     root = ET.Element('roblox', {'version': '4'})
     ET.SubElement(root, 'External').text = 'null'
     ET.SubElement(root, 'External').text = 'nil'
@@ -53,6 +54,12 @@ def build():
     player_scripts, _ = item(starter, 'StarterPlayerScripts', 'StarterPlayerScripts')
     client, _ = item(player_scripts, 'Folder', 'GhostlightClient')
     sources(client, ROOT / 'src/client')
+    if ui_preview:
+        _, props = item(client, 'ModuleScript', 'UIAcceptance')
+        ET.SubElement(props, 'ProtectedString', {'name': 'Source'}).text = (ROOT / 'tests/UIAcceptance.luau').read_text(encoding='utf-8')
+        for node in client.findall('Item'):
+            if node.find('Properties/string[@name="Name"]').text == 'Main':
+                node.find('Properties/ProtectedString[@name="Source"]').text += '\ntask.spawn(function() require(script.Parent.UIAcceptance)(ui,render,closePanel,ghostCard) end)\n'
     if preview_mode:
         _, props = item(player_scripts, 'LocalScript', 'ReferenceCamera')
         ET.SubElement(props, 'ProtectedString', {'name': 'Source'}).text = (ROOT / 'tools/ReferenceCamera.client.luau').read_text(encoding='utf-8')
