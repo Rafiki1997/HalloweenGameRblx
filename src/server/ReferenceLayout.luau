@@ -1,9 +1,7 @@
 -- Explicit landmark composition measured from assets/reference/spawn-town.png.
 local Layout={}
-Layout.Plots={
-    {-160,15,-105,165},{-70,10,-85,180},{80,17,-100,190},
-    {160,12,-50,205},{140,4,60,205},{-48,0,90,170},{-115,30,-185,150},
-}
+local Plan=require(script.Parent.MapPlan)
+Layout.Plots=Plan.Plots
 local amber=Color3.fromRGB(255,170,67)
 local slate=Color3.fromRGB(62,53,75)
 local cobble=Color3.fromRGB(105,87,88)
@@ -33,7 +31,15 @@ function Layout.build(root,W,Assets,V,Landscape)
         local halo=Instance.new('ImageLabel'); halo.BackgroundTransparency=1; halo.Size=UDim2.fromScale(1,1)
         halo.Image='rbxasset://textures/particles/smoke_main.dds'; halo.ImageColor3=Color3.fromRGB(255,153,54); halo.ImageTransparency=.64; halo.Parent=surface
     end
-    local function route(nodes,width,lit)
+    local junctions={}
+    for _,r in Plan.Routes do
+        for _,at in {r.points[1],r.points[#r.points]} do table.insert(junctions,{at[1],at[2],r.width*.5+2}) end
+    end
+    local function atJunction(x,z,padding)
+        for _,at in junctions do if (x-at[1])^2+(z-at[2])^2<(at[3]+padding)^2 then return true end end
+        return false
+    end
+    local function route(nodes,width,lit,definition)
         local distance=0
         for j=1,#nodes-1 do
             local a,b=nodes[j],nodes[j+1]
@@ -42,7 +48,7 @@ function Layout.build(root,W,Assets,V,Landscape)
                 local u,v=a:Lerp(b,(k-1)/count),a:Lerp(b,k/count)
                 local function surfaceHeight(x,z)
                     local hit=workspace:Raycast(Vector3.new(x,100,z),Vector3.new(0,-220,0),terrainQuery)
-                    return math.max(Landscape.height(x,z),hit and hit.Position.Y or -100)+1
+                    return math.max(Landscape.height(x,z),hit and hit.Position.Y or -100,definition and definition.bridge and .2 or -100)+1
                 end
                 local au=Vector3.new(u.X,surfaceHeight(u.X,u.Z),u.Z)
                 local bv=Vector3.new(v.X,surfaceHeight(v.X,v.Z),v.Z)
@@ -58,8 +64,14 @@ function Layout.build(root,W,Assets,V,Landscape)
                 local tile=p('ReferenceWalkway',Vector3.new(width,1,length+0.2),cf,cobble,Enum.Material.Cobblestone)
                 tile.Color=cobble:Lerp(Color3.fromRGB(144,112,93),lit and .1+.1*math.cos(distance*.22) or .05)
                 tile:SetAttribute('ReferencePath',true)
+                tile:SetAttribute('RouteId',definition and definition.id or 'plaza-ring')
+                tile:SetAttribute('Bridge',definition and definition.bridge or false)
+                if definition and definition.bridge then tile.Material=Enum.Material.WoodPlanks; tile.Color=Color3.fromRGB(98,65,44) end
+                if definition and definition.plot then tile:SetAttribute('PlotApproach',definition.plot) end
                 for _,side in {-1,1} do
-                    local curb=p('StoneCurb',Vector3.new(.7,.6,length+.2),cf*CFrame.new(side*(width/2+.25),.4,0))
+                    local curbCf=cf*CFrame.new(side*(width/2+.25),.4,0)
+                    if atJunction(curbCf.X,curbCf.Z,1) then continue end
+                    local curb=p('StoneCurb',Vector3.new(.7,.6,length+.2),curbCf)
                     curb.CanCollide=false
                 end
                 distance+=length
@@ -67,7 +79,7 @@ function Layout.build(root,W,Assets,V,Landscape)
                     distance=0
                     for _,side in {-1,1} do
                         local at=(cf*CFrame.new(side*(width/2+2.4),0,0)).Position
-                        lamp(Vector3.new(at.X,Landscape.height(at.X,at.Z),at.Z))
+                        if not atJunction(at.X,at.Z,3) then lamp(Vector3.new(at.X,Landscape.height(at.X,at.Z),at.Z)) end
                     end
                 end
             end
@@ -78,19 +90,10 @@ function Layout.build(root,W,Assets,V,Landscape)
         for _,v in coords do table.insert(out,Vector3.new(v[1],0,v[2])) end
         return out
     end
-    local function toGate(coords,index)
-        local out=nodes(coords)
-        local cf=W.Plots[index].CF
-        local scale=W.Plots[index].Scale or 1
-        table.insert(out,(cf*CFrame.new(0,0,-30*scale)).Position)
-        table.insert(out,(cf*CFrame.new(0,0,-19.5*scale)).Position)
-        route(out,8,true)
-    end
     local ring={}
     for i=0,64 do local a=i*math.pi*2/64; table.insert(ring,Vector3.new(math.sin(a)*45,0,math.cos(a)*45)) end
     route(ring,12,false)
-    route(nodes({{0,48},{0,90},{5,130},{0,165},{0,239}}),16,true)
-    route(nodes({{0,-47},{0,-75},{0,-105},{0,-140},{0,-166}}),18,true)
+    for _,definition in Plan.Routes do route(nodes(definition.points),definition.width,true,definition) end
     for z=-90,-164,-2 do
         local h=Landscape.height(0,z)
         p('MansionAvenueStair',Vector3.new(18,1.1,2.2),CFrame.new(0,h+.95,z),Color3.fromRGB(114,97,109),Enum.Material.Cobblestone)
@@ -99,16 +102,6 @@ function Layout.build(root,W,Assets,V,Landscape)
             if z%6==0 then p('AvenueStonePier',Vector3.new(2,4.4,2),wall.CFrame*CFrame.new(0,.6,0),Color3.fromRGB(91,78,103)) end
         end
     end
-    toGate({{-34,-29},{-51,-44},{-70,-54}},2)
-    toGate({{-70,-54},{-105,-53},{-137,-63}},1)
-    toGate({{32,-31},{52,-43},{72,-62}},3)
-    toGate({{52,-43},{93,-18},{132,-5}},4)
-    toGate({{43,12},{65,28},{87,54},{115,95}},5)
-    toGate({{-26,39},{-20,68},{-25,120}},6)
-    route(nodes({{-14,75},{-23,111},{-58,130},{-91,143},{-129,142},{-161,126}}),12,true)
-    route(nodes({{10,125},{45,113},{75,112},{105,135}}),10,true)
-    route(nodes({{-43,14},{-55,29},{-61,58},{-78,77},{-103,87},{-126,102}}),9,true)
-    toGate({{-137,-63},{-205,-75},{-216,-130},{-205,-155}},7)
     -- Garden islands break up the circular plaza; four openings align with its approaches.
     for i=0,47 do
         local a=i*math.pi*2/48
@@ -134,7 +127,7 @@ function Layout.build(root,W,Assets,V,Landscape)
     -- Keep interactable object references while moving the old shop row into the southwest village.
     local town=root:FindFirstChild('SpookyTown')
     for _,part in town:GetDescendants() do if part:IsA('BasePart') then part.CFrame+=Vector3.new(-65,0,58) end end
-    for i,spot in {{-73,163,0},{-104,179,15},{-142,173,-20},{-162,139,80},{-77,117,190},{-143,105,150}} do
+    for i,spot in Plan.Shops do
         local cf=CFrame.new(spot[1],-.5,spot[2])*CFrame.Angles(0,math.rad(spot[3]),0)
         local model=Assets.place('ShopHouse',town,cf,{Accent=amber})
         local block=V.part(town,'VillageHouseCollision',Vector3.new(20,17,15),cf*CFrame.new(0,8.5,-1),slate)
@@ -143,9 +136,9 @@ function Layout.build(root,W,Assets,V,Landscape)
         if glow then local light=Instance.new('PointLight'); light.Color=amber; light.Brightness=1.9; light.Range=24; light.Parent=glow end
         lamp(Vector3.new(spot[1]+11,-.5,spot[2]+6))
     end
-    local square=p('VillageSquare',Vector3.new(52,1,43),CFrame.new(-100,0,145),cobble,Enum.Material.Cobblestone)
+    local square=p('VillageSquare',Vector3.new(30,1,42),CFrame.new(-89,0,144),cobble,Enum.Material.Cobblestone)
     square.Parent=town
-    for _,pos in {{-83,138},{-121,152},{-114,123},{-81,156}} do
+    for _,pos in {{-80,126},{-139,153}} do
         Assets.place('MarketStall',town,CFrame.new(pos[1],.5,pos[2])*CFrame.Angles(0,math.rad(90),0),{Accent=amber})
     end
     -- The decorative chamber portal belongs beside the plaza, leaving the main south avenue clear.

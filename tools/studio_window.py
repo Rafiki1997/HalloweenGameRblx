@@ -6,7 +6,9 @@ from pathlib import Path
 from PIL import ImageGrab
 
 parser = argparse.ArgumentParser()
-parser.add_argument('action', choices=['show', 'play', 'stop', 'capture'])
+parser.add_argument('action', choices=['show', 'play', 'stop', 'capture', 'click'])
+parser.add_argument('--x',type=int,default=112)
+parser.add_argument('--y',type=int,default=61)
 parser.add_argument('--output', default='build/gauntlet/current.png')
 parser.add_argument('--title', default='ReferencePreview')
 args = parser.parse_args()
@@ -28,7 +30,7 @@ hwnd,title=next((item for item in windows if item[0]==foreground),windows[0])
 u.ShowWindow(hwnd, 3)
 u.SetForegroundWindow(hwnd)
 time.sleep(.5)
-if args.action in ('play', 'stop', 'capture'):
+if args.action in ('play', 'stop', 'capture', 'click'):
     current_thread = ctypes.windll.kernel32.GetCurrentThreadId()
     foreground_thread = u.GetWindowThreadProcessId(u.GetForegroundWindow(), None)
     u.AttachThreadInput(current_thread, foreground_thread, True)
@@ -36,31 +38,27 @@ if args.action in ('play', 'stop', 'capture'):
     u.SetFocus(hwnd)
     u.AttachThreadInput(current_thread, foreground_thread, False)
     time.sleep(.2)
-    if u.GetForegroundWindow() != hwnd:
+    if u.GetForegroundWindow() != hwnd or args.action=='click':
         # Qt accepts a directed shortcut event without changing another application's focus.
-        if args.action == 'play':
-            u.PostMessageW(hwnd,0x100,0x74,0x003f0001)
-            u.PostMessageW(hwnd,0x101,0x74,0xc03f0001)
-            print('Sent F5 directly to Studio')
-            raise SystemExit(0)
-        if args.action == 'stop':
+        if args.action in ('play','stop','click'):
+            screen_x,screen_y=(args.x,args.y) if args.action=='click' else (112 if args.action=='play' else 189,61)
             class Point(ctypes.Structure):
                 _fields_=[('x',ctypes.c_long),('y',ctypes.c_long)]
             u.ChildWindowFromPointEx.argtypes=[ctypes.c_void_p,Point,ctypes.c_uint]
             u.ChildWindowFromPointEx.restype=ctypes.c_void_p
             target=hwnd
             for _ in range(12):
-                pt=Point(189,61)
+                pt=Point(screen_x,screen_y)
                 u.ScreenToClient(target,ctypes.byref(pt))
                 child=u.ChildWindowFromPointEx(target,pt,3)
                 if not child or child==target: break
                 target=child
-            pt=Point(189,61)
+            pt=Point(screen_x,screen_y)
             u.ScreenToClient(target,ctypes.byref(pt))
             position=(pt.y<<16)|(pt.x&0xffff)
             u.PostMessageW(target,0x201,1,position)
             u.PostMessageW(target,0x202,0,position)
-            print('Clicked Studio Stop control directly')
+            print('Clicked Studio '+args.action+' control directly')
             raise SystemExit(0)
         raise SystemExit(f'Could not focus Studio {hwnd:x}; foreground {u.GetForegroundWindow():x}; no keyboard input sent')
     if args.action in ('play', 'stop'):

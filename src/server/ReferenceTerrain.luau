@@ -1,6 +1,7 @@
 -- The reference is an island, with a broad western lake and a raised northern mansion.
 -- Height/material are pure functions so all builders can share one surface contract.
 local ReferenceTerrain = {}
+local Plan=if script then require(script.Parent.MapPlan) else require('./MapPlan')
 ReferenceTerrain.Ground = -0.5
 ReferenceTerrain.WaterLevel = -3
 ReferenceTerrain.Bounds = 300
@@ -34,11 +35,8 @@ local function rectangleDistance(x, z, cx, cz, rx, rz)
     return math.sqrt(math.max(math.abs(x - cx) - rx, 0) ^ 2 + math.max(math.abs(z - cz) - rz, 0) ^ 2)
 end
 
-local PADS = {
-    {-160, -105, 15, 34, 30,165}, {-70, -85, 10, 34, 30,180},
-    {80, -100, 17, 34, 30,190}, {160, -50, 12, 34, 30,205},
-    {140, 60, 4, 34, 30,205}, {-48, 90, 0, 34, 30,170}, {-115, -185, 30, 34, 30,150},
-}
+local PADS = {}
+for _,plot in Plan.Plots do table.insert(PADS,{plot[1],plot[3],plot[2],34,30,plot[4]}) end
 ReferenceTerrain.HauntPads = PADS
 
 function ReferenceTerrain.height(x, z)
@@ -54,14 +52,14 @@ function ReferenceTerrain.height(x, z)
         local blend = 1 - smooth(0, 14, rectangleDistance(x, z, lot[1], lot[2], lot[3], lot[4]))
         h += (-0.5 - h) * blend
     end
+    local gardenCliff=smooth(115,130,-z)*(1-smooth(145,155,-z))*smooth(24,32,math.abs(x))*(1-smooth(70,82,math.abs(x)))
+    h-=12*gardenCliff
     for _, pad in PADS do
         local angle=math.rad(pad[6]); local dx,dz=x-pad[1],z-pad[2]
         local lx,lz=math.cos(angle)*dx-math.sin(angle)*dz,math.sin(angle)*dx+math.cos(angle)*dz
         local blend = 1 - smooth(0, 8, rectangleDistance(lx, lz, 0, 0, pad[4], pad[5]))
         h += (pad[3] - h) * blend
     end
-    local gardenCliff=smooth(115,130,-z)*(1-smooth(145,155,-z))*smooth(24,32,math.abs(x))*(1-smooth(70,82,math.abs(x)))
-    h-=12*gardenCliff
     local mansion = 1 - smooth(0, 5, rectangleDistance(x, z, 0, -186, 67, 38))
     h += (30 - h) * mansion
     local avenue = (1 - smooth(15, 25, math.abs(x))) * (1 - smooth(217, 237, z))

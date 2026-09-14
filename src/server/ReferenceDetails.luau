@@ -337,6 +337,12 @@ function Details.build(root, W, Assets, V, Landscape)
         local a=i/48*math.pi*2
         local x,z=-113+math.cos(a)*72,148+math.sin(a)*50
         if onPath(x,z,7) or z<105 then continue end
+        local inPlot=false
+        for _,plot in W.Plots do
+            local q=plot.CF:PointToObjectSpace(Vector3.new(x,plot.CF.Y,z))
+            if math.abs(q.X)<26*plot.Scale and math.abs(q.Z)<23*plot.Scale then inPlot=true; break end
+        end
+        if inPlot then continue end
         local cf=CFrame.new(x,ground(x,z),z)*CFrame.Angles(0,-a,0)
         part('VillageFenceStoneBase',Vector3.new(1.8,1.6,8),cf*CFrame.new(0,.7,0),slate,Enum.Material.Cobblestone,village)
         part('VillageFencePost',Vector3.new(1.4,5,1.4),cf*CFrame.new(0,2.5,0),wood,Enum.Material.Wood,village)
@@ -438,7 +444,7 @@ function Details.build(root, W, Assets, V, Landscape)
             if p:IsA('PointLight') then p.Color=Color3.fromRGB(255,140,40); p.Brightness=2.8; p.Range=28 end
         end
     end
-    local squareCenter=CFrame.new(-105,.7,155)
+    local squareCenter=CFrame.new(-84,.7,151)
     for i=0,17 do
         local a=i/18*math.pi*2
         decorative(part('VillageWellStone',Vector3.new(1.5,2,2.2),squareCenter*CFrame.new(math.cos(a)*4.4,1,math.sin(a)*4.4)*CFrame.Angles(0,-a,0),edge,Enum.Material.Cobblestone,village))

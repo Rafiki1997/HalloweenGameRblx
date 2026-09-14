@@ -25,3 +25,11 @@ The major remaining visual differences are the illustrated reference's much dens
 The preview's camera and diagnostic remote are excluded from the playable build. Capture helpers under `tools/` target only the explicitly named local preview Studio window; they are optional Windows utilities. `capture_window.py` uses the locally installed `windows-capture` and OpenCV packages under `.tools/capture`.
 
 The original on-disk place was preserved as `build/GhostlightHollow-before-reference.rbxlx` before rebuilding. Nothing has been published.
+
+## Placement correction pass
+
+The two marked misplaced estates now occupy separate plots beside the southern entrance. The red and cyan eastern estates face the plaza, with the cyan courtyard moved north to clear the cemetery. The old rear-mansion plot and lake/village plot locations are restored to landscape. Plot pads and orientations share `MapPlan.luau` with the route builder, eliminating duplicate coordinate lists.
+
+Routes now meet at intentional junctions and enter the actual front gates. The village entrance serves a clear street in front of the workshop row; the cemetery route enters its west gate. Lake access uses defined bank paths and raised wooden approaches to the docks. Junctions omit curbs and lamps that could obstruct their openings. Village fence sections near the relocated plots are omitted.
+
+`MapRoutes.spec.luau` checks dry routes, full shop footprints, plot entry corridors, duplicate paving, unintended crossings and facing directions. `ReferenceMap.spec.luau` also checks the rotated corners of all seven terrain pads. The preview adds pedestrian-volume checks against plot, shop and cemetery walls. Latest visual evidence: `build/gauntlet/layout-corrected.png`.

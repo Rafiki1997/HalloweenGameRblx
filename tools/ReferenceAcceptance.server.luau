@@ -162,6 +162,30 @@ group('spawn usable',function()
     assert(not ceiling,'spawn lacks avatar headroom')
     return string.format('dry %s floor at %.2f; 7 studs headroom',hit.Instance.Name,hit.Position.Y)
 end)
+group('route obstacle clearance',function()
+    local obstacles={}
+    for _,p in root:GetDescendants() do
+        if p:IsA('BasePart') and (p.Name=='HouseCollision' or p.Name=='SideFence' or p.Name=='FrontFence' or p.Name=='GatePost'
+            or p.Name:match('^ShopCollision') or p.Name=='VillageHouseCollision' or p.Name=='StallCollision'
+            or p.Name:match('^GraveFence') or p.Name=='GraveGatePost' or p.Name=='CryptCollision'
+            or p.Name=='NecropolisRetainingWall' or p.Name=='CemeteryStonePost'
+            or p.Name=='VillageFencePost' or p.Name=='VillageFenceRail') then table.insert(obstacles,p) end
+    end
+    local q=OverlapParams.new(); q.FilterType=Enum.RaycastFilterType.Include; q.FilterDescendantsInstances=obstacles
+    local bad={}; local checked=0
+    for _,path in paths do
+        for _,offset in {0,-path.Size.X*.5+1,path.Size.X*.5-1} do
+            local at=(path.CFrame*CFrame.new(offset,.5,0)).Position+Vector3.new(0,2.8,0)
+            local hits=workspace:GetPartBoundsInBox(CFrame.new(at),Vector3.new(1.6,5,1.6),q)
+            checked+=1
+            for _,hit in hits do
+                if #bad<8 then table.insert(bad,string.format('%s / %s at %.1f,%.1f',path:GetAttribute('RouteId') or '?',hit.Name,at.X,at.Z)) end
+            end
+        end
+    end
+    assert(#bad==0,table.concat(bad,'; '))
+    return checked..' pedestrian volumes clear of plot, shop and cemetery walls'
+end)
 group('engine errors',function()
     assert(#errors==0,table.concat(errors,' | '))
     return '0 script errors observed during build/QA'

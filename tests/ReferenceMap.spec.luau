@@ -1,5 +1,6 @@
 -- Active reference terrain contract; runs with the standalone Luau interpreter.
 local T=require('../src/server/ReferenceTerrain')
+local Plan=require('../src/server/MapPlan')
 local groups,failures=0,0
 local function check(name,fn)
     local ok,err=pcall(fn)
@@ -22,6 +23,11 @@ check('seven haunt cores support their elevated plots',function()
         for _,offset in {{0,0},{-10,-10},{10,-10},{-10,10},{10,10}} do
             close(T.height(p[1]+offset[1],p[2]+offset[2]),p[3],'Haunt '..i..' core')
         end
+        local a=math.rad(p[6])
+        for _,x in {-22*Plan.Scale,22*Plan.Scale} do for _,z in {-19*Plan.Scale,19*Plan.Scale} do
+            local wx,wz=p[1]+math.cos(a)*x+math.sin(a)*z,p[2]-math.sin(a)*x+math.cos(a)*z
+            assert(T.height(wx,wz)>p[3]-2,'Haunt '..i..' corner falls off its terrain shelf')
+        end end
     end
 end)
 check('western lake has depth, dry banks and a mud bed',function()

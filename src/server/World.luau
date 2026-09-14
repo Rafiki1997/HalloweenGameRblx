@@ -4,6 +4,7 @@ local C=require(Shared.Config)
 local Assets=require(Shared.Assets.Loader)
 local Landscape=require(script.Parent.ReferenceTerrain)
 local ReferenceLayout=require(script.Parent.ReferenceLayout)
+local MapPlan=require(script.Parent.MapPlan)
 local Architecture=require(script.Parent.ReferenceArchitecture)
 local W={Plots={},Areas={},Switches={}}
 local stone=Color3.fromRGB(51,49,65)
@@ -198,8 +199,8 @@ function W.build()
         end
         W.Plots[plotNumber]={Model=model,CF=cf,Slots=slots,Label=label,IncomeLabel=incomeLabel,Deposit=deposit,ChamberDoor=chamber,SpireOffset=spireOffset,Owner=nil,Displays={}}
         Architecture.decorateHaunt(model,cf,hauntHues[plotNumber],V)
-        model.WorldPivot=cf; model:ScaleTo(1.4)
-        W.Plots[plotNumber].Scale=1.4
+        model.WorldPivot=cf; model:ScaleTo(MapPlan.Scale)
+        W.Plots[plotNumber].Scale=MapPlan.Scale
         local plinthTop=if meshHaunts then 0.5 else 1
         lamp(root,(cf*CFrame.new(-26.6,plinthTop*1.4,-21)).Position)
         lamp(root,(cf*CFrame.new(26.6,plinthTop*1.4,-21)).Position)

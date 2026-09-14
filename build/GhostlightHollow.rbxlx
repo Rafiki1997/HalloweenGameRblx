@@ -1628,7 +1628,70 @@ print('Ghostlight Hollow server ready: seven Haunts, six mansion areas, fifteen 
           <bool name="Disabled">false</bool>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="RBX63b3ef7759c5edd40705b2636bc90fcceb021a7e">
+      <Item class="ModuleScript" referent="RBX9b1a6f83cd978bc7bc93f005f0d3e182cd75b96a">
+        <Properties>
+          <string name="Name">MapPlan</string>
+          <ProtectedString name="Source">-- Shared plan for buildings, terrain pads and the pedestrian network. X/Z coordinates in studs.
+local Plan={}
+Plan.Plots={
+    {-160,15,-105,165},{-70,10,-85,180},{80,17,-100,190},
+    {160,12,-50,math.deg(math.atan2(160,-50))},
+    {145,4,45,math.deg(math.atan2(145,45))},
+    {-55,0,215,math.deg(math.atan2(-55,215))},
+    {62,0,208,math.deg(math.atan2(62,208))},
+}
+Plan.Scale=1.4
+Plan.Shops={{-60,153,-90},{-107,184,160},{-142,173,120},{-162,139,90},{-76,110,180},{-149,111,55}}
+Plan.Routes={}
+local function route(id,width,points,bridge)
+    table.insert(Plan.Routes,{id=id,width=width,points=points,bridge=bridge or false})
+end
+local function front(index,distance)
+    local p=Plan.Plots[index]; local a=math.rad(p[4])
+    return {p[1]-math.sin(a)*distance*Plan.Scale,p[3]-math.cos(a)*distance*Plan.Scale}
+end
+Plan.front=front
+local function gate(id,index,points)
+    local approach=front(index,30)
+    local last=points[#points]
+    if (last[1]-approach[1])^2+(last[2]-approach[2])^2&gt;.01 then table.insert(points,approach) end
+    table.insert(points,front(index,19.5))
+    route(id,7,points)
+    Plan.Routes[#Plan.Routes].plot=index
+end
+local diagonal=45/math.sqrt(2)
+route('entrance',16,{{0,45},{0,90},{0,135},{0,170},{0,239}})
+route('mansion',18,{{0,-45},{0,-90},{0,-140},{0,-166}})
+route('northwest-lane',9,{{-diagonal,-diagonal},{-50,-43},{-70,-43}})
+gate('blue-gate',2,{{-70,-43}})
+route('north-bank-bridge',7,{{-70,-43},{-88,-43},{-111,-53}},true)
+gate('violet-gate',1,{{-111,-53},{-148,-60}})
+route('northeast-lane',9,{{diagonal,-diagonal},{56,-40}})
+gate('green-gate',3,{{56,-40}})
+gate('red-gate',4,{{56,-40},{90,-25}})
+route('east-lane',9,{{45,0},{70,15}})
+gate('cyan-gate',5,{{70,15}})
+route('cemetery-lane',9,{{70,15},{76,80},{76,135}})
+route('cemetery-entrance',7,{{0,135},{76,135},{105,135}})
+gate('rose-gate',6,{{0,170},{-28,171}})
+gate('amber-gate',7,{{0,170},{29,168}})
+route('village-entrance',10,{{0,135},{-51,135},{-77,135},{-96,135}})
+route('village-street',8,{{-96,110},{-96,133.2},{-96,135},{-96,156.2},{-96,160}})
+for i,z in {110.2,133.2,156.2} do
+    route('shop-door-'..i,5,{{-96,z},{-108.9,z}})
+end
+route('lake-east-bank',8,{{-45,0},{-49,28},{-59,60},{-77,88}})
+route('village-north',8,{{-77,88},{-96,93},{-96,110}})
+route('lake-south-bank',8,{{-77,88},{-122,88},{-150,82}})
+route('south-dock',7,{{-150,82},{-148,65}},true)
+route('lake-west-bank',6,{{-150,82},{-193,78},{-203,36},{-197,10}})
+route('west-dock',6,{{-197,10},{-183,10}},true)
+route('east-dock',6,{{-49,28},{-57,19},{-66,19}},true)
+return Plan
+</ProtectedString>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="RBXbad3e872542a8a09ad0f8d52299e189b49281d42">
         <Properties>
           <string name="Name">Profiles</string>
           <ProtectedString name="Source">local DataStoreService=game:GetService('DataStoreService')
@@ -1721,7 +1784,7 @@ return P
 </ProtectedString>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="RBX27fb4de3305a32ac0afac3d6d538dae169a95ba2">
+      <Item class="ModuleScript" referent="RBX24380773b40d4e06167d23d80a8b3b2c114b3cdb">
         <Properties>
           <string name="Name">ReferenceArchitecture</string>
           <ProtectedString name="Source">-- Dimensional Gothic silhouette and small illuminated openings, composed in local space.
@@ -2002,7 +2065,7 @@ return A
 </ProtectedString>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="RBX8083d3977f779e97f4e51603dc15afa80a5f9e4c">
+      <Item class="ModuleScript" referent="RBX278adef026272d9e79a5fb424eaa03356262a7f7">
         <Properties>
           <string name="Name">ReferenceDetails</string>
           <ProtectedString name="Source">-- Reference-image environmental set dressing. Positions use the finished town layout.
@@ -2344,6 +2407,12 @@ function Details.build(root, W, Assets, V, Landscape)
         local a=i/48*math.pi*2
         local x,z=-113+math.cos(a)*72,148+math.sin(a)*50
         if onPath(x,z,7) or z&lt;105 then continue end
+        local inPlot=false
+        for _,plot in W.Plots do
+            local q=plot.CF:PointToObjectSpace(Vector3.new(x,plot.CF.Y,z))
+            if math.abs(q.X)&lt;26*plot.Scale and math.abs(q.Z)&lt;23*plot.Scale then inPlot=true; break end
+        end
+        if inPlot then continue end
         local cf=CFrame.new(x,ground(x,z),z)*CFrame.Angles(0,-a,0)
         part('VillageFenceStoneBase',Vector3.new(1.8,1.6,8),cf*CFrame.new(0,.7,0),slate,Enum.Material.Cobblestone,village)
         part('VillageFencePost',Vector3.new(1.4,5,1.4),cf*CFrame.new(0,2.5,0),wood,Enum.Material.Wood,village)
@@ -2445,7 +2514,7 @@ function Details.build(root, W, Assets, V, Landscape)
             if p:IsA('PointLight') then p.Color=Color3.fromRGB(255,140,40); p.Brightness=2.8; p.Range=28 end
         end
     end
-    local squareCenter=CFrame.new(-105,.7,155)
+    local squareCenter=CFrame.new(-84,.7,151)
     for i=0,17 do
         local a=i/18*math.pi*2
         decorative(part('VillageWellStone',Vector3.new(1.5,2,2.2),squareCenter*CFrame.new(math.cos(a)*4.4,1,math.sin(a)*4.4)*CFrame.Angles(0,-a,0),edge,Enum.Material.Cobblestone,village))
@@ -2513,15 +2582,13 @@ return Details
 </ProtectedString>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="RBXfcc3c6e3dfa999df59e4d0bdcff5e4b145eada66">
+      <Item class="ModuleScript" referent="RBX829be1eea70a207d4c336de92dc461cbd0675c9f">
         <Properties>
           <string name="Name">ReferenceLayout</string>
           <ProtectedString name="Source">-- Explicit landmark composition measured from assets/reference/spawn-town.png.
 local Layout={}
-Layout.Plots={
-    {-160,15,-105,165},{-70,10,-85,180},{80,17,-100,190},
-    {160,12,-50,205},{140,4,60,205},{-48,0,90,170},{-115,30,-185,150},
-}
+local Plan=require(script.Parent.MapPlan)
+Layout.Plots=Plan.Plots
 local amber=Color3.fromRGB(255,170,67)
 local slate=Color3.fromRGB(62,53,75)
 local cobble=Color3.fromRGB(105,87,88)
@@ -2551,7 +2618,15 @@ function Layout.build(root,W,Assets,V,Landscape)
         local halo=Instance.new('ImageLabel'); halo.BackgroundTransparency=1; halo.Size=UDim2.fromScale(1,1)
         halo.Image='rbxasset://textures/particles/smoke_main.dds'; halo.ImageColor3=Color3.fromRGB(255,153,54); halo.ImageTransparency=.64; halo.Parent=surface
     end
-    local function route(nodes,width,lit)
+    local junctions={}
+    for _,r in Plan.Routes do
+        for _,at in {r.points[1],r.points[#r.points]} do table.insert(junctions,{at[1],at[2],r.width*.5+2}) end
+    end
+    local function atJunction(x,z,padding)
+        for _,at in junctions do if (x-at[1])^2+(z-at[2])^2&lt;(at[3]+padding)^2 then return true end end
+        return false
+    end
+    local function route(nodes,width,lit,definition)
         local distance=0
         for j=1,#nodes-1 do
             local a,b=nodes[j],nodes[j+1]
@@ -2560,7 +2635,7 @@ function Layout.build(root,W,Assets,V,Landscape)
                 local u,v=a:Lerp(b,(k-1)/count),a:Lerp(b,k/count)
                 local function surfaceHeight(x,z)
                     local hit=workspace:Raycast(Vector3.new(x,100,z),Vector3.new(0,-220,0),terrainQuery)
-                    return math.max(Landscape.height(x,z),hit and hit.Position.Y or -100)+1
+                    return math.max(Landscape.height(x,z),hit and hit.Position.Y or -100,definition and definition.bridge and .2 or -100)+1
                 end
                 local au=Vector3.new(u.X,surfaceHeight(u.X,u.Z),u.Z)
                 local bv=Vector3.new(v.X,surfaceHeight(v.X,v.Z),v.Z)
@@ -2576,8 +2651,14 @@ function Layout.build(root,W,Assets,V,Landscape)
                 local tile=p('ReferenceWalkway',Vector3.new(width,1,length+0.2),cf,cobble,Enum.Material.Cobblestone)
                 tile.Color=cobble:Lerp(Color3.fromRGB(144,112,93),lit and .1+.1*math.cos(distance*.22) or .05)
                 tile:SetAttribute('ReferencePath',true)
+                tile:SetAttribute('RouteId',definition and definition.id or 'plaza-ring')
+                tile:SetAttribute('Bridge',definition and definition.bridge or false)
+                if definition and definition.bridge then tile.Material=Enum.Material.WoodPlanks; tile.Color=Color3.fromRGB(98,65,44) end
+                if definition and definition.plot then tile:SetAttribute('PlotApproach',definition.plot) end
                 for _,side in {-1,1} do
-                    local curb=p('StoneCurb',Vector3.new(.7,.6,length+.2),cf*CFrame.new(side*(width/2+.25),.4,0))
+                    local curbCf=cf*CFrame.new(side*(width/2+.25),.4,0)
+                    if atJunction(curbCf.X,curbCf.Z,1) then continue end
+                    local curb=p('StoneCurb',Vector3.new(.7,.6,length+.2),curbCf)
                     curb.CanCollide=false
                 end
                 distance+=length
@@ -2585,7 +2666,7 @@ function Layout.build(root,W,Assets,V,Landscape)
                     distance=0
                     for _,side in {-1,1} do
                         local at=(cf*CFrame.new(side*(width/2+2.4),0,0)).Position
-                        lamp(Vector3.new(at.X,Landscape.height(at.X,at.Z),at.Z))
+                        if not atJunction(at.X,at.Z,3) then lamp(Vector3.new(at.X,Landscape.height(at.X,at.Z),at.Z)) end
                     end
                 end
             end
@@ -2596,19 +2677,10 @@ function Layout.build(root,W,Assets,V,Landscape)
         for _,v in coords do table.insert(out,Vector3.new(v[1],0,v[2])) end
         return out
     end
-    local function toGate(coords,index)
-        local out=nodes(coords)
-        local cf=W.Plots[index].CF
-        local scale=W.Plots[index].Scale or 1
-        table.insert(out,(cf*CFrame.new(0,0,-30*scale)).Position)
-        table.insert(out,(cf*CFrame.new(0,0,-19.5*scale)).Position)
-        route(out,8,true)
-    end
     local ring={}
     for i=0,64 do local a=i*math.pi*2/64; table.insert(ring,Vector3.new(math.sin(a)*45,0,math.cos(a)*45)) end
     route(ring,12,false)
-    route(nodes({{0,48},{0,90},{5,130},{0,165},{0,239}}),16,true)
-    route(nodes({{0,-47},{0,-75},{0,-105},{0,-140},{0,-166}}),18,true)
+    for _,definition in Plan.Routes do route(nodes(definition.points),definition.width,true,definition) end
     for z=-90,-164,-2 do
         local h=Landscape.height(0,z)
         p('MansionAvenueStair',Vector3.new(18,1.1,2.2),CFrame.new(0,h+.95,z),Color3.fromRGB(114,97,109),Enum.Material.Cobblestone)
@@ -2617,16 +2689,6 @@ function Layout.build(root,W,Assets,V,Landscape)
             if z%6==0 then p('AvenueStonePier',Vector3.new(2,4.4,2),wall.CFrame*CFrame.new(0,.6,0),Color3.fromRGB(91,78,103)) end
         end
     end
-    toGate({{-34,-29},{-51,-44},{-70,-54}},2)
-    toGate({{-70,-54},{-105,-53},{-137,-63}},1)
-    toGate({{32,-31},{52,-43},{72,-62}},3)
-    toGate({{52,-43},{93,-18},{132,-5}},4)
-    toGate({{43,12},{65,28},{87,54},{115,95}},5)
-    toGate({{-26,39},{-20,68},{-25,120}},6)
-    route(nodes({{-14,75},{-23,111},{-58,130},{-91,143},{-129,142},{-161,126}}),12,true)
-    route(nodes({{10,125},{45,113},{75,112},{105,135}}),10,true)
-    route(nodes({{-43,14},{-55,29},{-61,58},{-78,77},{-103,87},{-126,102}}),9,true)
-    toGate({{-137,-63},{-205,-75},{-216,-130},{-205,-155}},7)
     -- Garden islands break up the circular plaza; four openings align with its approaches.
     for i=0,47 do
         local a=i*math.pi*2/48
@@ -2652,7 +2714,7 @@ function Layout.build(root,W,Assets,V,Landscape)
     -- Keep interactable object references while moving the old shop row into the southwest village.
     local town=root:FindFirstChild('SpookyTown')
     for _,part in town:GetDescendants() do if part:IsA('BasePart') then part.CFrame+=Vector3.new(-65,0,58) end end
-    for i,spot in {{-73,163,0},{-104,179,15},{-142,173,-20},{-162,139,80},{-77,117,190},{-143,105,150}} do
+    for i,spot in Plan.Shops do
         local cf=CFrame.new(spot[1],-.5,spot[2])*CFrame.Angles(0,math.rad(spot[3]),0)
         local model=Assets.place('ShopHouse',town,cf,{Accent=amber})
         local block=V.part(town,'VillageHouseCollision',Vector3.new(20,17,15),cf*CFrame.new(0,8.5,-1),slate)
@@ -2661,9 +2723,9 @@ function Layout.build(root,W,Assets,V,Landscape)
         if glow then local light=Instance.new('PointLight'); light.Color=amber; light.Brightness=1.9; light.Range=24; light.Parent=glow end
         lamp(Vector3.new(spot[1]+11,-.5,spot[2]+6))
     end
-    local square=p('VillageSquare',Vector3.new(52,1,43),CFrame.new(-100,0,145),cobble,Enum.Material.Cobblestone)
+    local square=p('VillageSquare',Vector3.new(30,1,42),CFrame.new(-89,0,144),cobble,Enum.Material.Cobblestone)
     square.Parent=town
-    for _,pos in {{-83,138},{-121,152},{-114,123},{-81,156}} do
+    for _,pos in {{-80,126},{-139,153}} do
         Assets.place('MarketStall',town,CFrame.new(pos[1],.5,pos[2])*CFrame.Angles(0,math.rad(90),0),{Accent=amber})
     end
     -- The decorative chamber portal belongs beside the plaza, leaving the main south avenue clear.
@@ -2759,12 +2821,13 @@ return Layout
 </ProtectedString>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="RBX1d71b8f4d4188d10f79d114208e63eaa89cd72fa">
+      <Item class="ModuleScript" referent="RBX6cdca72b62494027f321040a36d4f6c7bdb79f2d">
         <Properties>
           <string name="Name">ReferenceTerrain</string>
           <ProtectedString name="Source">-- The reference is an island, with a broad western lake and a raised northern mansion.
 -- Height/material are pure functions so all builders can share one surface contract.
 local ReferenceTerrain = {}
+local Plan=if script then require(script.Parent.MapPlan) else require('./MapPlan')
 ReferenceTerrain.Ground = -0.5
 ReferenceTerrain.WaterLevel = -3
 ReferenceTerrain.Bounds = 300
@@ -2798,11 +2861,8 @@ local function rectangleDistance(x, z, cx, cz, rx, rz)
     return math.sqrt(math.max(math.abs(x - cx) - rx, 0) ^ 2 + math.max(math.abs(z - cz) - rz, 0) ^ 2)
 end
 
-local PADS = {
-    {-160, -105, 15, 34, 30,165}, {-70, -85, 10, 34, 30,180},
-    {80, -100, 17, 34, 30,190}, {160, -50, 12, 34, 30,205},
-    {140, 60, 4, 34, 30,205}, {-48, 90, 0, 34, 30,170}, {-115, -185, 30, 34, 30,150},
-}
+local PADS = {}
+for _,plot in Plan.Plots do table.insert(PADS,{plot[1],plot[3],plot[2],34,30,plot[4]}) end
 ReferenceTerrain.HauntPads = PADS
 
 function ReferenceTerrain.height(x, z)
@@ -2818,14 +2878,14 @@ function ReferenceTerrain.height(x, z)
         local blend = 1 - smooth(0, 14, rectangleDistance(x, z, lot[1], lot[2], lot[3], lot[4]))
         h += (-0.5 - h) * blend
     end
+    local gardenCliff=smooth(115,130,-z)*(1-smooth(145,155,-z))*smooth(24,32,math.abs(x))*(1-smooth(70,82,math.abs(x)))
+    h-=12*gardenCliff
     for _, pad in PADS do
         local angle=math.rad(pad[6]); local dx,dz=x-pad[1],z-pad[2]
         local lx,lz=math.cos(angle)*dx-math.sin(angle)*dz,math.sin(angle)*dx+math.cos(angle)*dz
         local blend = 1 - smooth(0, 8, rectangleDistance(lx, lz, 0, 0, pad[4], pad[5]))
         h += (pad[3] - h) * blend
     end
-    local gardenCliff=smooth(115,130,-z)*(1-smooth(145,155,-z))*smooth(24,32,math.abs(x))*(1-smooth(70,82,math.abs(x)))
-    h-=12*gardenCliff
     local mansion = 1 - smooth(0, 5, rectangleDistance(x, z, 0, -186, 67, 38))
     h += (30 - h) * mansion
     local avenue = (1 - smooth(15, 25, math.abs(x))) * (1 - smooth(217, 237, z))
@@ -2961,7 +3021,7 @@ return ReferenceTerrain
 </ProtectedString>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="RBX5f0b6ca11f996dcbaf722c055f73442b4af53d9c">
+      <Item class="ModuleScript" referent="RBX753eee59ec8bbab4a5fd4e1100272bcc72beb4d2">
         <Properties>
           <string name="Name">World</string>
           <ProtectedString name="Source">local Shared=game:GetService('ReplicatedStorage'):WaitForChild('Ghostlight')
@@ -2970,6 +3030,7 @@ local C=require(Shared.Config)
 local Assets=require(Shared.Assets.Loader)
 local Landscape=require(script.Parent.ReferenceTerrain)
 local ReferenceLayout=require(script.Parent.ReferenceLayout)
+local MapPlan=require(script.Parent.MapPlan)
 local Architecture=require(script.Parent.ReferenceArchitecture)
 local W={Plots={},Areas={},Switches={}}
 local stone=Color3.fromRGB(51,49,65)
@@ -3164,8 +3225,8 @@ function W.build()
         end
         W.Plots[plotNumber]={Model=model,CF=cf,Slots=slots,Label=label,IncomeLabel=incomeLabel,Deposit=deposit,ChamberDoor=chamber,SpireOffset=spireOffset,Owner=nil,Displays={}}
         Architecture.decorateHaunt(model,cf,hauntHues[plotNumber],V)
-        model.WorldPivot=cf; model:ScaleTo(1.4)
-        W.Plots[plotNumber].Scale=1.4
+        model.WorldPivot=cf; model:ScaleTo(MapPlan.Scale)
+        W.Plots[plotNumber].Scale=MapPlan.Scale
         local plinthTop=if meshHaunts then 0.5 else 1
         lamp(root,(cf*CFrame.new(-26.6,plinthTop*1.4,-21)).Position)
         lamp(root,(cf*CFrame.new(26.6,plinthTop*1.4,-21)).Position)
