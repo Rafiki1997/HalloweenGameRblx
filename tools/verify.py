@@ -21,7 +21,7 @@ for path in sorted((ROOT / 'src').rglob('*.luau')):
     if run.returncode:
         failures.append(str(path))
         print(run.stdout, run.stderr)
-for path in sorted((ROOT / 'tests').glob('RuntimeAcceptance*.luau')):
+for path in sorted(list((ROOT / 'tests').glob('RuntimeAcceptance*.luau')) + [ROOT / 'tests/UIAcceptance.luau']):
     run = subprocess.run([str(BIN / 'luau-compile.exe'), str(path), '--null'], capture_output=True, text=True)
     if run.returncode:
         failures.append(str(path))
@@ -51,6 +51,8 @@ if len(packed) != len(paths):
     failures.append('script count mismatch')
 if any('RuntimeTestStatus' in source for source in packed):
     failures.append('test-only control leaked into production')
+if any('script.Parent.UIAcceptance' in source for source in packed):
+    failures.append('UI preview control leaked into production')
 if failures:
     print('FAILED:', failures)
     sys.exit(1)

@@ -1,0 +1,660 @@
+[
+  {
+    "message": "UI ACCEPTANCE PASS actual server state reaches the HUD",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 211,
+    "timestampMs": 1789419885038
+  },
+  {
+    "message": "UI ACCEPTANCE PASS published transparent icon atlas loads in Studio",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 212,
+    "timestampMs": 1789419885088
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Navigation on screen 1920x1020",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 213,
+    "timestampMs": 1789419885406
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Wallet on screen 1920x1020",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 214,
+    "timestampMs": 1789419885406
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Quest on screen 1920x1020",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 215,
+    "timestampMs": 1789419885406
+  },
+  {
+    "message": "UI ACCEPTANCE PASS CollectionDock on screen 1920x1020",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 216,
+    "timestampMs": 1789419885406
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Actions on screen 1920x1020",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 217,
+    "timestampMs": 1789419885406
+  },
+  {
+    "message": "UI ACCEPTANCE PASS vacuum target at least 44px 1920x1020",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 218,
+    "timestampMs": 1789419885406
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Navigation on screen 1366x710",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 219,
+    "timestampMs": 1789419885722
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Wallet on screen 1366x710",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 220,
+    "timestampMs": 1789419885722
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Quest on screen 1366x710",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 221,
+    "timestampMs": 1789419885722
+  },
+  {
+    "message": "UI ACCEPTANCE PASS CollectionDock on screen 1366x710",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 222,
+    "timestampMs": 1789419885722
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Actions on screen 1366x710",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 223,
+    "timestampMs": 1789419885722
+  },
+  {
+    "message": "UI ACCEPTANCE PASS vacuum target at least 44px 1366x710",
+    "type": "info",
+    "timestamp": 1789419885,
+    "seq": 224,
+    "timestampMs": 1789419885722
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Navigation on screen 1050x560",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 225,
+    "timestampMs": 1789419886062
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Wallet on screen 1050x560",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 226,
+    "timestampMs": 1789419886062
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Quest on screen 1050x560",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 227,
+    "timestampMs": 1789419886062
+  },
+  {
+    "message": "UI ACCEPTANCE PASS CollectionDock on screen 1050x560",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 228,
+    "timestampMs": 1789419886062
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Actions on screen 1050x560",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 229,
+    "timestampMs": 1789419886062
+  },
+  {
+    "message": "UI ACCEPTANCE PASS vacuum target at least 44px 1050x560",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 230,
+    "timestampMs": 1789419886062
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Navigation on screen 1024x710",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 231,
+    "timestampMs": 1789419886371
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Wallet on screen 1024x710",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 232,
+    "timestampMs": 1789419886371
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Quest on screen 1024x710",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 233,
+    "timestampMs": 1789419886372
+  },
+  {
+    "message": "UI ACCEPTANCE PASS CollectionDock on screen 1024x710",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 234,
+    "timestampMs": 1789419886372
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Actions on screen 1024x710",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 235,
+    "timestampMs": 1789419886372
+  },
+  {
+    "message": "UI ACCEPTANCE PASS vacuum target at least 44px 1024x710",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 236,
+    "timestampMs": 1789419886372
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Navigation on screen 844x330",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 237,
+    "timestampMs": 1789419886687
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Wallet on screen 844x330",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 238,
+    "timestampMs": 1789419886687
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Quest on screen 844x330",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 239,
+    "timestampMs": 1789419886687
+  },
+  {
+    "message": "UI ACCEPTANCE PASS CollectionDock on screen 844x330",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 240,
+    "timestampMs": 1789419886688
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Actions on screen 844x330",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 241,
+    "timestampMs": 1789419886688
+  },
+  {
+    "message": "UI ACCEPTANCE PASS vacuum target at least 44px 844x330",
+    "type": "info",
+    "timestamp": 1789419886,
+    "seq": 242,
+    "timestampMs": 1789419886688
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Navigation on screen 667x310",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 243,
+    "timestampMs": 1789419887020
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Wallet on screen 667x310",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 244,
+    "timestampMs": 1789419887020
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Quest on screen 667x310",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 245,
+    "timestampMs": 1789419887020
+  },
+  {
+    "message": "UI ACCEPTANCE PASS CollectionDock on screen 667x310",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 246,
+    "timestampMs": 1789419887020
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Actions on screen 667x310",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 247,
+    "timestampMs": 1789419887020
+  },
+  {
+    "message": "UI ACCEPTANCE PASS vacuum target at least 44px 667x310",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 248,
+    "timestampMs": 1789419887020
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Navigation on screen 390x744",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 249,
+    "timestampMs": 1789419887327
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Wallet on screen 390x744",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 250,
+    "timestampMs": 1789419887327
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Quest on screen 390x744",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 251,
+    "timestampMs": 1789419887327
+  },
+  {
+    "message": "UI ACCEPTANCE PASS CollectionDock on screen 390x744",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 252,
+    "timestampMs": 1789419887327
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Actions on screen 390x744",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 253,
+    "timestampMs": 1789419887327
+  },
+  {
+    "message": "UI ACCEPTANCE PASS vacuum target at least 44px 390x744",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 254,
+    "timestampMs": 1789419887327
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Navigation on screen 320x520",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 255,
+    "timestampMs": 1789419887662
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Wallet on screen 320x520",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 256,
+    "timestampMs": 1789419887662
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Quest on screen 320x520",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 257,
+    "timestampMs": 1789419887663
+  },
+  {
+    "message": "UI ACCEPTANCE PASS CollectionDock on screen 320x520",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 258,
+    "timestampMs": 1789419887663
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Actions on screen 320x520",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 259,
+    "timestampMs": 1789419887663
+  },
+  {
+    "message": "UI ACCEPTANCE PASS vacuum target at least 44px 320x520",
+    "type": "info",
+    "timestamp": 1789419887,
+    "seq": 260,
+    "timestampMs": 1789419887663
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Haunt opens and hides gameplay controls",
+    "type": "info",
+    "timestamp": 1789419888,
+    "seq": 261,
+    "timestampMs": 1789419888187
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Haunt contains actual game content",
+    "type": "info",
+    "timestamp": 1789419888,
+    "seq": 262,
+    "timestampMs": 1789419888187
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Haunt phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419888,
+    "seq": 265,
+    "timestampMs": 1789419888603
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Haunt phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419888,
+    "seq": 266,
+    "timestampMs": 1789419888604
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Haunt phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419888,
+    "seq": 267,
+    "timestampMs": 1789419888604
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Haunt closes and restores exploration",
+    "type": "info",
+    "timestamp": 1789419888,
+    "seq": 268,
+    "timestampMs": 1789419888907
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Collection opens and hides gameplay controls",
+    "type": "info",
+    "timestamp": 1789419889,
+    "seq": 269,
+    "timestampMs": 1789419889223
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Collection contains actual game content",
+    "type": "info",
+    "timestamp": 1789419889,
+    "seq": 270,
+    "timestampMs": 1789419889223
+  },
+  {
+    "message": "UI ACCEPTANCE PASS collection uses a responsive ghost grid",
+    "type": "info",
+    "timestamp": 1789419889,
+    "seq": 271,
+    "timestampMs": 1789419889837
+  },
+  {
+    "message": "UI ACCEPTANCE PASS phone collection uses two columns",
+    "type": "info",
+    "timestamp": 1789419890,
+    "seq": 272,
+    "timestampMs": 1789419890040
+  },
+  {
+    "message": "UI ACCEPTANCE PASS discovered ghost loads its 3D collection portrait",
+    "type": "info",
+    "timestamp": 1789419890,
+    "seq": 273,
+    "timestampMs": 1789419890258
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Collection closes and restores exploration",
+    "type": "info",
+    "timestamp": 1789419890,
+    "seq": 274,
+    "timestampMs": 1789419890376
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Mansion opens and hides gameplay controls",
+    "type": "info",
+    "timestamp": 1789419890,
+    "seq": 275,
+    "timestampMs": 1789419890687
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Mansion contains actual game content",
+    "type": "info",
+    "timestamp": 1789419890,
+    "seq": 276,
+    "timestampMs": 1789419890687
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Mansion phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419891,
+    "seq": 277,
+    "timestampMs": 1789419891105
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Mansion phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419891,
+    "seq": 278,
+    "timestampMs": 1789419891105
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Mansion phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419891,
+    "seq": 279,
+    "timestampMs": 1789419891105
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Mansion phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419891,
+    "seq": 280,
+    "timestampMs": 1789419891105
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Mansion phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419891,
+    "seq": 281,
+    "timestampMs": 1789419891105
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Mansion phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419891,
+    "seq": 282,
+    "timestampMs": 1789419891105
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Mansion closes and restores exploration",
+    "type": "info",
+    "timestamp": 1789419891,
+    "seq": 283,
+    "timestampMs": 1789419891426
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Upgrades opens and hides gameplay controls",
+    "type": "info",
+    "timestamp": 1789419891,
+    "seq": 284,
+    "timestampMs": 1789419891737
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Upgrades contains actual game content",
+    "type": "info",
+    "timestamp": 1789419891,
+    "seq": 285,
+    "timestampMs": 1789419891737
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Upgrades phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419892,
+    "seq": 286,
+    "timestampMs": 1789419892155
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Upgrades phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419892,
+    "seq": 287,
+    "timestampMs": 1789419892156
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Upgrades phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419892,
+    "seq": 288,
+    "timestampMs": 1789419892156
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Upgrades phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419892,
+    "seq": 289,
+    "timestampMs": 1789419892156
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Upgrades phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419892,
+    "seq": 290,
+    "timestampMs": 1789419892156
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Upgrades phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419892,
+    "seq": 291,
+    "timestampMs": 1789419892156
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Upgrades closes and restores exploration",
+    "type": "info",
+    "timestamp": 1789419892,
+    "seq": 292,
+    "timestampMs": 1789419892474
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Rebirth opens and hides gameplay controls",
+    "type": "info",
+    "timestamp": 1789419892,
+    "seq": 293,
+    "timestampMs": 1789419892786
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Rebirth contains actual game content",
+    "type": "info",
+    "timestamp": 1789419892,
+    "seq": 294,
+    "timestampMs": 1789419892786
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Rebirth phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419893,
+    "seq": 295,
+    "timestampMs": 1789419893190
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Rebirth phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419893,
+    "seq": 296,
+    "timestampMs": 1789419893190
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Rebirth phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419893,
+    "seq": 297,
+    "timestampMs": 1789419893190
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Rebirth phone text fits its row",
+    "type": "info",
+    "timestamp": 1789419893,
+    "seq": 298,
+    "timestampMs": 1789419893190
+  },
+  {
+    "message": "UI ACCEPTANCE PASS Rebirth closes and restores exploration",
+    "type": "info",
+    "timestamp": 1789419893,
+    "seq": 299,
+    "timestampMs": 1789419893524
+  },
+  {
+    "message": "UI ACCEPTANCE PASS full vacuum has an explicit text warning",
+    "type": "info",
+    "timestamp": 1789419893,
+    "seq": 300,
+    "timestampMs": 1789419893524
+  },
+  {
+    "message": "UI ACCEPTANCE PASS server state replaces the temporary capacity test",
+    "type": "info",
+    "timestamp": 1789419894,
+    "seq": 301,
+    "timestampMs": 1789419894037
+  },
+  {
+    "message": "UI ACCEPTANCE COMPLETE 89 checks passed",
+    "type": "info",
+    "timestamp": 1789419894,
+    "seq": 302,
+    "timestampMs": 1789419894037
+  },
+  {
+    "message": "UI REVIEW HUD",
+    "type": "info",
+    "timestamp": 1789419894,
+    "seq": 303,
+    "timestampMs": 1789419894037
+  },
+  {
+    "message": "UI REVIEW Collection",
+    "type": "info",
+    "timestamp": 1789419912,
+    "seq": 304,
+    "timestampMs": 1789419912056
+  },
+  {
+    "message": "UI REVIEW Phone HUD",
+    "type": "info",
+    "timestamp": 1789419930,
+    "seq": 305,
+    "timestampMs": 1789419930069
+  },
+  {
+    "message": "UI REVIEW Phone Mansion",
+    "type": "info",
+    "timestamp": 1789419948,
+    "seq": 306,
+    "timestampMs": 1789419948087
+  }
+]

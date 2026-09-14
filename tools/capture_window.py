@@ -5,7 +5,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'.tools/capture'))
 from windows_capture import WindowsCapture, Frame, InternalCaptureControl
 output = sys.argv[1] if len(sys.argv)>1 else 'build/gauntlet/current.png'
-capture = WindowsCapture(cursor_capture=False, draw_border=False, window_name='GhostlightHollow-ReferencePreview.rbxlx - Roblox Studio')
+title = sys.argv[2] if len(sys.argv)>2 else 'GhostlightHollow-ReferencePreview.rbxlx - Roblox Studio'
+capture = WindowsCapture(cursor_capture=False, draw_border=False, window_name=title)
 started=time.monotonic()
 frames=0
 last_saved=0
