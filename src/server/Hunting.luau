@@ -35,10 +35,15 @@ local function spawnGhost(floor)
     local area=world.Areas[floor]
     local species=Rules.roll(floor,rng:NextNumber())
     local pos=area.Center+Vector3.new(rng:NextNumber(-46,46),4,rng:NextNumber(-32,24))
+    local zone
+    if area.GhostZones then
+        zone=area.GhostZones[math.min(#area.GhostZones,math.floor(rng:NextNumber(0,#area.GhostZones))+1)]
+        pos=zone.Center+Vector3.new(rng:NextNumber(-zone.X,zone.X),0,rng:NextNumber(-zone.Z,zone.Z))
+    end
     local id=Http:GenerateGUID(false)
     local model=V.ghost(species,world.GhostFolder,CFrame.new(pos),1,true)
     model.Name='Ghost_'..id; model:SetAttribute('GhostId',id); model:SetAttribute('Floor',floor)
-    local g={Id=id,Species=species,Floor=floor,Model=model,Pos=pos,Target=pos,Progress=0,NextMove=0,Seed=rng:NextNumber(0,20)}
+    local g={Id=id,Species=species,Floor=floor,Model=model,Pos=pos,Target=pos,RoamZone=zone,Progress=0,NextMove=0,Seed=rng:NextNumber(0,20)}
     H.Ghosts[id]=g
     return g
 end
@@ -176,6 +181,10 @@ function H.start(w,p,r,changed)
                     if now>g.NextMove then
                         g.NextMove=now+rng:NextNumber(2,5)
                         g.Target=area.Center+Vector3.new(rng:NextNumber(-48,48),4,rng:NextNumber(-37,28))
+                        if g.RoamZone then
+                            local zone=g.RoamZone
+                            g.Target=zone.Center+Vector3.new(rng:NextNumber(-zone.X,zone.X),0,rng:NextNumber(-zone.Z,zone.Z))
+                        end
                         for _,player in Players:GetPlayers() do
                             local root=character(player)
                             if root and player:GetAttribute('Floor')==g.Floor and (root.Position-g.Pos).Magnitude<12 then
@@ -184,6 +193,11 @@ function H.start(w,p,r,changed)
                                 break
                             end
                         end
+                    end
+                    if g.RoamZone then
+                        local zone=g.RoamZone
+                        local offset=g.Target-zone.Center
+                        g.Target=zone.Center+Vector3.new(math.clamp(offset.X,-zone.X,zone.X),0,math.clamp(offset.Z,-zone.Z,zone.Z))
                     end
                     local delta=g.Target-g.Pos
                     if delta.Magnitude>0.4 then g.Pos+=delta.Unit*math.min(delta.Magnitude,0.38) end

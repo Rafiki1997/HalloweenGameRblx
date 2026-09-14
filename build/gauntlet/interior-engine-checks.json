@@ -1,0 +1,107 @@
+{
+  "logs": [
+    {
+      "message": "INTERIOR PASS floor 1 windows and exit: 5 window openings; return prompt present",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 332,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR PASS floor 1 ghost clearance and connected rooms: 175 ghost volume samples clear; all seven hunting pockets and exit connected",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 333,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR PASS floor 2 windows and exit: 4 window openings; return prompt present",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 334,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR PASS floor 2 ghost clearance and connected rooms: 175 ghost volume samples clear; all seven hunting pockets and exit connected",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 335,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR PASS floor 3 windows and exit: 4 window openings; return prompt present",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 336,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR PASS floor 3 ghost clearance and connected rooms: 175 ghost volume samples clear; all seven hunting pockets and exit connected",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 337,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR PASS floor 4 windows and exit: 4 window openings; return prompt present",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 338,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR PASS floor 4 ghost clearance and connected rooms: 175 ghost volume samples clear; all seven hunting pockets and exit connected",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 339,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR PASS floor 5 windows and exit: 0 window openings; return prompt present",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 340,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR PASS floor 5 ghost clearance and connected rooms: 175 ghost volume samples clear; all seven hunting pockets and exit connected",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 341,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR PASS floor 6 windows and exit: 0 window openings; return prompt present",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 342,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR PASS floor 6 ghost clearance and connected rooms: 175 ghost volume samples clear; all seven hunting pockets and exit connected",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 343,
+      "timestampMs": 1789412231965
+    },
+    {
+      "message": "INTERIOR COMPLETE 12 passed; 0 failed",
+      "type": "info",
+      "timestamp": 1789412231,
+      "seq": 344,
+      "timestampMs": 1789412231965
+    }
+  ],
+  "count": 13,
+  "totalBuffered": 360,
+  "lastSeq": 360,
+  "oldestSeq": 1,
+  "routing": {
+    "selectionMode": "targetAlias",
+    "requestedTargetAlias": "studio-2",
+    "actualClientId": "1116c8a4-15fd-429e-82e3-5296c06ccbd3",
+    "actualTargetAlias": "studio-2",
+    "actualPlaceId": 0,
+    "actualPlaceName": "GhostlightHollow-ReferencePreview.rbxlx"
+  }
+}

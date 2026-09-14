@@ -230,7 +230,7 @@ task.spawn(function()
                 if floor>0 and World.Areas[floor] then
                     local rel=root.Position-World.Areas[floor].Center
                     if math.abs(rel.X)>58 or math.abs(rel.Z)>48 or rel.Y< -10 then enterFloor(player,floor) end
-                elseif root.Position.Y< -15 or root.Position.Z< -245 or math.abs(root.Position.X)>215 then home(player) end
+                elseif root.Position.Y< -45 or root.Position.Z< -285 or root.Position.Z>285 or math.abs(root.Position.X)>270 then home(player) end
             end
             push(player)
             table.insert(ranking,{Name=player.DisplayName,Income=Rules.income(p)})
