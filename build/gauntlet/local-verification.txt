@@ -1,0 +1,59 @@
+PASS every built landmark keeps level ground at y -0.5
+PASS ground rises into rolling, walkable hills beyond the town footprint
+PASS a ridge rises behind the mansion, tall and too steep to climb
+PASS an outer rim encloses the hollow, tall, too steep to climb, and bounded in height
+PASS a pond fills a dell south-east of town and nowhere else
+PASS surface material follows the ground: leafy turf in town, grass blades on hills, rock on walls, mud under water
+PASS WriteVoxels layers sit half a cell above the region coordinate that addresses them
+PASS voxel cells carry ground occupancy, water where the ground dips under the water level, and air above
+PASS the rebirth shrine stands clear of every Haunt walkway
+9 landscape groups passed
+REFERENCE PASS spawn, town, cemetery and entrance remain dry and level
+REFERENCE PASS seven haunt cores support their elevated plots
+REFERENCE PASS western lake has depth, dry banks and a mud bed
+REFERENCE PASS main entrance connects to a walkable raised mansion approach
+REFERENCE INFO reachable dry grid cells 11211
+REFERENCE PASS all seven pads connect to spawn over dry walkable terrain
+REFERENCE PASS island ends in cliffs and open void instead of an enclosing ground slab
+REFERENCE COMPLETE 6 pure groups passed; 0 failed
+PASS Little Boo joins the existing roster and survives capture, deposit and save reconciliation
+PASS clicks matter and capture never progresses on a timer
+PASS capture capacity, deposit and slot ownership are enforced
+PASS purchases reject invalid or unaffordable requests
+PASS rebirth preserves collection but resets temporary progression
+PASS loaded profiles reconcile invalid data and prevent phantom copies
+PASS all rarities have multiple ghosts and every floor has a spawn pool
+PASS upgraded equipment can capture every rarity with sustained clicks
+PASS chamber rewards require placed hunters and permitted area
+PASS slot removals reject malformed requests and release the exact copy
+Optimistic progression income-wait seconds (excludes hunting): 289194
+PASS a full simulated progression reaches rebirth without extra currencies
+11 rule groups passed
+PASS encounter: contact reserves one ghost and freezes the hunter
+PASS encounter: one client gets the intro; another cannot steal the ghost
+PASS encounter: clicks, attacks and capture stay paused through the intro
+PASS encounter: intro enters 1v1 once and keeps mansion actors frozen
+PASS encounter: clicking after the intro advances capture
+PASS encounter: server schedules a closing circle for the battle owner
+PASS encounter: early circle claims do not grant progress
+PASS encounter: foreign, forged, mismatched, malformed and outside-circle claims are rejected
+PASS encounter: valid closing-circle hover adds 12 percentage points to clicks
+PASS encounter: replaying a circle cannot award twice
+PASS encounter: next circle gets a new token
+PASS encounter: late claims do not grant progress
+PASS encounter: battle cannot move the ghost away or damage the frozen player
+PASS encounter: hover alone without recent clicks cannot farm captures
+PASS encounter: release cleans up and contact cooldown prevents immediate retrigger
+PASS encounter: walls block encounter initiation
+PASS encounter: full bag blocks automatic encounters
+PASS encounter: town players cannot trigger mansion ghosts
+PASS encounter: a later encounter starts normally
+PASS encounter: travel during the intro releases the reservation and root
+PASS encounter: cleanup preserves a root that was already anchored
+PASS encounter: death during the intro restores movement and releases the ghost
+PASS encounter: inactive 1v1 times out and restores exploration
+PASS encounter: bonus clamps capture progress at 100 percent
+PASS encounter: bonus completion grants one ghost and releases the battle
+PASS encounter: disconnect cleans up reservation, root and cooldown tables
+26 encounter checks passed
+PASS: 22 Luau scripts compile, scope lint clean; packaged sources match exactly.

@@ -1,0 +1,144 @@
+{
+  "logs": [
+    {
+      "message": "[LogHandlers] Started log capture",
+      "type": "info",
+      "timestamp": 1789404717,
+      "seq": 143,
+      "timestampMs": 1789404717345
+    },
+    {
+      "message": "[LogHandlers] Started log capture",
+      "type": "info",
+      "timestamp": 1789404717,
+      "seq": 144,
+      "timestampMs": 1789404717639
+    },
+    {
+      "message": "StreetLamp imported extents: 1.9003667831420898, 8.949972152709961, 1.0738714933395386 expected: 1.9004600048065186, 8.949999809265137, 1.0738699436187744",
+      "type": "info",
+      "timestamp": 1789404718,
+      "seq": 145,
+      "timestampMs": 1789404718427
+    },
+    {
+      "message": "World.build 0.680s excluding preload: 12555 primitive parts, 2260 MeshParts, 334 lights including interiors; landscape 22500 columns in 100 chunks (0.17s), 0 hillside pines, 0 silhouettes",
+      "type": "info",
+      "timestamp": 1789404718,
+      "seq": 146,
+      "timestampMs": 1789404718427
+    },
+    {
+      "message": "Ghostlight Hollow: Studio practice session. Persistence is intentionally OFF.",
+      "type": "warning",
+      "timestamp": 1789404718,
+      "seq": 147,
+      "timestampMs": 1789404718427
+    },
+    {
+      "message": "Ghostlight Hollow server ready: seven Haunts, six mansion areas, fifteen ghosts.",
+      "type": "info",
+      "timestamp": 1789404718,
+      "seq": 148,
+      "timestampMs": 1789404718427
+    },
+    {
+      "message": "Landscape surface probe (nominal ground -0.50, walkway top 0.50): plaza edge -0.50, Haunt approach -0.50, mansion avenue 7.55, graveyard -0.50, hill 30.00",
+      "type": "info",
+      "timestamp": 1789404722,
+      "seq": 149,
+      "timestampMs": 1789404722378
+    },
+    {
+      "message": "Walkway probe: Haunt 1 path GardenCourt at 10.70; mansion avenue ReferenceWalkway at 2.95; plaza centre FountainCarvedRim at 4.45",
+      "type": "info",
+      "timestamp": 1789404722,
+      "seq": 150,
+      "timestampMs": 1789404722378
+    },
+    {
+      "message": "REFERENCE PASS world ready: 718 path tiles; 7 plots; 6 interiors",
+      "type": "info",
+      "timestamp": 1789404722,
+      "seq": 151,
+      "timestampMs": 1789404722487
+    },
+    {
+      "message": "REFERENCE PASS walkway visibility: 2154 centers/quarter-points visible above terrain",
+      "type": "info",
+      "timestamp": 1789404722,
+      "seq": 152,
+      "timestampMs": 1789404722487
+    },
+    {
+      "message": "REFERENCE PASS gate approaches: 21 gate center/outside samples connect to paths",
+      "type": "info",
+      "timestamp": 1789404722,
+      "seq": 153,
+      "timestampMs": 1789404722487
+    },
+    {
+      "message": "REFERENCE PASS landmark collision parents: 8 town and 11 cemetery parts stay with landmark",
+      "type": "info",
+      "timestamp": 1789404722,
+      "seq": 154,
+      "timestampMs": 1789404722487
+    },
+    {
+      "message": "REFERENCE PASS ghost slot visibility: 140 ghost display centers clear of opaque architecture",
+      "type": "info",
+      "timestamp": 1789404722,
+      "seq": 155,
+      "timestampMs": 1789404722487
+    },
+    {
+      "message": "REFERENCE PASS portal animation position: glow/frame horizontal separation <= 0.95 studs across animation",
+      "type": "info",
+      "timestamp": 1789404723,
+      "seq": 156,
+      "timestampMs": 1789404723546
+    },
+    {
+      "message": "REFERENCE PASS spawn usable: dry CircularPlaza floor at 0.50; 7 studs headroom",
+      "type": "info",
+      "timestamp": 1789404723,
+      "seq": 157,
+      "timestampMs": 1789404723546
+    },
+    {
+      "message": "REFERENCE PASS engine errors: 0 script errors observed during build/QA",
+      "type": "info",
+      "timestamp": 1789404723,
+      "seq": 158,
+      "timestampMs": 1789404723546
+    },
+    {
+      "message": "REFERENCE COMPLETE 8 passed; 0 failed",
+      "type": "info",
+      "timestamp": 1789404723,
+      "seq": 159,
+      "timestampMs": 1789404723546
+    },
+    {
+      "message": "REFERENCE CLIENT Camera=8, 315, 405, 0.99977845, -0.0133289332, 0.016289765, 0, 0.773935258, 0.633264601, -0.0210479684, -0.633124292, 0.773763835; Descendants=20243; FPS=60.55147457303673",
+      "type": "info",
+      "timestamp": 1789404730,
+      "seq": 160,
+      "timestampMs": 1789404730145
+    }
+  ],
+  "count": 18,
+  "totalBuffered": 160,
+  "cursorStatus": "ok",
+  "lastSeq": 160,
+  "hasMore": false,
+  "oldestSeq": 1,
+  "routing": {
+    "selectionMode": "targetAlias",
+    "requestedTargetAlias": "studio-2",
+    "actualClientId": "1a07802e-ea8e-489c-b436-c8ae721e5656",
+    "actualTargetAlias": "studio-2",
+    "actualPlaceId": 0,
+    "actualPlaceName": "GhostlightHollow-ReferencePreview.rbxlx"
+  }
+}

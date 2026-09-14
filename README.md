@@ -6,6 +6,10 @@ A new Roblox ghost-hunting simulator built from the supplied brief and three ref
 
 Open **build/GhostlightHollow.rbxlx** in Roblox Studio and press **Play (F5)**. The town and mansion are generated when the server starts; the edit viewport initially has no map. Wait for the HUD to load. Your vacuum equips automatically.
 
+The spawn map now follows `assets/reference/spawn-town.png`: a central spirit fountain, western fishing lake, southwest village, southeast cemetery, six prominent colored haunt estates, a seventh rear estate for the existing seven-player game, and a northern mansion above stone terraces. `ReferenceTerrain`, `ReferenceLayout`, `ReferenceArchitecture`, and `ReferenceDetails` build these districts. Exact visual parity with the illustration has **not** passed the independent visual gauntlet; screenshots and critiques are preserved in `build/gauntlet/`.
+
+For the repeatable visual review, run `python tools/build_place.py --preview`, open `build/GhostlightHollow-ReferencePreview.rbxlx`, and press Play. This separate preview hides the HUD, fixes the overview camera, and runs eight engine acceptance groups. Its camera also supports `workspace:SetAttribute('ReferenceShot','plaza')`, `'town'`, `'lake'`, `'graveyard'`, or `'overview'` from the Studio command bar during Play. The normal game build keeps the playable camera and HUD. The place that existed before this rebuild is preserved as `build/GhostlightHollow-before-reference.rbxlx`.
+
 1. Select **MANSION → ENTER** beside Abandoned Foyer.
 2. Run into a ghost (within 5.5 studs) or click one to start the 2.8-second retro intro, followed by a private **1v1 capture screen** with your avatar facing the ghost. Click anywhere in the battle to fill the bottom capture bar. Hover inside a target when its outer ring closes for **+12 percentage points** on top of your clicks. Keep clicking: bonuses require a click within the last 2.5 seconds. On touch, tap to capture and hold a finger inside the closing target. Movement and ghost attacks pause until the encounter ends. Capture returns you to the mansion; **FLEE / Q** releases the ghost. Encounters have a 3-second cooldown after release or capture.
 3. Press **F** or **LIGHT** to toggle your flashlight. **Q** releases a target.
@@ -29,7 +33,7 @@ Profiles use UpdateAsync leases, token validation, retries, autosaves, and leave
 - `src/shared/Config.luau`: ghost roster, rarity colors, economy, capture configuration.
 - `src/shared/Rules.luau`: pure, executable rules for rewards, placement and progression.
 - `src/shared/Visuals.luau`: original part-built ghost and equipment models.
-- `src/server`: world, authoritative hunting, profiles, chamber, and orchestration. The main mansion approach intentionally has seven available plots so the path remains clear.
+- `src/server`: reference island generation, authoritative hunting, profiles, chamber, and orchestration. Seven player estates surround the clear mansion approach.
 - `src/client`: HUD, collection previews, inputs, suction effects, encounter transition, 1v1 battle and chamber camera. Tune contact distance, intro duration and cooldown in `C.Encounter`; circle timing, radius, bonus and battle timeouts are in `C.Battle` in the shared config.
 - `default.project.json`: Rojo mapping for continued editing.
 - `docs/BUILD-BRIEF.md`: the supplied specification.
