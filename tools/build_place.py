@@ -58,6 +58,8 @@ def build():
         ET.SubElement(props, 'ProtectedString', {'name': 'Source'}).text = (ROOT / 'tools/ReferenceCamera.client.luau').read_text(encoding='utf-8')
         _, props = item(scripts, 'Script', 'ReferenceAcceptance')
         ET.SubElement(props, 'ProtectedString', {'name': 'Source'}).text = (ROOT / 'tools/ReferenceAcceptance.server.luau').read_text(encoding='utf-8')
+        _, props = item(scripts, 'Script', 'InteriorAcceptance')
+        ET.SubElement(props, 'ProtectedString', {'name': 'Source'}).text = (ROOT / 'tools/InteriorAcceptance.server.luau').read_text(encoding='utf-8')
     if test_mode:
         for parent, cls, filename in [(scripts, 'Script', 'RuntimeAcceptance.server.luau'), (client, 'LocalScript', 'RuntimeAcceptance.client.luau')]:
             _, props = item(parent, cls, 'RuntimeAcceptance')

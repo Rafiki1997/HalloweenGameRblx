@@ -43,7 +43,7 @@ local function loadHunting()
 end
 local H=loadHunting()
 local world={Areas={},Root=object()}
-for i=1,6 do world.Areas[i]={Center=Vector3.new(0,0,i*200)} end
+for i=1,6 do world.Areas[i]={Center=Vector3.new(0,0,i*200),GhostZones={{Center=Vector3.new(12,4,i*200-15),X=5,Z=6}}} end
 local events={}
 local remote={FireClient=function(_,player,event,data) table.insert(events,{Player=player,Event=event,Data=data}) end,
     FireAllClients=function(_,event,data) table.insert(events,{Event=event,Data=data}) end}
@@ -80,6 +80,7 @@ local passed=0
 local function check(condition,name)
     assert(condition,name); passed+=1; print('PASS encounter: '..name)
 end
+check(ghost.RoamZone and (ghost.Pos-ghost.RoamZone.Center).Magnitude<.01,'ghost spawns in its assigned clear room pocket')
 step()
 check(H.Active[p]==ghost and ghost.Owner==p and root.Anchored,'contact reserves one ghost and freezes the hunter')
 check(count('EncounterStart')==1 and count('BeamOn')==0 and H.Active[other]==nil,'one client gets the intro; another cannot steal the ghost')
@@ -177,4 +178,10 @@ ghost.Finishing=nil; ghost.Owner=nil; H.Ghosts[ghost.Id]=ghost
 hum.Health=100; now+=Config.Encounter.Cooldown+1
 H.click(p,ghost.Id); removed(p)
 check(not root.Anchored and not H.Active[p] and not H.NextEncounter[p] and not H.LastClick[p],'disconnect cleans up reservation, root and cooldown tables')
+roster={}
+ghost.NextMove=now+100
+ghost.Target=ghost.RoamZone.Center+Vector3.new(100,0,100)
+for _=1,200 do step() end
+local offset=ghost.Pos-ghost.RoamZone.Center
+check(math.abs(offset.X)<=ghost.RoamZone.X and math.abs(offset.Z)<=ghost.RoamZone.Z,'roaming stays in its room even when a target lies beyond the walls')
 print(passed..' encounter checks passed')

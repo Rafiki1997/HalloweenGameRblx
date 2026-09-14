@@ -6,6 +6,7 @@ local Landscape=require(script.Parent.ReferenceTerrain)
 local ReferenceLayout=require(script.Parent.ReferenceLayout)
 local MapPlan=require(script.Parent.MapPlan)
 local Architecture=require(script.Parent.ReferenceArchitecture)
+local MansionInterior=require(script.Parent.MansionInterior)
 local W={Plots={},Areas={},Switches={}}
 local stone=Color3.fromRGB(51,49,65)
 local wood=Color3.fromRGB(62,43,58)
@@ -380,42 +381,7 @@ function W.build()
     if Assets.configured('Pumpkin') then Assets.place('Pumpkin',root,CFrame.new(28.5,-0.5,46)) end
     for floor,info in C.Floors do
         local center=Vector3.new(5000+(floor-1)*150,0,-450)
-        local area=Instance.new('Model'); area.Name='Floor'..floor; area.Parent=root
-        part(area,'Floor',Vector3.new(132,2,112),center-Vector3.new(0,1,0),wood,Enum.Material.WoodPlanks)
-        part(area,'Ceiling',Vector3.new(134,1,114),center+Vector3.new(0,19,0),Color3.fromRGB(27,23,38))
-        for _,s in {-1,1} do
-            part(area,'Wall',Vector3.new(2,20,114),center+Vector3.new(s*66,9,0),stone,Enum.Material.Brick)
-            part(area,'Wall',Vector3.new(132,20,2),center+Vector3.new(0,9,s*56),stone,Enum.Material.Brick)
-            for _,z in {-36,36} do part(area,'RoomDivider',Vector3.new(2,17,34),center+Vector3.new(s*22,8,z),wood) end
-        end
-        local entry=center+Vector3.new(0,3,35)
-        local exit=part(area,'ReturnDoor',Vector3.new(8,9,0.5),center+Vector3.new(0,4.5,44),purple,Enum.Material.Neon)
-        V.label(exit,'RETURN TO HAUNT',purple)
-        sign(area,center+Vector3.new(0,12,40),floor..' • '..info.Name)
-        local roomNames={'Foyer','Bedrooms','Library','Basement Workshop','Crypt Chapel','Catacomb Reliquary'}
-        for room=1,3 do
-            local roomSign=part(area,'RoomSign',Vector3.new(7,2,0.4),center+Vector3.new((room-2)*38,8,-50),Color3.fromRGB(34,27,48),Enum.Material.Wood)
-            V.label(roomSign,roomNames[math.min(#roomNames,room+(floor-1))],warm,150,35)
-        end
-        local lights={}
-        for _,x in {-36,0,36} do
-            for _,z in {-25,25} do
-                local pos=center+Vector3.new(x,0,z)
-                local tablePart=part(area,'OldTable',Vector3.new(8,0.8,4),pos+Vector3.new(0,3,0),wood,Enum.Material.Wood)
-                for _,dx in {-3,3} do part(area,'TableLeg',Vector3.new(0.5,3,0.5),pos+Vector3.new(dx,1.5,0),wood) end
-                local candle=part(area,'Candle',Vector3.new(0.3,1.4,0.3),pos+Vector3.new(0,4,0),warm,Enum.Material.Neon)
-                local l=Instance.new('PointLight'); l.Color=warm; l.Range=if floor>=4 then 12 else 22; l.Brightness=0.9; l.Parent=candle; table.insert(lights,l)
-                if floor==3 then
-                    for k=1,5 do part(area,'Book',Vector3.new(0.7,1.2,1),tablePart.Position+Vector3.new(k-3,1,0),Color3.fromRGB(60+k*20,40,76)) end
-                elseif floor==2 then
-                    part(area,'Bed',Vector3.new(6,2,10),pos+Vector3.new(4,1,-10),Color3.fromRGB(63,39,72))
-                elseif floor>=5 then
-                    part(area,'Sarcophagus',Vector3.new(5,3,9),pos+Vector3.new(3,1.5,-10),stone)
-                end
-            end
-        end
-        -- Lights remain atmospheric and non-toggleable during exploration.
-        W.Areas[floor]={Model=area,Center=center,Entry=entry,Exit=exit,Lights=lights}
+        W.Areas[floor]=MansionInterior.build(root,floor,info,center,V)
     end
     local portalGlow,portalLight,portalHome
     local portalCyan=Color3.fromRGB(103,245,224)
@@ -475,8 +441,8 @@ function W.build()
         while root.Parent do
             task.wait(4)
             local area=W.Areas[rng:NextInteger(1,6)]
-            local l=area.Lights[1]
-            if l.Enabled then l.Brightness=0.15; task.wait(0.12); l.Brightness=0.9 end
+            local l=area.FlickerLight or area.Lights[1]
+            if l.Enabled then local brightness=l.Brightness; l.Brightness=0.15; task.wait(0.12); l.Brightness=brightness end
         end
     end)
     ReferenceLayout.build(root,W,Assets,V,Landscape)

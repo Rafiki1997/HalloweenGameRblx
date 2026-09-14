@@ -7,7 +7,14 @@ RunService:BindToRenderStep('ReferenceCapture',Enum.RenderPriority.Camera.Value+
     camera.CameraType=Enum.CameraType.Scriptable
     local shot=workspace:GetAttribute('ReferenceShot') or 'overview'
     camera.FieldOfView=if shot=='overview' then 50 else 55
-    if shot=='plaza' then camera.CFrame=CFrame.lookAt(Vector3.new(0,12,52),Vector3.new(0,17,-15))
+    if shot:match('^interior') then
+        local floor=tonumber(shot:match('%d+')) or 1
+        local center=Vector3.new(5000+(floor-1)*150,0,-450)
+        camera.FieldOfView=75
+        if shot=='interior2side' then camera.CFrame=CFrame.lookAt(center+Vector3.new(-29,8,12),center+Vector3.new(-52,6,39))
+        elseif shot:match('side') then camera.CFrame=CFrame.lookAt(center+Vector3.new(-30,9,43),center+Vector3.new(-48,9,-19))
+        else camera.CFrame=CFrame.lookAt(center+Vector3.new(8,8,45),center+Vector3.new(-2,10,-22)) end
+    elseif shot=='plaza' then camera.CFrame=CFrame.lookAt(Vector3.new(0,12,52),Vector3.new(0,17,-15))
     elseif shot=='town' then camera.CFrame=CFrame.lookAt(Vector3.new(-49,22,190),Vector3.new(-108,8,137))
     elseif shot=='graveyard' then camera.CFrame=CFrame.lookAt(Vector3.new(83,21,181),Vector3.new(134,7,133))
     elseif shot=='lake' then camera.CFrame=CFrame.lookAt(Vector3.new(-61,17,96),Vector3.new(-130,0,10))
