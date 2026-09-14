@@ -259,7 +259,10 @@ function W.build()
             Assets.place('Boulder',root,CFrame.new(b[1],Landscape.height(b[1],b[2]),b[2]))
         end
     end
-    Architecture.decorateMansion(root,CFrame.new(0,30,-183),V)
+    local _,frontDoor=Architecture.decorateMansion(root,CFrame.new(0,30,-183),V)
+    W.MansionDoor:Destroy()
+    W.MansionDoor=frontDoor
+    V.label(frontDoor,'The Haunted Mansion',purple,240,65).Parent.StudsOffset=Vector3.new(0,10,0)
     end
     -- Asset meshes face Roblox +Z (their Blender -Y front). Yaw +90 degrees turns that front toward +X.
     local faceEast=CFrame.Angles(0,math.pi/2,0)

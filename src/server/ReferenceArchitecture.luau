@@ -177,7 +177,20 @@ function A.decorateHaunt(model,cf,hue,V)
     b.part('EntryBay',Vector3.new(centreWidth,centreEave-12.2,23.8-centreFront),CFrame.new(0,(centreEave+12.2)*.5,(23.8+centreFront)*.5),facade,Enum.Material.Brick)
     b.gable(0,centreEave,centreFront-.12,centreWidth+1.6,centreRoof,24-centreFront,hue)
     for _,x in {-centreWidth*.24,centreWidth*.24} do b.window(x,14.4,centreFront-.3,centreWidth*.23,centreEave-15.2,hue) end
-    b.part('DoorRecess',Vector3.new(4.4,7,.4),CFrame.new(0,4.1,12.8),iron,Enum.Material.Wood)
+    -- The imported timber wall starts at z10.6 and its old porch posts at z8.7.
+    -- Cover those posts with a closed entry bay between the display pedestals.
+    local door=b.part('PlotFrontDoor',Vector3.new(3,6.6,.24),CFrame.new(3,3.8,8.3),Color3.fromRGB(57,34,30),Enum.Material.WoodPlanks)
+    door.CanCollide=true; door.CanQuery=true
+    door:SetAttribute('DecorativeDoor',true)
+    for _,s in {-1,1} do
+        b.part('DoorJamb',Vector3.new(.22,7,2.5),CFrame.new(3+s*1.65,3.8,9.3),edge)
+    end
+    b.part('DoorLintel',Vector3.new(3.5,.28,2.5),CFrame.new(3,7.25,9.3),edge)
+    for _,y in {2.2,5.2} do
+        b.part('RaisedDoorPanel',Vector3.new(2.35,2.15,.12),CFrame.new(3,y,8.12),Color3.fromRGB(79,46,37),Enum.Material.Wood)
+    end
+    local handle=b.part('DoorHandle',Vector3.new(.18,.42,.25),CFrame.new(4.05,3.8,7.95),Color3.fromRGB(185,139,68),Enum.Material.Metal)
+    handle.Shape=Enum.PartType.Ball
     b.gable(0,9.8,12.3,7.4,4.3,3,nil)
     for _,s in {-1,1} do
         b.part('PorchColumn',Vector3.new(.48,9,.48),CFrame.new(s*2.9,5.3,12.5),edge)
@@ -260,16 +273,23 @@ function A.decorateMansion(root,baseCf,V)
     b.gable(0,43,-21,21,19,24,amber)
     b.tower(0,6,34,25,4,25,amber)
     for _,y in {16,28,42} do b.window(0,y,-21.3,5,8,amber) end
-    b.part('MansionPortalRecess',Vector3.new(11,14,.6),CFrame.new(0,7,-21.4),iron,Enum.Material.Wood)
+    -- The interactive door is the outermost facade, accessible from the avenue.
+    local door=b.part('MansionEntrance',Vector3.new(10.8,12.8,.6),CFrame.new(0,7.1,-22),Color3.fromRGB(52,30,28),Enum.Material.WoodPlanks)
+    door.CanCollide=true; door.CanQuery=true
+    b.part('DoorCentreStile',Vector3.new(.18,12.8,.2),CFrame.new(0,7.1,-22.4),iron,Enum.Material.Metal)
     b.gable(0,13.5,-24,15,10,5,nil)
     for _,s in {-1,1} do
         b.part('PortalColumn',Vector3.new(1.1,13,1.1),CFrame.new(s*6.5,6.5,-23.5),edge)
-        b.window(s*3,4,-21.8,1.9,6,amber)
+        b.part('MansionDoorJamb',Vector3.new(.38,13.2,.55),CFrame.new(s*5.6,7.1,-22.15),edge)
+        for _,y in {3.2,9.2} do
+            b.part('MansionDoorPanel',Vector3.new(4.1,4.4,.18),CFrame.new(s*2.65,y,-22.4),Color3.fromRGB(77,42,31),Enum.Material.Wood)
+        end
+        b.part('MansionDoorHandle',Vector3.new(.24,1.4,.35),CFrame.new(s*.7,6.6,-22.65),Color3.fromRGB(190,144,70),Enum.Material.Metal)
     end
     for _,y in {1,13,25} do
         b.part('MansionStringCourse',Vector3.new(116,.55,1),CFrame.new(0,y,-18.9),edge)
     end
-    return detail
+    return detail,door
 end
 
 return A

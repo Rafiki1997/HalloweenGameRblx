@@ -39,7 +39,7 @@ local PADS = {}
 for _,plot in Plan.Plots do table.insert(PADS,{plot[1],plot[3],plot[2],34,30,plot[4]}) end
 ReferenceTerrain.HauntPads = PADS
 
-function ReferenceTerrain.height(x, z)
+local function naturalHeight(x, z)
     local d = islandDistance(x, z)
     if d >= 1.055 then return -100 end
     local h = -0.5 + 30.5 * smooth(65, 163, -z)
@@ -70,6 +70,74 @@ function ReferenceTerrain.height(x, z)
     h += (-12 - h) * (1 - smooth(0.81, 1.11, lake))
     -- A narrow steep skirt exposes sixty studs of rock around the entire island.
     h += (-66 - h) * smooth(0.973, 1.038, d)
+    return h
+end
+
+-- Grade the whole gate approach, spreading each terrace rise over its available
+-- run. The final landing meets the scaled courtyard top without a drop.
+ReferenceTerrain.Approaches={}
+for _,route in Plan.Routes do
+    if not route.plot then continue end
+    local segments,total={},0
+    for i=1,#route.points-1 do
+        local a,b=route.points[i],route.points[i+1]
+        local length=math.sqrt((b[1]-a[1])^2+(b[2]-a[2])^2)
+        table.insert(segments,{a=a,b=b,length=length,start=total})
+        total+=length
+    end
+    local first=route.points[1]
+    local startHeight=naturalHeight(first[1],first[2])
+    for _,other in Plan.Routes do
+        if not other.bridge then continue end
+        for _,point in {other.points[1],other.points[#other.points]} do
+            if (point[1]-first[1])^2+(point[2]-first[2])^2<.01 then startHeight=math.max(startHeight,.2) end
+        end
+    end
+    local flats={}
+    for i=2,#segments do
+        local previous,current=segments[i-1],segments[i]
+        local dot=((previous.b[1]-previous.a[1])*(current.b[1]-current.a[1])+(previous.b[2]-previous.a[2])*(current.b[2]-current.a[2]))/(previous.length*current.length)
+        if dot<.995 then
+            local radius=route.width*.5+1
+            table.insert(flats,{math.max(0,current.start-radius),math.min(total,current.start+radius)})
+        end
+    end
+    table.insert(flats,{total-1.5,total})
+    local merged={}
+    for _,flat in flats do
+        local last=merged[#merged]
+        if last and flat[1]<=last[2] then last[2]=math.max(last[2],flat[2]) else table.insert(merged,flat) end
+    end
+    local climbRun=total
+    for _,flat in merged do climbRun-=flat[2]-flat[1] end
+    ReferenceTerrain.Approaches[route.id]={segments=segments,length=total,width=route.width,flats=merged,climbRun=climbRun,
+        low=startHeight+1,high=Plan.Plots[route.plot][2]+Plan.Scale*.5-.5}
+end
+function ReferenceTerrain.approachHeight(id,distance)
+    local a=ReferenceTerrain.Approaches[id]
+    local climb=distance
+    for _,flat in a.flats do climb-=math.clamp(distance-flat[1],0,flat[2]-flat[1]) end
+    return a.low+(a.high-a.low)*math.clamp(climb/a.climbRun,0,1)
+end
+function ReferenceTerrain.height(x,z)
+    local h=naturalHeight(x,z)
+    for id,approach in ReferenceTerrain.Approaches do
+        local nearest,along=math.huge,0
+        for _,segment in approach.segments do
+            local a,b=segment.a,segment.b
+            local t=math.clamp(((x-a[1])*(b[1]-a[1])+(z-a[2])*(b[2]-a[2]))/segment.length^2,0,1)
+            local distance=math.sqrt((x-a[1]-(b[1]-a[1])*t)^2+(z-a[2]-(b[2]-a[2])*t)^2)
+            if distance<nearest then nearest=distance; along=segment.start+segment.length*t end
+        end
+        local blend=1-smooth(approach.width*.5+3,approach.width*.5+7,nearest)
+        if blend>0 then
+            -- Extra substrate clearance absorbs four-stud voxel interpolation.
+            -- Fade the cut at the junction so adjacent paving still meets flush.
+            local cut=math.min(1.5,math.abs(approach.high-approach.low)*.15)*smooth(0,5,along)*(1-smooth(approach.length-5,approach.length,along))
+            local target=ReferenceTerrain.approachHeight(id,along)-1-cut
+            h+=(target-h)*blend
+        end
+    end
     return h
 end
 

@@ -5,6 +5,18 @@ local function localPoint(x,z,p)
     return math.cos(a)*dx-math.sin(a)*dz,math.sin(a)*dx+math.cos(a)*dz
 end
 local count=0
+for id,a in T.Approaches do
+    local grade=math.abs(a.high-a.low)/a.climbRun
+    assert(grade<math.tan(math.rad(38)),id..' stair flight is too steep')
+    assert(grade*.65<=.5,id..' stair riser requires jumping')
+    local previous=T.approachHeight(id,0)
+    for distance=.25,a.length,.25 do
+        local height=T.approachHeight(id,distance)
+        assert(math.abs(height-previous)<=.25*math.tan(math.rad(38)),id..' has an abrupt height change')
+        previous=height
+    end
+    assert(math.abs(T.approachHeight(id,a.length)-a.high)<.001,id..' landing misses the courtyard')
+end
 for _,r in P.Routes do
     for j=1,#r.points-1 do
         local a,b=r.points[j],r.points[j+1]

@@ -11,6 +11,9 @@ RunService:BindToRenderStep('ReferenceCapture',Enum.RenderPriority.Camera.Value+
     elseif shot=='town' then camera.CFrame=CFrame.lookAt(Vector3.new(-49,22,190),Vector3.new(-108,8,137))
     elseif shot=='graveyard' then camera.CFrame=CFrame.lookAt(Vector3.new(83,21,181),Vector3.new(134,7,133))
     elseif shot=='lake' then camera.CFrame=CFrame.lookAt(Vector3.new(-61,17,96),Vector3.new(-130,0,10))
+    elseif shot=='mansion-door' then camera.CFrame=CFrame.lookAt(Vector3.new(0,37,-145),Vector3.new(0,37,-161))
+    elseif shot=='plot-door' then camera.CFrame=CFrame.lookAt(Vector3.new(120,22,-47),Vector3.new(169,22,-53))
+    elseif shot=='plot-stairs' then camera.CFrame=CFrame.lookAt(Vector3.new(63,7,-33),Vector3.new(83,18,-69))
     else camera.CFrame=CFrame.lookAt(Vector3.new(8,315,405),Vector3.new(0,4,25)) end
     camera.Focus=camera.CFrame*CFrame.new(0,0,if shot=='overview' then -490 else -60)
     for _,g in player.PlayerGui:GetChildren() do if g:IsA('ScreenGui') then g.Enabled=false end end

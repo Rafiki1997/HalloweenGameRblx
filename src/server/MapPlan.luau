@@ -28,7 +28,7 @@ local function gate(id,index,points)
 end
 local diagonal=45/math.sqrt(2)
 route('entrance',16,{{0,45},{0,90},{0,135},{0,170},{0,239}})
-route('mansion',18,{{0,-45},{0,-90},{0,-140},{0,-166}})
+route('mansion',18,{{0,-45},{0,-90},{0,-140},{0,-157}})
 route('northwest-lane',9,{{-diagonal,-diagonal},{-50,-43},{-70,-43}})
 gate('blue-gate',2,{{-70,-43}})
 route('north-bank-bridge',7,{{-70,-43},{-88,-43},{-111,-53}},true)

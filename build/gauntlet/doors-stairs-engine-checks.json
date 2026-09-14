@@ -1,0 +1,116 @@
+{
+  "logs": [
+    {
+      "message": "REFERENCE PASS world ready: 1184 path tiles; 7 plots; 6 interiors",
+      "type": "info",
+      "timestamp": 1789409349,
+      "seq": 113,
+      "timestampMs": 1789409349163
+    },
+    {
+      "message": "REFERENCE PASS walkway visibility: 3552 centers/quarter-points visible above terrain",
+      "type": "info",
+      "timestamp": 1789409349,
+      "seq": 114,
+      "timestampMs": 1789409349164
+    },
+    {
+      "message": "REFERENCE PASS gate approaches: 21 gate center/outside samples connect to paths",
+      "type": "info",
+      "timestamp": 1789409349,
+      "seq": 115,
+      "timestampMs": 1789409349164
+    },
+    {
+      "message": "REFERENCE PASS landmark collision parents: 8 town and 11 cemetery parts stay with landmark",
+      "type": "info",
+      "timestamp": 1789409349,
+      "seq": 116,
+      "timestampMs": 1789409349164
+    },
+    {
+      "message": "REFERENCE PASS ghost slot visibility: 140 ghost display centers clear of opaque architecture",
+      "type": "info",
+      "timestamp": 1789409349,
+      "seq": 117,
+      "timestampMs": 1789409349164
+    },
+    {
+      "message": "REFERENCE PASS portal animation position: glow/frame horizontal separation <= 0.95 studs across animation",
+      "type": "info",
+      "timestamp": 1789409350,
+      "seq": 118,
+      "timestampMs": 1789409350294
+    },
+    {
+      "message": "REFERENCE PASS spawn usable: dry CircularPlaza floor at 0.50; 7 studs headroom",
+      "type": "info",
+      "timestamp": 1789409350,
+      "seq": 119,
+      "timestampMs": 1789409350294
+    },
+    {
+      "message": "REFERENCE PASS route obstacle clearance: 3552 pedestrian volumes clear of plot, shop and cemetery walls",
+      "type": "info",
+      "timestamp": 1789409350,
+      "seq": 120,
+      "timestampMs": 1789409350294
+    },
+    {
+      "message": "REFERENCE PASS front doors accessible and visible: mansion prompt reached from front porch; seven visible closed plot doors",
+      "type": "info",
+      "timestamp": 1789409350,
+      "seq": 121,
+      "timestampMs": 1789409350294
+    },
+    {
+      "message": "REFERENCE PASS stair risers and gate transitions: 2047 live collision samples; risers below .6 studs and landings meet courtyards",
+      "type": "info",
+      "timestamp": 1789409350,
+      "seq": 122,
+      "timestampMs": 1789409350294
+    },
+    {
+      "message": "REFERENCE CLIENT Camera=63, 7, -33, 0.87415731, -0.125323445, -0.469194084, -0, 0.96612978, -0.25805676, 0.48564294, 0.225582197, 0.844549358; Descendants=21305; FPS=60.776336665789835",
+      "type": "info",
+      "timestamp": 1789409356,
+      "seq": 123,
+      "timestampMs": 1789409356451
+    },
+    {
+      "message": "REFERENCE PASS avatar walks entrances without jumping: 8 approaches walked by an avatar with jumping disabled",
+      "type": "info",
+      "timestamp": 1789409385,
+      "seq": 124,
+      "timestampMs": 1789409385689
+    },
+    {
+      "message": "REFERENCE PASS engine errors: 0 script errors observed during build/QA",
+      "type": "info",
+      "timestamp": 1789409385,
+      "seq": 125,
+      "timestampMs": 1789409385689
+    },
+    {
+      "message": "REFERENCE COMPLETE 12 passed; 0 failed",
+      "type": "info",
+      "timestamp": 1789409385,
+      "seq": 126,
+      "timestampMs": 1789409385689
+    }
+  ],
+  "count": 25,
+  "totalBuffered": 129,
+  "cursorStatus": "ok",
+  "lastSeq": 129,
+  "hasMore": false,
+  "oldestSeq": 1,
+  "routing": {
+    "selectionMode": "targetAlias",
+    "requestedTargetAlias": "studio-2",
+    "actualClientId": "1116c8a4-15fd-429e-82e3-5296c06ccbd3",
+    "actualTargetAlias": "studio-2",
+    "actualPlaceId": 0,
+    "actualPlaceName": "GhostlightHollow-ReferencePreview.rbxlx"
+  }
+}

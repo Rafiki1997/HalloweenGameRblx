@@ -1,4 +1,4 @@
--- Include only in reference preview/test builds. Read-only map and engine checks.
+-- Include only in reference preview/test builds. Geometry and disposable avatar checks.
 local Log=game:GetService('LogService')
 local errors={}
 local errorConnection=Log.MessageOut:Connect(function(message,kind)
@@ -185,6 +185,96 @@ group('route obstacle clearance',function()
     end
     assert(#bad==0,table.concat(bad,'; '))
     return checked..' pedestrian volumes clear of plot, shop and cemetery walls'
+end)
+group('front doors accessible and visible',function()
+    local door=W.MansionDoor
+    assert(door and door.Name=='MansionEntrance' and door.Transparency==0 and door.CanCollide,'mansion interaction needs a solid visible door')
+    local landing=root:FindFirstChild('MansionDoorLanding',true)
+    assert(landing,'front porch landing missing')
+    local origin=Vector3.new(0,landing.Position.Y+3.5,-154)
+    assert((origin-door.Position).Magnitude<12,'mansion prompt is out of reach from the front landing')
+    local hit=workspace:Raycast(origin,door.Position-origin,params({root,workspace.Terrain}))
+    assert(hit and hit.Instance==door,'wall obstructs the visible mansion door from its landing')
+    assert(door:FindFirstChildOfClass('ProximityPrompt'),'mansion selection prompt missing')
+    for i,plot in W.Plots do
+        local front=plot.Model:FindFirstChild('PlotFrontDoor',true)
+        assert(front and front.Transparency==0,'plot '..i..' decorative door missing')
+        assert(not front:FindFirstChildOfClass('ProximityPrompt'),'decorative plot door should not allow entry')
+        local wall=plot.Model:FindFirstChild('HouseCollision',true)
+        local pos=wall.CFrame:PointToObjectSpace(front.Position)
+        assert(pos.Z< -wall.Size.Z*.5,'plot '..i..' door buried behind facade')
+    end
+    return 'mansion prompt reached from front porch; seven visible closed plot doors'
+end)
+group('stair risers and gate transitions',function()
+    local plan=require(script.Parent.MapPlan)
+    local terrain=require(script.Parent.ReferenceTerrain)
+    local q=params({root,workspace.Terrain})
+    local count=0
+    for _,route in plan.Routes do
+        if not route.plot then continue end
+        local previous
+        for _,segment in terrain.Approaches[route.id].segments do
+            local steps=math.ceil(segment.length/.2)
+            for k=0,steps do
+                local t=k/steps
+                local x=segment.a[1]+(segment.b[1]-segment.a[1])*t
+                local z=segment.a[2]+(segment.b[2]-segment.a[2])*t
+                local hit=workspace:Raycast(Vector3.new(x,80,z),Vector3.new(0,-110,0),q)
+                assert(hit and hit.Instance:GetAttribute('ReferencePath'),route.id..' tread blocked or buried')
+                if previous then assert(math.abs(hit.Position.Y-previous)<.6,string.format('%s riser %.2f at %.2f,%.2f on %s',route.id,hit.Position.Y-previous,x,z,hit.Instance.Name)) end
+                previous=hit.Position.Y; count+=1
+            end
+        end
+        local plot=W.Plots[route.plot]
+        local court=plot.Model:FindFirstChild('GardenCourt',true)
+        assert(math.abs(previous-(court.Position.Y+court.Size.Y*.5))<.15,route.id..' ends above/below courtyard')
+    end
+    return count..' live collision samples; risers below .6 studs and landings meet courtyards'
+end)
+group('avatar walks entrances without jumping',function()
+    local player=game:GetService('Players'):GetPlayers()[1]
+    assert(player and player.Character,'preview character required for walking checks')
+    local character=player.Character
+    local original=character.Archivable; character.Archivable=true
+    local walker=character:Clone(); character.Archivable=original
+    walker.Name='ReferenceWalkProbe'
+    for _,item in walker:GetDescendants() do
+        if item:IsA('LuaSourceContainer') or item:IsA('Tool') then item:Destroy() end
+    end
+    local humanoid=walker:FindFirstChildOfClass('Humanoid')
+    local body=walker:FindFirstChild('HumanoidRootPart')
+    humanoid.WalkSpeed=16; humanoid.AutoJumpEnabled=false; humanoid.UseJumpPower=true; humanoid.JumpPower=0
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping,false)
+    walker.Parent=workspace; body:SetNetworkOwner(nil)
+    local ok,result=pcall(function()
+        local plan=require(script.Parent.MapPlan)
+        local q=params({root,workspace.Terrain})
+        local traversed=0
+        for _,route in plan.Routes do
+            if not route.plot and route.id~='mansion' then continue end
+            local function destination(point)
+                local hit=workspace:Raycast(Vector3.new(point[1],90,point[2]),Vector3.new(0,-130,0),q)
+                assert(hit,'no walking surface on '..route.id)
+                return hit.Position+Vector3.new(0,humanoid.HipHeight+body.Size.Y*.5+.2,0)
+            end
+            body.CFrame=CFrame.new(destination(route.points[1])+Vector3.new(0,1,0))
+            body.AssemblyLinearVelocity=Vector3.zero; task.wait(.3)
+            for i=2,#route.points do
+                local goal=destination(route.points[i])
+                humanoid:MoveTo(goal)
+                local timeout=os.clock()+8
+                repeat task.wait(.1) until (Vector3.new(body.Position.X,0,body.Position.Z)-Vector3.new(goal.X,0,goal.Z)).Magnitude<1.2 or os.clock()>timeout
+                assert((Vector3.new(body.Position.X,0,body.Position.Z)-Vector3.new(goal.X,0,goal.Z)).Magnitude<1.2,
+                    route.id..' avatar stuck at '..tostring(body.Position))
+            end
+            traversed+=1
+        end
+        return traversed..' approaches walked by an avatar with jumping disabled'
+    end)
+    walker:Destroy()
+    assert(ok,result)
+    return result
 end)
 group('engine errors',function()
     assert(#errors==0,table.concat(errors,' | '))

@@ -41,24 +41,33 @@ function Layout.build(root,W,Assets,V,Landscape)
     end
     local function route(nodes,width,lit,definition)
         local distance=0
+        local along=0
+        local approach=definition and Landscape.Approaches[definition.id]
         for j=1,#nodes-1 do
             local a,b=nodes[j],nodes[j+1]
-            local count=math.max(1,math.ceil((b-a).Magnitude/3))
+            local run=(b-a).Magnitude
+            local count=math.max(1,math.ceil(run/(if approach then .65 else 3)))
             for k=1,count do
                 local u,v=a:Lerp(b,(k-1)/count),a:Lerp(b,k/count)
                 local function surfaceHeight(x,z)
                     local hit=workspace:Raycast(Vector3.new(x,100,z),Vector3.new(0,-220,0),terrainQuery)
                     return math.max(Landscape.height(x,z),hit and hit.Position.Y or -100,definition and definition.bridge and .2 or -100)+1
                 end
-                local au=Vector3.new(u.X,surfaceHeight(u.X,u.Z),u.Z)
-                local bv=Vector3.new(v.X,surfaceHeight(v.X,v.Z),v.Z)
+                local au=Vector3.new(u.X,if approach then Landscape.approachHeight(definition.id,along+run*(k-1)/count) else surfaceHeight(u.X,u.Z),u.Z)
+                local bv=Vector3.new(v.X,if approach then Landscape.approachHeight(definition.id,along+run*k/count) else surfaceHeight(v.X,v.Z),v.Z)
                 local length=(bv-au).Magnitude
                 local cf=CFrame.lookAt((au+bv)/2,bv)
+                if approach then
+                    -- Level stone treads, at most half a stud of rise; no steep
+                    -- tilted slabs and no reliance on Humanoid jumping.
+                    length=run/count
+                    cf=CFrame.lookAt(Vector3.new((u.X+v.X)/2,(au.Y+bv.Y)/2,(u.Z+v.Z)/2),Vector3.new(v.X,(au.Y+bv.Y)/2,v.Z))
+                end
                 local clearance=0
                 for _,fraction in {-.5,-.25,0,.25,.5} do
                     local sample=(cf*CFrame.new(0,0,(length+.2)*fraction)).Position
                     local hit=workspace:Raycast(Vector3.new(sample.X,100,sample.Z),Vector3.new(0,-220,0),terrainQuery)
-                    if hit then clearance=math.max(clearance,hit.Position.Y+.7-sample.Y) end
+                    if hit and not approach then clearance=math.max(clearance,hit.Position.Y+.7-sample.Y) end
                 end
                 cf+=Vector3.new(0,clearance,0)
                 local tile=p('ReferenceWalkway',Vector3.new(width,1,length+0.2),cf,cobble,Enum.Material.Cobblestone)
@@ -68,6 +77,7 @@ function Layout.build(root,W,Assets,V,Landscape)
                 tile:SetAttribute('Bridge',definition and definition.bridge or false)
                 if definition and definition.bridge then tile.Material=Enum.Material.WoodPlanks; tile.Color=Color3.fromRGB(98,65,44) end
                 if definition and definition.plot then tile:SetAttribute('PlotApproach',definition.plot) end
+                if approach then tile:SetAttribute('StairTread',true) end
                 for _,side in {-1,1} do
                     local curbCf=cf*CFrame.new(side*(width/2+.25),.4,0)
                     if atJunction(curbCf.X,curbCf.Z,1) then continue end
@@ -83,6 +93,7 @@ function Layout.build(root,W,Assets,V,Landscape)
                     end
                 end
             end
+            along+=run
         end
     end
     local function nodes(coords)
@@ -94,7 +105,9 @@ function Layout.build(root,W,Assets,V,Landscape)
     for i=0,64 do local a=i*math.pi*2/64; table.insert(ring,Vector3.new(math.sin(a)*45,0,math.cos(a)*45)) end
     route(ring,12,false)
     for _,definition in Plan.Routes do route(nodes(definition.points),definition.width,true,definition) end
-    for z=-90,-164,-2 do
+    -- Level porch ends at the visible door, outside the facade.
+    p('MansionDoorLanding',Vector3.new(10.5,1,7),CFrame.new(0,31,-157.5),cobble,Enum.Material.Cobblestone)
+    for z=-90,-154,-2 do
         local h=Landscape.height(0,z)
         p('MansionAvenueStair',Vector3.new(18,1.1,2.2),CFrame.new(0,h+.95,z),Color3.fromRGB(114,97,109),Enum.Material.Cobblestone)
         for _,side in {-1,1} do
