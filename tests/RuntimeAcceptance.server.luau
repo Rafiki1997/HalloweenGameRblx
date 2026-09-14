@@ -2,6 +2,7 @@
 local Players=game:GetService('Players')
 local Shared=game:GetService('ReplicatedStorage'):WaitForChild('Ghostlight')
 local Rules=require(Shared.Rules)
+local C=require(Shared.Config)
 local Profiles=require(script.Parent.Profiles)
 local H=require(script.Parent.Hunting)
 local W=require(script.Parent.World)
@@ -11,7 +12,11 @@ local testRemote=Instance.new('RemoteEvent'); testRemote.Name='RuntimeTestStatus
 testRemote.OnServerEvent:Connect(function(player,status)
     if status=='Ready' then player:SetAttribute('TestClientReady',true)
     elseif status=='Scriptable' then player:SetAttribute('TestCameraScriptable',true)
-    elseif status=='Custom' then player:SetAttribute('TestCameraScriptable',false) end
+    elseif status=='Custom' then player:SetAttribute('TestCameraScriptable',false)
+    elseif status=='EncounterShown' then player:SetAttribute('TestEncounterVisible',true)
+    elseif status=='EncounterHidden' then player:SetAttribute('TestEncounterVisible',false)
+    elseif status=='BattleShown' then player:SetAttribute('TestBattleVisible',true)
+    elseif status=='BattleHidden' then player:SetAttribute('TestBattleVisible',false) end
 end)
 local function check(value,message)
     assert(value,'ACCEPTANCE FAIL: '..message)
@@ -50,13 +55,39 @@ local ok,err=pcall(function()
     check((player:GetAttribute('Floor') or 0)==0,'locked area request rejected')
     client('EnterFloor',1,function() return player:GetAttribute('Floor')==1 end)
     check(player:GetAttribute('Floor')==1,'client entered foyer')
+    local contactGhost
+    for _,g in H.Ghosts do if g.Floor==1 then contactGhost=g; break end end
+    player.Character:PivotTo(CFrame.new(contactGhost.Pos))
+    check(untilTrue(function() return H.Active[player]~=nil end,2),'physical contact begins an encounter')
+    local encounterGhost=H.Active[player]
+    check(encounterGhost.IntroUntil and player.Character.HumanoidRootPart.Anchored,'intro reserves ghost and freezes movement')
+    check(untilTrue(function() return player:GetAttribute('TestEncounterVisible') end,2),'client creates encounter overlay')
+    H.click(player,encounterGhost.Id)
+    check(encounterGhost.Progress==0,'intro blocks capture progress')
+    check(untilTrue(function() return not encounterGhost.IntroUntil end,C.Encounter.Duration+2),'intro completes on server')
+    check(player.Character.HumanoidRootPart.Anchored and encounterGhost.Battle,'intro enters 1v1 with mansion movement paused')
+    check(untilTrue(function() return player:GetAttribute('TestEncounterVisible')==false end,2),'client removes completed overlay')
+    check(untilTrue(function() return player:GetAttribute('TestBattleVisible')==true end,2),'client opens 1v1 screen')
+    check(untilTrue(function() return encounterGhost.Spot~=nil end,3),'server issues a timed weak spot')
+    local spot=encounterGhost.Spot
+    local claim={Id=encounterGhost.Id,Token=spot.Token,X=spot.X,Y=spot.Y}
+    local progress=encounterGhost.Progress
+    H.weakSpot(player,claim)
+    check(encounterGhost.Progress==progress,'early weak-spot claim is rejected in engine')
+    untilTrue(function() return workspace:GetServerTimeNow()>=spot.EndsAt end,3)
+    H.click(player,encounterGhost.Id); progress=encounterGhost.Progress
+    H.weakSpot(player,claim)
+    check(math.abs(encounterGhost.Progress-progress-C.Battle.SpotBonus)<0.001,'closing-circle bonus adds 12 percentage points in engine')
+    progress=encounterGhost.Progress; H.weakSpot(player,claim)
+    check(encounterGhost.Progress==progress,'duplicate bonus cannot be replayed in engine')
     local function catch()
-        local ghost
-        for _,g in H.Ghosts do if g.Floor==1 then ghost=g; break end end
+        local ghost=H.Active[player]
+        if not ghost then for _,g in H.Ghosts do if g.Floor==1 then ghost=g; break end end end
         assert(ghost,'No matching test ghost')
         local before=#p.Bag
         local deadline=os.clock()+25
         repeat
+            ghost=H.Active[player] or ghost
             player.Character:PivotTo(CFrame.new(ghost.Pos+Vector3.new(0,0,7)))
             H.click(player,ghost.Id)
             task.wait(0.12)
@@ -66,6 +97,9 @@ local ok,err=pcall(function()
     end
     local first=catch()
     check(p.Owned[first]==1 and p.Discovered[first],'capture ownership and discovery recorded once')
+    check(not player.Character.HumanoidRootPart.Anchored,'capture restores mansion movement')
+    check(untilTrue(function() return player:GetAttribute('TestBattleVisible')==false end,3),'capture result closes 1v1 screen')
+    check(untilTrue(function() return player:GetAttribute('TestCameraScriptable')==false end,2),'capture restores exploration camera')
     client('Home',nil,function() return player:GetAttribute('Floor')==0 end)
     check(player:GetAttribute('Floor')==0,'client returned home')
     client('Deposit',nil,function() return #p.Bag==0 and #p.Placed==1 end)

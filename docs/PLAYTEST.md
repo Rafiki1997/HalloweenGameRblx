@@ -49,16 +49,23 @@ four decimals (no scale compensation needed), role names survived import, 275 Me
 - [ ] Mansion terrace: the ridge reads as a hillside behind the house; boulders sit on the ground.
 - [ ] Frame rate holds with the terrain and roughly 260 extra silhouette parts.
 
-Local verification is not a substitute for Roblox playtesting. A pre-feedback single-client Studio baseline passed 26 automated checks (see STUDIO-ACCEPTANCE.txt). The next run should repeat that fixture against this feedback pass. It used starter capture power, server-driven chase/click calls into the real hunting service, and client RemoteEvent requests for travel, deposit, upgrades, flashlight, chamber and rebirth. The fixture grants money/unlocks to reach late systems and accelerates one chamber reward; this is functional testing, not a balance or manual-input playthrough. Test controls are absent from the shipped place.
+The 1v1 capture build passed 41 single-client Studio acceptance checks: contact, intro-to-battle transition, timed bonus validation, capture reward, movement/camera/UI restoration, travel, deposit, upgrades, chamber and rebirth. The fixture uses starter capture power, server-driven clicks and weak-spot claims into the actual hunting service, and client RemoteEvent requests for travel and progression. It grants money/unlocks and accelerates one chamber reward. Temporary test runners were removed from the open production place after the run.
 
-Ten local rule-test groups also pass. All nine production scripts compile and the packaged sources match. Desktop startup was inspected. The checklist below deliberately remains open for complete manual release acceptance, including feel, visual quality, multiplayer and real DataStores.
+All 18 production scripts compile and match their packaged sources; 26 deterministic encounter checks, 11 rule groups and 9 landscape groups pass locally. The desktop battle layout was inspected in Studio, and the client input review recorded a real cursor-triggered +0.12 bonus. The avatar follow-up uses 1.2-second closing rings and a fixed vacuum-ready pose. In Studio, all 16 R15 body parts matched after changing the source rig's animation transforms and facing; the vacuum grip matched the right hand and its nozzle faced forward. The resulting battle pose was visually checked. The checks below remain for broader visual, hardware, multiplayer and persistence acceptance.
 
 ## Fresh player
+- [x] Run into a mansion ghost: flash, black sweeps and ghost reveal transition to a private 1v1 screen with the hunter, ghost and bottom capture bar.
+- [x] Closing circles award +12 percentage points alongside clicks. Early and duplicate claims are rejected; capture rewards once and restores movement, camera and HUD.
+- [x] The battle avatar keeps the player's appearance, adopts a fixed stance facing screen-right toward the ghost, and holds a fresh vacuum in its right hand. Rings close in 1.2 seconds.
+- [ ] During the intro, capture progress pauses. Mansion movement and attacks stay paused throughout the battle. Q/FLEE releases; death, respawn, travel and disconnect restore movement and remove overlays. Contact cannot immediately retrigger after release (3-second cooldown).
+- [ ] On touch, repeatedly tap to capture while holding a finger inside a closing circle. On gamepad, aim with the right stick, click with A/R2 and flee with B. Verify misses, changing targets and moving outside at closure.
+- [ ] Full bags, walls, other floors and another hunter's reserved ghost block the encounter. On two clients, only the initiating hunter sees the transition.
+- [ ] Review the intro on phone portrait/landscape and desktop: full-screen wipe has no uncovered bands, ghost fits its viewport, dialogue stays readable, HUD returns and camera stays unchanged.
 - [ ] Town, roofs, paths, lamps and signs render; seven available plots leave the mansion approach clear; character spawns safely.
 - [ ] One Haunt is assigned and the vacuum is held correctly.
 - [ ] Mansion entry opens the free foyer; locked floors reject entry.
 - [ ] Ghosts wander and are targetable; walls block initial locks.
-- [ ] Repeated clicks progress capture, resistance pushes ghosts away, and inactivity/range/unequipping breaks the beam.
+- [ ] Repeated clicks progress capture while resistance gradually drains progress. Missed circles add no penalty. Fifteen seconds of inactivity, the two-minute limit, travel or unequipping releases the battle.
 - [ ] Common and higher-rarity captures complete at 100% with compression into the nozzle and a result toast.
 - [ ] Flashlight and room switches work and dark areas remain navigable.
 - [ ] Full vacuum blocks further captures. Returning and depositing frees capacity without creating copies.
@@ -84,6 +91,8 @@ Ten local rule-test groups also pass. All nine production scripts compile and th
 - [ ] Profile frame rate with eight clients. Current budget: 42 wild ghosts at 10 Hz plus chamber hunters at 5 Hz.
 
 ## Current implementation limits
+
+- Desktop encounter and 1v1 behavior were checked in Studio. Hardware touch/gamepad use, small-screen visual review and multiplayer playtests remain pending. Weak-spot ownership, token, timing, finite pointer coordinates and radius are validated on the server; physical cursor position is necessarily reported by the client.
 
 - Functional part-built art; custom mesh production and reference-level visual polish remain.
 - Mansion progression uses six isolated themed wings reached through the area selector, rather than vertically connected floors.

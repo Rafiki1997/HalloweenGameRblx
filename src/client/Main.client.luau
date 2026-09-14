@@ -9,6 +9,8 @@ local Shared=ReplicatedStorage:WaitForChild('Ghostlight')
 local C=require(Shared.Config)
 local Rules=require(Shared.Rules)
 local V=require(Shared.Visuals)
+local Encounter=require(script.Parent.Encounter)
+local Battle=require(script.Parent.Battle)
 local remote=Shared:WaitForChild('Action')
 local player=Players.LocalPlayer
 local mouse=player:GetMouse()
@@ -119,7 +121,7 @@ local function sortedGhosts()
 end
 local benefits={Suction='Stronger pull during capture',Capture='More progress per click',Capacity='Carry more ghosts per trip',Movement='Run faster while exploring',Flashlight='Brighter, longer light beam',Haunt='More display slots and estate decorations'}
 local function render(name)
-    if not state then return end
+    if not state or Battle.isActive() or Encounter.isPlaying() then return end
     currentPanel=name; panel.Visible=true; actions.Visible=false; captureBox.Visible=false; title.Text=string.upper(name); clearList()
     local p=state.Profile
     if name=='Haunt' then
@@ -192,13 +194,13 @@ local function aimedGhost()
     return best
 end
 require(Shared.LabelVisibility).start(player,function()
-    if currentPanel then return nil end
+    if currentPanel or Battle.isActive() or Encounter.isPlaying() then return nil end
     local id=targetId or aimedGhost()
     return id and wildGhost(id) or nil
 end)
 local vacuumButton
 local function click()
-    if currentPanel or chamberCenter then return end
+    if currentPanel or chamberCenter or Encounter.isPlaying() or Battle.isActive() then return end
     local id=targetId or aimedGhost()
     if id then
         send('Click',id)
@@ -233,6 +235,8 @@ local function beamOn(data)
     if data.UserId==player.UserId then targetId=data.Id; suction:Play() end
 end
 local function captureEnd()
+    Encounter.cancel()
+    Battle.close()
     targetId=nil; captureBox.Visible=false; suction:Stop()
 end
 local function finale(data)
@@ -258,7 +262,9 @@ local function finale(data)
         end)
     end
     if data.UserId==player.UserId then
-        captureEnd()
+        if Battle.isActive() then
+            Battle.finish(data); targetId=nil; captureBox.Visible=false; suction:Stop()
+        else captureEnd() end
         local gdata=C.Ghosts[data.Species]
         sound('rbxasset://sounds/volume_slider.ogg',0.35,if gdata.Rarity>=5 then 0.75 else 1.1)
         notify(string.upper(C.Rarities[gdata.Rarity])..' GHOST CAPTURED!\n'..gdata.Name,V.color(gdata.Rarity))
@@ -284,7 +290,7 @@ remote.OnClientEvent:Connect(function(event,data)
         if chamberCenter then objective.Text='HAUNT CHAMBER • Your ghosts are hunting.'
         elseif #p.Bag>=Rules.capacity(p) then objective.Text='Vacuum full · Return home to deposit'
         elseif #p.Placed==0 and #p.Bag>0 then objective.Text='Return to your Haunt and DEPOSIT to start earning.'
-        elseif floor>0 then objective.Text='Click to capture · F: light · Q: release'
+        elseif floor>0 then objective.Text='Touch a ghost or click to encounter · F: light · Q: release'
         elseif state.Income==0 then objective.Text='Enter the mansion to catch your first ghost'
         elseif p.Floor<6 then objective.Text='Next area: '..C.Floors[p.Floor+1].Name..' • '..money(C.Floors[p.Floor+1].Cost)
         else objective.Text='Explore the Catacombs or work toward your next rebirth.' end
@@ -300,6 +306,7 @@ remote.OnClientEvent:Connect(function(event,data)
     elseif event=='BeamOn' then beamOn(data)
     elseif event=='BeamOff' then beamOff(data.UserId)
     elseif event=='CaptureProgress' then
+        if Battle.isActive() then Battle.progress(data); return end
         captureBox.Visible=not currentPanel; bar.Size=UDim2.fromScale(data.Progress,1)
         local g=wildGhost(targetId)
         if g and g.PrimaryPart then
@@ -309,6 +316,16 @@ remote.OnClientEvent:Connect(function(event,data)
         end
         captureText.Text=C.Ghosts[data.Species].Name..' • '..math.floor(data.Progress*100)..'%\n'..(if data.Surge then 'PULLING AWAY! CHASE IT!' else 'KEEP CLICKING!')
         bar.BackgroundColor3=if data.Surge then amber else mint
+    elseif event=='EncounterStart' then
+        captureEnd(); panel.Visible=false; currentPanel=nil; toast.Visible=false; actions.Visible=true
+        targetId=data.Id
+        Encounter.play(player,gui,data)
+    elseif event=='BattleStart' then
+        Encounter.cancel()
+        targetId=data.Id; captureBox.Visible=false
+        Battle.open(player,gui,data,remote)
+    elseif event=='WeakSpot' then Battle.weakSpot(data)
+    elseif event=='WeakSpotResult' then Battle.weakSpotResult(data)
     elseif event=='CaptureEnd' then captureEnd(); if data and data~='' then notify(data) end
     elseif event=='GhostAttack' then
         notify('THE '..string.upper(C.Ghosts[data.Species].Name)..' STRIKES!\nKeep moving while you vacuum.',Color3.fromRGB(255,117,135))
@@ -331,6 +348,7 @@ remote.OnClientEvent:Connect(function(event,data)
     end
 end)
 UserInputService.InputBegan:Connect(function(input,processed)
+    if Battle.isActive() then return end
     if processed then return end
     if input.UserInputType==Enum.UserInputType.MouseButton1 or input.KeyCode==Enum.KeyCode.ButtonR2 then click()
     elseif input.KeyCode==Enum.KeyCode.F or input.KeyCode==Enum.KeyCode.ButtonX then send('Flashlight')

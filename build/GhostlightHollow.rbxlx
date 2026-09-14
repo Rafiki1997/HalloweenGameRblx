@@ -209,6 +209,10 @@ C.UpgradeNames = {'Suction','Capture','Capacity','Movement','Flashlight'}
 C.UpgradeBase = {Suction=15000,Capture=20000,Capacity=12000,Movement=10000,Flashlight=8000}
 C.MaxUpgrade = 6
 C.Capture = {Range=24, BreakRange=38, ClickInterval=0.09, IdleTimeout=2.5, Tick=0.1, AttackInterval=4.5, AttackRange=12, AttackDamage=0.7}
+-- Intro duration is shared by the server reservation and client screen transition.
+C.Encounter = {Duration=2.8, TouchRange=5.5, Cooldown=3}
+C.Battle = {IdleTimeout=15, MaxDuration=120, SpotDelay=0.8, SpotDuration=1.2,
+    SpotGap=0.7, SpotRadius=0.10, SpotBonus=0.12, EarlyTolerance=0.08, LateTolerance=0.45}
 C.ChamberInterval = 35
 C.Ghosts = {
     little_boo={Name='Little Boo',Rarity=1,Income=3,Shape='ReferenceGhost',Weight=30},
@@ -957,7 +961,7 @@ local Shared=game:GetService('ReplicatedStorage'):WaitForChild('Ghostlight')
 local C=require(Shared.Config)
 local Rules=require(Shared.Rules)
 local V=require(Shared.Visuals)
-local H={Ghosts={},Active={},LastClick={}}
+local H={Ghosts={},Active={},LastClick={},NextEncounter={}}
 local rng=Random.new()
 local world,profiles,remote,onChanged
 local function character(player)
@@ -969,13 +973,19 @@ end
 local function equipped(player)
     return player.Character and player.Character:FindFirstChild('Spectral Vacuum')
 end
+local function releaseEncounter(g)
+    if g.FrozenRoot and g.FrozenRoot.Parent then g.FrozenRoot.Anchored=g.WasAnchored end
+    g.FrozenRoot=nil; g.IntroUntil=nil; g.Battle=nil; g.Spot=nil; g.NextSpot=nil
+end
 function H.cancel(player,message)
     local g=H.Active[player]
     if g then
+        releaseEncounter(g)
+        H.NextEncounter[player]=os.clock()+C.Encounter.Cooldown
         g.Owner=nil; g.Progress=0; g.Model:SetAttribute('Hunter',nil)
         H.Active[player]=nil
         remote:FireAllClients('BeamOff',{UserId=player.UserId})
-        remote:FireClient(player,'CaptureEnd',message or 'Ghost escaped! Stay close and keep clicking.')
+        remote:FireClient(player,'CaptureEnd',message or 'Ghost escaped! Keep clicking during the encounter.')
     end
 end
 local function spawnGhost(floor)
@@ -1001,24 +1011,69 @@ function H.click(player,id)
     if not g or g.Finishing or (g.Owner and g.Owner~=player) or g.Floor&gt;p.Floor or player:GetAttribute('Floor')~=g.Floor then return end
     if #p.Bag&gt;=Rules.capacity(p) then remote:FireClient(player,'Notice','VACUUM FULL • Return to your Haunt to deposit.'); return end
     if H.Active[player] and H.Active[player]~=g then return end
+    if g.IntroUntil then return end
     local range=if g.Owner then C.Capture.BreakRange else C.Capture.Range+p.Upgrades.Suction
     if (root.Position-g.Pos).Magnitude&gt;range then return end
     if not g.Owner then
+        if now&lt;(H.NextEncounter[player] or 0) then return end
         local params=RaycastParams.new(); params.FilterType=Enum.RaycastFilterType.Exclude; params.FilterDescendantsInstances={player.Character,world.GhostFolder}
         local hit=workspace:Raycast(root.Position,g.Pos-root.Position,params)
         if hit then return end
         g.Owner=player; g.Progress=0; g.Start=now; H.Active[player]=g
         g.Model:SetAttribute('Hunter',player.UserId)
-        remote:FireAllClients('BeamOn',{UserId=player.UserId,Id=g.Id})
+        -- Reserve immediately, but do not attack, decay progress, or start suction under the wipe.
+        g.IntroUntil=now+C.Encounter.Duration
+        g.FrozenRoot=root; g.WasAnchored=root.Anchored; root.Anchored=true
+        remote:FireClient(player,'EncounterStart',{Id=g.Id,Species=g.Species,EndsAt=workspace:GetServerTimeNow()+C.Encounter.Duration})
+        return
     end
-                        g.LastClick=now
+    g.LastClick=now
+    g.LastActivity=now
     g.Progress=Rules.capture(g.Progress,1,p.Upgrades.Capture,C.Ghosts[g.Species].Difficulty,0)
+end
+local function sendProgress(player,g)
+    remote:FireClient(player,'CaptureProgress',{Id=g.Id,Progress=g.Progress,Species=g.Species,Battle=true})
+end
+local function spawnSpot(player,g,now)
+    local spot={Token=Http:GenerateGUID(false),X=rng:NextNumber(0.24,0.76),Y=rng:NextNumber(0.24,0.76),
+        EndsAt=workspace:GetServerTimeNow()+C.Battle.SpotDuration}
+    g.Spot=spot
+    g.NextSpot=now+C.Battle.SpotDuration+C.Battle.LateTolerance+C.Battle.SpotGap
+    remote:FireClient(player,'WeakSpot',{Id=g.Id,Token=spot.Token,X=spot.X,Y=spot.Y,EndsAt=spot.EndsAt})
+end
+function H.weakSpot(player,claim)
+    if type(claim)~='table' or type(claim.Token)~='string' or #claim.Token&gt;60 then return end
+    -- The client reports a pointer position, never a reward amount or trusted timestamp.
+    for _,key in {'X','Y'} do
+        local n=claim[key]
+        if type(n)~='number' or n~=n or n&lt;0 or n&gt;1 then return end
+    end
+    local g=H.Active[player]
+    local p=profiles.get(player)
+    local root=character(player)
+    if not g or not g.Battle or g.Finishing or not g.Spot or not p or not root or root~=g.FrozenRoot then return end
+    if not equipped(player) or player:GetAttribute('Chamber') or player:GetAttribute('Floor')~=g.Floor or #p.Bag&gt;=Rules.capacity(p) then return end
+    local spot=g.Spot
+    if claim.Id~=g.Id or claim.Token~=spot.Token then return end
+    local offset=workspace:GetServerTimeNow()-spot.EndsAt
+    if offset&lt; -C.Battle.EarlyTolerance or offset&gt;C.Battle.LateTolerance then return end
+    if (claim.X-spot.X)^2+(claim.Y-spot.Y)^2&gt;C.Battle.SpotRadius^2 then return end
+    -- Aim bonuses supplement active clicking. Parking the cursor alone cannot farm captures.
+    if os.clock()-g.LastClick&gt;C.Capture.IdleTimeout then return end
+    g.Spot=nil -- Consume before changing progress: replayed claims cannot award twice.
+    local before=g.Progress
+    g.Progress=math.min(1,g.Progress+C.Battle.SpotBonus)
+    g.LastActivity=os.clock()
+    remote:FireClient(player,'WeakSpotResult',{Id=g.Id,Token=spot.Token,Hit=true,Bonus=g.Progress-before,Progress=g.Progress})
+    sendProgress(player,g)
 end
 local function finish(player,g,p)
     g.Finishing=true
     if not Rules.captureReward(p,g.Species) then g.Finishing=false; H.cancel(player,'Vacuum full.'); return end
     -- Award once on the server. The visual finale cannot grant or repeat a reward.
+    releaseEncounter(g)
     H.Active[player]=nil; H.Ghosts[g.Id]=nil
+    H.NextEncounter[player]=os.clock()+C.Encounter.Cooldown
     remote:FireAllClients('Captured',{UserId=player.UserId,Id=g.Id,Species=g.Species})
     onChanged(player)
     task.delay(0.8,function() g.Model:Destroy() end)
@@ -1038,31 +1093,43 @@ function H.start(w,p,r,changed)
                     local player=g.Owner
                     local data=profiles.get(player)
                     local root=character(player)
-                    if not root or not data or not equipped(player) or player:GetAttribute('Floor')~=g.Floor or (root.Position-g.Pos).Magnitude&gt;C.Capture.BreakRange or now-g.LastClick&gt;C.Capture.IdleTimeout then
+                    if g.IntroUntil then
+                        if not root or root~=g.FrozenRoot or not data or not equipped(player) or player:GetAttribute('Chamber') or player:GetAttribute('Floor')~=g.Floor then
+                            H.cancel(player,'')
+                        elseif now&gt;=g.IntroUntil then
+                            g.IntroUntil=nil; g.Battle=true
+                            g.Start=now; g.LastClick=now; g.LastActivity=now; g.NextSpot=now+C.Battle.SpotDelay
+                            remote:FireClient(player,'BattleStart',{Id=g.Id,Species=g.Species,Progress=0})
+                            remote:FireAllClients('BeamOn',{UserId=player.UserId,Id=g.Id})
+                        end
+                        continue
+                    end
+                    if not root or root~=g.FrozenRoot or not data or not equipped(player) or player:GetAttribute('Chamber') or player:GetAttribute('Floor')~=g.Floor or (root.Position-g.Pos).Magnitude&gt;C.Capture.BreakRange or now-g.LastActivity&gt;C.Battle.IdleTimeout or now-g.Start&gt;C.Battle.MaxDuration then
                         H.cancel(player)
                     else
                         if g.Progress&gt;=1 then finish(player,g,data); continue end
                         g.Progress=Rules.capture(g.Progress,0,data.Upgrades.Capture,C.Ghosts[g.Species].Difficulty,C.Capture.Tick)
-                        if now-(g.LastAttack or 0)&gt;=C.Capture.AttackInterval and (root.Position-g.Pos).Magnitude&lt;=C.Capture.AttackRange then
-                            g.LastAttack=now
-                            local humanoid=player.Character and player.Character:FindFirstChildOfClass('Humanoid')
-                            if humanoid and not player:GetAttribute('TestInvulnerable') then humanoid:TakeDamage(C.Capture.AttackDamage*10) end
-                            g.Progress=math.max(0,g.Progress-C.Capture.AttackDamage*0.08)
-                            remote:FireClient(player,'GhostAttack',{Species=g.Species})
+                        -- The mansion actors stay reserved and stationary for the whole 1v1.
+                        -- Resistance still drains progress, but no off-screen chase or damage occurs.
+                        if g.Spot and workspace:GetServerTimeNow()&gt;g.Spot.EndsAt+C.Battle.LateTolerance then
+                            remote:FireClient(player,'WeakSpotResult',{Id=g.Id,Token=g.Spot.Token,Hit=false,Progress=g.Progress})
+                            g.Spot=nil
                         end
-                        local away=g.Pos-root.Position
-                        away=Vector3.new(away.X,0,away.Z)
-                        if away.Magnitude&lt;0.1 then away=Vector3.new(0,0,-1) end
-                        away=away.Unit
-                        local surge=math.sin((now-g.Start)*2.7+g.Seed)&gt;0.55
-                        local speed=if surge then 9+C.Ghosts[g.Species].Rarity else -2-data.Upgrades.Suction*0.65-g.Progress*5
-                        local side=Vector3.new(-away.Z,0,away.X)*math.sin(now*5+g.Seed)*4
-                        g.Pos+= (away*speed+side)*C.Capture.Tick
-                        local relative=g.Pos-area.Center
-                        g.Pos=area.Center+Vector3.new(math.clamp(relative.X,-51,51),4+math.sin(now*7)*0.35,math.clamp(relative.Z,-40,36))
-                        remote:FireClient(player,'CaptureProgress',{Progress=g.Progress,Species=g.Species,Surge=surge})
+                        if now&gt;=g.NextSpot then spawnSpot(player,g,now) end
+                        sendProgress(player,g)
                     end
                 else
+                    -- Anchored, non-colliding ghosts do not reliably fire Touched. Check contact
+                    -- on the server, then use the same capacity/floor/line-of-sight validation as clicks.
+                    for _,player in Players:GetPlayers() do
+                        local root=character(player)
+                        if root and not H.Active[player] and now&gt;=(H.NextEncounter[player] or 0) and player:GetAttribute('Floor')==g.Floor and (root.Position-g.Pos).Magnitude&lt;=C.Encounter.TouchRange then
+                            local data=profiles.get(player)
+                            if data and #data.Bag&lt;Rules.capacity(data) then H.click(player,g.Id) end
+                            if g.Owner then break end
+                        end
+                    end
+                    if g.Owner then continue end
                     if now&gt;g.NextMove then
                         g.NextMove=now+rng:NextNumber(2,5)
                         g.Target=area.Center+Vector3.new(rng:NextNumber(-48,48),4,rng:NextNumber(-37,28))
@@ -1088,7 +1155,7 @@ function H.start(w,p,r,changed)
             end
         end
     end)
-    Players.PlayerRemoving:Connect(function(player) H.cancel(player); H.LastClick[player]=nil end)
+    Players.PlayerRemoving:Connect(function(player) H.cancel(player); H.LastClick[player]=nil; H.NextEncounter[player]=nil end)
 end
 return H
 </ProtectedString>
@@ -1411,7 +1478,7 @@ local function enterFloor(player,floor)
     player:SetAttribute('Floor',floor)
     player.Character:PivotTo(CFrame.new(World.Areas[floor].Entry))
     stats(player); push(player)
-    notice(player,'Aim at a ghost and click repeatedly. Chase it when it pulls away!')
+    notice(player,'Run into a ghost or click one to encounter it, then click repeatedly to vacuum!')
 end
 Hunt.start(World,Profiles,remote,push)
 Chamber.start(World,Profiles,remote,push)
@@ -1431,6 +1498,7 @@ World.RebirthAltarPrompt.Triggered:Connect(function(player) if near(player,World
 remote.OnServerEvent:Connect(function(player,action,arg)
     if type(action)~='string' or #action&gt;24 then return end
     if action=='Click' then Hunt.click(player,arg); return end
+    if action=='WeakSpot' then Hunt.weakSpot(player,arg); return end
     local now=os.clock()
     if now-(lastRequest[player] or 0)&lt;0.15 then return end
     lastRequest[player]=now
@@ -2187,7 +2255,532 @@ return W
         <Properties>
           <string name="Name">GhostlightClient</string>
         </Properties>
-        <Item class="LocalScript" referent="RBXa94e91f39d1841b9d3d400ef5791133bc5328eab">
+        <Item class="ModuleScript" referent="RBX2a6ef7b3e419a21f0fe827aa201015f46535defb">
+          <Properties>
+            <string name="Name">Battle</string>
+            <ProtectedString name="Source">-- Private 1v1 capture screen. All progress and weak-spot rewards come from the server.
+local RunService=game:GetService('RunService')
+local UserInputService=game:GetService('UserInputService')
+local GuiService=game:GetService('GuiService')
+local ContextActionService=game:GetService('ContextActionService')
+local Shared=game:GetService('ReplicatedStorage'):WaitForChild('Ghostlight')
+local C=require(Shared.Config)
+local V=require(Shared.Visuals)
+local BattleAvatar=require(script.Parent.BattleAvatar)
+local Battle={}
+local active=nil
+local movementAction='GhostlightBattleMovement'
+local ink=Color3.fromRGB(242,237,220)
+local mint=Color3.fromRGB(133,255,220)
+local gold=Color3.fromRGB(255,204,118)
+local dark=Color3.fromRGB(19,14,31)
+local function make(class,parent,props)
+    local obj=Instance.new(class)
+    for k,v in props do obj[k]=v end
+    obj.Parent=parent
+    return obj
+end
+local function box(parent,name,size,pos,color,z)
+    return make('Frame',parent,{Name=name,Size=size,Position=pos,BackgroundColor3=color,BorderSizePixel=0,ZIndex=z or 1})
+end
+local function label(parent,name,value,size,pos,color,maxSize,z)
+    local obj=make('TextLabel',parent,{Name=name,Text=value,Size=size,Position=pos,BackgroundTransparency=1,
+        Font=Enum.Font.Arcade,TextColor3=color or ink,TextScaled=true,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=z or 2})
+    make('UITextSizeConstraint',obj,{MinTextSize=9,MaxTextSize=maxSize or 26})
+    return obj
+end
+local function outline(obj,color,thickness)
+    return make('UIStroke',obj,{Color=color,Thickness=thickness or 2})
+end
+local function round(obj) make('UICorner',obj,{CornerRadius=UDim.new(1,0)}) end
+local function contains(obj,pos)
+    local p,s=obj.AbsolutePosition,obj.AbsoluteSize
+    return pos.X&gt;=p.X and pos.Y&gt;=p.Y and pos.X&lt;=p.X+s.X and pos.Y&lt;=p.Y+s.Y
+end
+local function listen(session,signal,fn)
+    table.insert(session.Connections,signal:Connect(fn))
+end
+local function portrait(parent,name,model,size,pos,back)
+    local vp=make('ViewportFrame',parent,{Name=name,Size=size,Position=pos,BackgroundTransparency=1,Active=false,
+        Ambient=Color3.fromRGB(165,161,189),LightColor=Color3.fromRGB(255,245,228),LightDirection=Vector3.new(-1,-1,2),ZIndex=4})
+    local wm=make('WorldModel',vp,{Name='PortraitWorld'})
+    model.Parent=wm
+    for _,obj in model:GetDescendants() do
+        if obj:IsA('Script') or obj:IsA('LocalScript') or obj:IsA('BillboardGui') or obj:IsA('Sound') then obj:Destroy()
+        elseif obj:IsA('BasePart') then obj.Anchored=true; obj.CanCollide=false; obj.LocalTransparencyModifier=0 end
+    end
+    model:PivotTo(CFrame.new())
+    local bounds,extent=model:GetBoundingBox()
+    local camera=make('Camera',vp,{FieldOfView=38})
+    vp.CurrentCamera=camera
+    return {Viewport=vp,Model=model,Camera=camera,Bounds=bounds,Extent=extent,Back=back,Pivot=model:GetPivot(),Scale=model:GetScale()}
+end
+local function fitPortrait(p,t,shrink)
+    local vp=p.Viewport
+    local aspect=math.max(0.1,vp.AbsoluteSize.X/math.max(1,vp.AbsoluteSize.Y))
+    local distance=math.max(p.Extent.Y,p.Extent.X/aspect)*0.58/math.tan(math.rad(19))+p.Extent.Z*0.65
+    -- Back-right view projects the hunter's forward (-Z) direction toward the ghost on screen-right.
+    local direction=if p.Back then Vector3.new(1.25,0.12,1).Unit else Vector3.new(0,0,-1)
+    p.Camera.CFrame=CFrame.lookAt(p.Bounds.Position+direction*distance,p.Bounds.Position)
+    p.Model:ScaleTo(p.Scale*shrink)
+    p.Model:PivotTo(p.Pivot*CFrame.new(0,if p.Back then 0 else math.sin(t*2.4)*0.15,0))
+end
+function Battle.isActive() return active~=nil end
+function Battle.close()
+    local s=active
+    if not s then return end
+    active=nil
+    for _,connection in s.Connections do connection:Disconnect() end
+    ContextActionService:UnbindAction(movementAction)
+    if s.Gui then s.Gui:Destroy() end
+    if s.Hud.Parent then s.Hud.Enabled=s.HudEnabled end
+    if s.Camera and s.Camera==workspace.CurrentCamera then s.Camera.CameraType=s.CameraType end
+    UserInputService.MouseBehavior=s.MouseBehavior
+    UserInputService.MouseIconEnabled=s.MouseIconEnabled
+end
+local function click(s)
+    if active~=s or s.Finished then return end
+    local now=os.clock()
+    if now-s.LastClick&lt;C.Capture.ClickInterval then return end
+    s.LastClick=now
+    s.Remote:FireServer('Click',s.Id)
+    s.PulseUntil=now+0.13
+end
+function Battle.progress(data)
+    local s=active
+    if not s or s.Id~=data.Id or s.Finished then return end
+    s.Progress=data.Progress
+end
+function Battle.weakSpot(data)
+    local s=active
+    if not s or s.Id~=data.Id or s.Finished then return end
+    s.Spot=data; s.SpotClaimed=false; s.Target.Visible=true; s.Ring.Visible=true
+    s.Target.Position=UDim2.fromScale(data.X,data.Y)
+    s.Ring.Position=s.Target.Position
+    s.Feedback.Text='AIM INSIDE WHEN THE RING CLOSES'
+    s.Feedback.TextColor3=dark
+end
+function Battle.weakSpotResult(data)
+    local s=active
+    if not s or s.Id~=data.Id or not s.Spot or s.Spot.Token~=data.Token or s.Finished then return end
+    s.Progress=data.Progress
+    s.Spot=nil; s.Target.Visible=false; s.Ring.Visible=false
+    s.Feedback.Text=if data.Hit then string.format('WEAK SPOT! +%d%% CAPTURE',math.floor(data.Bonus*100+0.5)) else 'MISSED! KEEP CLICKING'
+    s.Feedback.TextColor3=if data.Hit then Color3.fromRGB(18,112,90) else Color3.fromRGB(136,80,15)
+    if data.Hit then s.Cue:Play(); s.PulseUntil=os.clock()+0.3 end
+end
+function Battle.finish(data)
+    local s=active
+    if not s or s.Id~=data.Id then return end
+    s.Finished=os.clock(); s.Progress=1; s.Spot=nil
+    s.Target.Visible=false; s.Ring.Visible=false; s.Exit.Visible=false
+    s.Feedback.Text=string.upper(C.Ghosts[data.Species].Name)..' CAPTURED!'
+    s.Feedback.TextColor3=Color3.fromRGB(18,112,90)
+    s.Help.Text='Added to your vacuum. Returning to the mansion...'
+    task.delay(1.35,function() if active==s then Battle.close() end end)
+end
+function Battle.open(player,hud,data,remote)
+    Battle.close()
+    local s={Id=data.Id,Hud=hud,HudEnabled=hud.Enabled,Connections={},Remote=remote,Progress=data.Progress or 0,
+        ShownProgress=0,LastClick=0,PulseUntil=0,Touches={},Stick=Vector2.new(),PadCursor=Vector2.new(0.5,0.5),
+        MouseBehavior=UserInputService.MouseBehavior,MouseIconEnabled=UserInputService.MouseIconEnabled}
+    active=s
+    local ok,err=xpcall(function()
+        local species=C.Ghosts[data.Species]
+        local accent=V.color(species.Rarity)
+        local playerGui=player:WaitForChild('PlayerGui')
+        if active~=s then return end
+        local gui=make('ScreenGui',playerGui,{Name='GhostlightBattle',IgnoreGuiInset=true,
+            ResetOnSpawn=false,DisplayOrder=900,ZIndexBehavior=Enum.ZIndexBehavior.Sibling})
+        s.Gui=gui
+        local backdrop=box(gui,'Backdrop',UDim2.fromScale(1,1),UDim2.new(),dark)
+        make('UIGradient',backdrop,{Color=ColorSequence.new(Color3.fromRGB(16,13,28),Color3.fromRGB(53,36,66)),Rotation=90})
+        local content=box(backdrop,'Content',UDim2.new(1,-48,1,-76),UDim2.fromOffset(24,60),dark)
+        content.BackgroundTransparency=1
+        label(content,'Heading','GHOST ENCOUNTER',UDim2.fromScale(0.67,0.09),UDim2.new(),gold,30)
+        s.Exit=make('TextButton',content,{Name='Flee',Text='FLEE [Q]',Size=UDim2.fromScale(0.22,0.09),Position=UDim2.fromScale(0.78,0),
+            BackgroundColor3=Color3.fromRGB(62,42,70),TextColor3=ink,TextScaled=true,Font=Enum.Font.Arcade,BorderSizePixel=0,ZIndex=3})
+        make('UITextSizeConstraint',s.Exit,{MinTextSize=10,MaxTextSize=20})
+        listen(s,s.Exit.Activated,function() if not s.Finished then remote:FireServer('Cancel') end end)
+        local arena=box(content,'Arena',UDim2.fromScale(1,0.59),UDim2.fromScale(0,0.12),Color3.fromRGB(50,39,70))
+        arena.ClipsDescendants=true; outline(arena,accent)
+        make('UIGradient',arena,{Color=ColorSequence.new(Color3.fromRGB(34,29,52),Color3.fromRGB(90,67,97)),Rotation=90})
+        -- Tall windows and floor lines suggest the mansion, with diagonal Pokemon-style platforms.
+        for i=1,5 do
+            local window=box(arena,'Window'..i,UDim2.fromScale(0.09,0.49),UDim2.fromScale(i*0.19-0.12,-0.09),Color3.fromRGB(139,117,165),2)
+            window.BackgroundTransparency=0.85
+            box(window,'Mullion',UDim2.fromScale(0.08,1),UDim2.fromScale(0.46,0),Color3.fromRGB(43,32,57),2)
+        end
+        for i=1,5 do
+            local line=box(arena,'FloorLine'..i,UDim2.new(1,0,0,1),UDim2.fromScale(0,0.46+i*0.10),accent,2)
+            line.BackgroundTransparency=0.88
+        end
+        local near=box(arena,'PlayerPlatform',UDim2.fromScale(0.46,0.16),UDim2.fromScale(0.015,0.80),Color3.fromRGB(90,86,111),3); round(near); outline(near,Color3.fromRGB(142,131,159))
+        local far=box(arena,'GhostPlatform',UDim2.fromScale(0.39,0.12),UDim2.fromScale(0.56,0.56),Color3.fromRGB(107,91,123),3); round(far); outline(far,accent)
+        local nameplate=box(arena,'GhostNameplate',UDim2.fromScale(0.43,0.20),UDim2.fromScale(0.035,0.05),dark,5)
+        outline(nameplate,accent)
+        label(nameplate,'GhostName',species.Name,UDim2.fromScale(0.90,0.50),UDim2.fromScale(0.05,0.07),ink,26,6)
+        label(nameplate,'Rarity','WILD / '..string.upper(C.Rarities[species.Rarity]),UDim2.fromScale(0.90,0.25),UDim2.fromScale(0.05,0.65),accent,16,6)
+        label(arena,'HunterName',player.DisplayName..' / HUNTER',UDim2.fromScale(0.44,0.07),UDim2.fromScale(0.03,0.91),ink,16,5)
+        local wild=workspace:FindFirstChild('GhostlightWorld')
+        wild=wild and wild:FindFirstChild('WildGhosts')
+        local original=wild and wild:FindFirstChild('Ghost_'..data.Id)
+        local ghost=if original then original:Clone() else V.ghost(data.Species,nil,CFrame.new(),1,false)
+        if active~=s then ghost:Destroy(); return end
+        ghost:ScaleTo(1)
+        s.Ghost=portrait(arena,'Opponent',ghost,UDim2.fromScale(0.40,0.61),UDim2.fromScale(0.55,0.025),false)
+        local char=player.Character
+        if char then
+            local avatar=BattleAvatar.create(char)
+            s.Hunter=portrait(arena,'Hunter',avatar,UDim2.fromScale(0.48,0.69),UDim2.fromScale(0.01,0.23),true)
+        end
+        local field=box(arena,'WeakSpotField',UDim2.fromOffset(200,200),UDim2.fromScale(0.73,0.43),dark,8)
+        field.AnchorPoint=Vector2.new(0.5,0.5); field.BackgroundTransparency=1; s.Field=field
+        s.Target=box(field,'Target',UDim2.fromScale(C.Battle.SpotRadius*2,C.Battle.SpotRadius*2),UDim2.fromScale(0.5,0.5),dark,9)
+        s.Target.AnchorPoint=Vector2.new(0.5,0.5); s.Target.BackgroundTransparency=0.20; round(s.Target)
+        s.TargetStroke=outline(s.Target,ink,3)
+        local cross=label(s.Target,'Crosshair','+',UDim2.fromScale(0.75,0.75),UDim2.fromScale(0.125,0.10),ink,30,10)
+        cross.TextXAlignment=Enum.TextXAlignment.Center
+        s.Ring=box(field,'ClosingRing',UDim2.fromScale(0.44,0.44),UDim2.fromScale(0.5,0.5),mint,10)
+        s.Ring.AnchorPoint=Vector2.new(0.5,0.5); s.Ring.BackgroundTransparency=1; round(s.Ring); s.RingStroke=outline(s.Ring,gold,3)
+        s.Target.Visible=false; s.Ring.Visible=false
+        s.PadMarker=box(field,'GamepadCursor',UDim2.fromOffset(9,9),UDim2.fromScale(0.5,0.5),mint,12)
+        s.PadMarker.AnchorPoint=Vector2.new(0.5,0.5); round(s.PadMarker); outline(s.PadMarker,dark,2); s.PadMarker.Visible=false
+        local footer=box(content,'CapturePanel',UDim2.fromScale(1,0.25),UDim2.fromScale(0,0.75),Color3.fromRGB(239,232,212))
+        outline(footer,accent,3)
+        s.Feedback=label(footer,'Feedback','CLICK ANYWHERE TO VACUUM',UDim2.fromScale(0.90,0.23),UDim2.fromScale(0.04,0.065),dark,24)
+        local track=box(footer,'CaptureTrack',UDim2.fromScale(0.92,0.21),UDim2.fromScale(0.04,0.37),Color3.fromRGB(58,48,72),2)
+        s.Bar=box(track,'CaptureFill',UDim2.fromScale(0,1),UDim2.new(),mint,3)
+        s.Percent=label(track,'CapturePercent','CAPTURE 0%',UDim2.fromScale(0.98,0.88),UDim2.fromScale(0.01,0.05),ink,20,4)
+        s.Percent.TextXAlignment=Enum.TextXAlignment.Center; s.Percent.TextStrokeTransparency=0.25; s.Percent.TextStrokeColor3=dark
+        s.Help=label(footer,'Instructions','Click to capture. Hover inside a circle as its ring closes: +12%.',UDim2.fromScale(0.92,0.28),UDim2.fromScale(0.04,0.66),Color3.fromRGB(70,56,86),18)
+        s.Cue=make('Sound',gui,{SoundId='rbxasset://sounds/volume_slider.ogg',Volume=0.28,PlaybackSpeed=1.35})
+        hud.Enabled=false
+        s.Camera=workspace.CurrentCamera; s.CameraType=s.Camera.CameraType; s.Camera.CameraType=Enum.CameraType.Scriptable
+        UserInputService.MouseBehavior=Enum.MouseBehavior.Default; UserInputService.MouseIconEnabled=true
+        ContextActionService:BindActionAtPriority(movementAction,function() return Enum.ContextActionResult.Sink end,false,3000,
+            Enum.PlayerActions.CharacterForward,Enum.PlayerActions.CharacterBackward,Enum.PlayerActions.CharacterLeft,
+            Enum.PlayerActions.CharacterRight,Enum.PlayerActions.CharacterJump)
+        listen(s,UserInputService.InputBegan,function(input,processed)
+            if s.Finished or GuiService.MenuIsOpen or UserInputService:GetFocusedTextBox() then return end
+            local kind=input.UserInputType
+            if kind==Enum.UserInputType.MouseButton1 or kind==Enum.UserInputType.Touch then
+                local pos=if kind==Enum.UserInputType.Touch then Vector2.new(input.Position.X,input.Position.Y) else UserInputService:GetMouseLocation()
+                if not contains(content,pos) or contains(s.Exit,pos) then return end
+                s.Mode=if kind==Enum.UserInputType.Touch then 'Touch' else 'Mouse'
+                if kind==Enum.UserInputType.Touch then s.Touches[input]=pos end
+                click(s)
+            elseif not processed and (input.KeyCode==Enum.KeyCode.ButtonR2 or input.KeyCode==Enum.KeyCode.ButtonA) then
+                s.Mode='Gamepad'; click(s)
+            elseif not processed and (input.KeyCode==Enum.KeyCode.Q or input.KeyCode==Enum.KeyCode.ButtonB) then remote:FireServer('Cancel') end
+        end)
+        listen(s,UserInputService.InputChanged,function(input)
+            if input.UserInputType==Enum.UserInputType.Touch and s.Touches[input] then s.Touches[input]=Vector2.new(input.Position.X,input.Position.Y)
+            elseif input.KeyCode==Enum.KeyCode.Thumbstick2 then s.Stick=Vector2.new(input.Position.X,-input.Position.Y); s.Mode='Gamepad'
+            elseif input.UserInputType==Enum.UserInputType.MouseMovement then s.Mode='Mouse' end
+        end)
+        listen(s,UserInputService.InputEnded,function(input) s.Touches[input]=nil end)
+        listen(s,UserInputService.WindowFocusReleased,function() s.Focused=false; table.clear(s.Touches); s.Stick=Vector2.new() end)
+        listen(s,UserInputService.WindowFocused,function() s.Focused=true end)
+        listen(s,RunService.RenderStepped,function(dt)
+            if active~=s then return end
+            local now=os.clock()
+            local side=math.min(arena.AbsoluteSize.X*0.52,arena.AbsoluteSize.Y*0.83)
+            field.Size=UDim2.fromOffset(side,side)
+            local finishTime=if s.Finished then math.clamp((now-s.Finished)/0.8,0,1) else 0
+            fitPortrait(s.Ghost,now,math.max(0.03,(1-s.Progress*0.12)*(1-finishTime)))
+            if s.Hunter then fitPortrait(s.Hunter,now,1) end
+            s.ShownProgress+=(s.Progress-s.ShownProgress)*math.min(1,dt*16)
+            s.Bar.Size=UDim2.fromScale(s.ShownProgress,1)
+            s.Bar.BackgroundColor3=if now&lt;s.PulseUntil then gold else mint
+            s.Percent.Text='CAPTURE '..math.floor(s.Progress*100+0.5)..'%'
+            s.PadMarker.Visible=s.Mode=='Gamepad' and not s.Finished
+            if s.Mode=='Gamepad' then
+                s.PadCursor=Vector2.new(math.clamp(s.PadCursor.X+s.Stick.X*dt*0.7,0,1),math.clamp(s.PadCursor.Y+s.Stick.Y*dt*0.7,0,1))
+                s.PadMarker.Position=UDim2.fromScale(s.PadCursor.X,s.PadCursor.Y)
+            end
+            if not s.Finished then
+                s.Help.Text=if s.Mode=='Touch' then 'Tap to capture. Hold a circle as its ring closes: +12%.'
+                    elseif s.Mode=='Gamepad' then 'A / R2: capture. Right stick: aim. B: flee. Circles: +12%.'
+                    else 'Click to capture. Hover inside a circle as its ring closes: +12%.'
+            end
+            local spot=s.Spot
+            if not spot then return end
+            local remaining=spot.EndsAt-workspace:GetServerTimeNow()
+            local t=math.clamp(1-remaining/C.Battle.SpotDuration,0,1)
+            local radius=C.Battle.SpotRadius+(0.23-C.Battle.SpotRadius)*(1-t)
+            s.Ring.Size=UDim2.fromScale(radius*2,radius*2)
+            local pointer
+            local function testPoint(pos)
+                local uv=(pos-field.AbsolutePosition)/math.max(1,side)
+                if (uv-Vector2.new(spot.X,spot.Y)).Magnitude&lt;=C.Battle.SpotRadius then pointer=uv end
+            end
+            if s.Mode=='Touch' then for _,pos in s.Touches do testPoint(pos) end
+            elseif s.Mode=='Gamepad' then testPoint(field.AbsolutePosition+s.PadCursor*side)
+            else testPoint(UserInputService:GetMouseLocation()) end
+            local over=pointer~=nil and s.Focused~=false and not GuiService.MenuIsOpen and not UserInputService:GetFocusedTextBox()
+            s.TargetStroke.Color=if over then mint else ink
+            s.RingStroke.Color=if over then mint else gold
+            if remaining&lt;=0 and remaining&gt;= -C.Battle.LateTolerance and not s.SpotClaimed then
+                s.SpotClaimed=true -- Judge the pointer at closure, not after a missed circle.
+                if over then remote:FireServer('WeakSpot',{Id=s.Id,Token=spot.Token,X=pointer.X,Y=pointer.Y}) end
+            end
+            if remaining&lt; -C.Battle.LateTolerance then s.Target.Visible=false; s.Ring.Visible=false end
+        end)
+    end,debug.traceback)
+    if not ok then
+        if active==s then Battle.close(); remote:FireServer('Cancel') end
+        warn('Ghost battle screen: '..tostring(err))
+    end
+end
+return Battle
+</ProtectedString>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="RBX54ec8bbe7c5b4d4fa4573f0bbfd8cea6edab6a29">
+          <Properties>
+            <string name="Name">BattleAvatar</string>
+            <ProtectedString name="Source">-- A deterministic display rig using the player's appearance, not their current animation pose.
+local V=require(game:GetService('ReplicatedStorage'):WaitForChild('Ghostlight').Visuals)
+local Avatar={}
+local poses={
+    RightShoulder={65,0,8}, ['Right Shoulder']={75,0,8},
+    LeftShoulder={30,0,-10}, ['Left Shoulder']={30,0,-10},
+    RightElbow={20,0,0}, LeftElbow={15,0,0}, RightWrist={-10,0,0},
+}
+function Avatar.create(character)
+    local archivable=character.Archivable
+    character.Archivable=true
+    local ok,model=pcall(function() return character:Clone() end)
+    character.Archivable=archivable
+    assert(ok and model,'Could not clone the battle avatar')
+    local built,err=xpcall(function()
+        model.Name='BattleAvatar'
+        for _,obj in model:GetDescendants() do
+            if obj:IsA('Tool') or obj:IsA('Script') or obj:IsA('LocalScript') or obj:IsA('Animator')
+                or obj:IsA('AnimationController') or obj:IsA('Sound') or obj:IsA('Beam') or obj:IsA('Trail') then
+                obj:Destroy()
+            elseif obj:IsA('BasePart') then
+                obj.Anchored=true; obj.CanCollide=false; obj.LocalTransparencyModifier=0
+            end
+        end
+        local root=model:FindFirstChild('HumanoidRootPart')
+        assert(root,'Battle avatar has no root')
+        model.PrimaryPart=root
+        model:PivotTo(root.CFrame:Inverse()*model:GetPivot())
+        local joints={}
+        for _,joint in model:GetDescendants() do
+            if (joint:IsA('JointInstance') or joint:IsA('WeldConstraint')) and joint.Part0 and joint.Part1
+                and joint.Part0:IsDescendantOf(model) and joint.Part1:IsDescendantOf(model) then
+                local offset
+                if joint:IsA('WeldConstraint') then
+                    offset=joint.Part0.CFrame:ToObjectSpace(joint.Part1.CFrame)
+                else
+                    if joint:IsA('Motor6D') then
+                        joint.Transform=CFrame.new()
+                        local pose=poses[joint.Name]
+                        if pose then
+                            -- Rotate in the parent's axes so both R6 and R15 shoulder bases work.
+                            joint.C0=CFrame.new(joint.C0.Position)*CFrame.Angles(math.rad(pose[1]),math.rad(pose[2]),math.rad(pose[3]))*joint.C0.Rotation
+                        end
+                    end
+                    offset=joint.C0*joint.C1:Inverse()
+                end
+                table.insert(joints,{Parent=joint.Part0,Child=joint.Part1,Offset=offset})
+            end
+        end
+        -- Anchored viewport rigs do not solve joints automatically. Rebuild the body and
+        -- accessory CFrames from the neutral skeleton, removing any captured run/jump pose.
+        local solved={[root]=true}
+        for _=1,#joints do
+            local changed=false
+            for _,joint in joints do
+                if solved[joint.Parent] and not solved[joint.Child] then
+                    joint.Child.CFrame=joint.Parent.CFrame*joint.Offset
+                    solved[joint.Child]=true; changed=true
+                end
+            end
+            if not changed then break end
+        end
+        local hand=model:FindFirstChild('RightHand') or model:FindFirstChild('Right Arm')
+        assert(hand,'Battle avatar has no right hand')
+        local gripAttachment=hand:FindFirstChild('RightGripAttachment')
+        local gripPosition=if gripAttachment then gripAttachment.Position else Vector3.new(0,-hand.Size.Y*0.5,0)
+        -- Always create a fresh vacuum: a cloned live Tool can retain a stale RightGrip,
+        -- suction effects or a position from the middle of an equipment animation.
+        local vacuum=V.vacuum(); vacuum.Parent=model
+        local handle=vacuum.Handle
+        local gripCF=CFrame.new(hand.CFrame:PointToWorldSpace(gripPosition))*root.CFrame.Rotation
+        local delta=gripCF*handle.CFrame:Inverse()
+        for _,part in vacuum:GetDescendants() do
+            if part:IsA('BasePart') then part.CFrame=delta*part.CFrame; part.Anchored=true end
+        end
+        local weld=Instance.new('Weld'); weld.Name='BattleGrip'; weld.Part0=hand; weld.Part1=handle
+        weld.C0=hand.CFrame:ToObjectSpace(gripCF); weld.C1=CFrame.new(); weld.Parent=hand
+        model:SetAttribute('BattlePose','VacuumReadyV1')
+    end,debug.traceback)
+    if not built then model:Destroy(); error(err) end
+    return model
+end
+return Avatar
+</ProtectedString>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="RBX92293e7e902348e3e77808815d35b0680d5918a8">
+          <Properties>
+            <string name="Name">Encounter</string>
+            <ProtectedString name="Source">-- Original handheld-RPG encounter treatment, built entirely from UI and our ghost models.
+-- One render loop owns the sequence; cancellation destroys every temporary instance.
+local RunService=game:GetService('RunService')
+local ContextActionService=game:GetService('ContextActionService')
+local Shared=game:GetService('ReplicatedStorage'):WaitForChild('Ghostlight')
+local C=require(Shared.Config)
+local V=require(Shared.Visuals)
+local Encounter={}
+local active=nil
+local inputAction='GhostlightEncounterInput'
+local function make(class,parent,props)
+    local obj=Instance.new(class)
+    for key,value in props do obj[key]=value end
+    obj.Parent=parent
+    return obj
+end
+local function box(parent,name,size,pos,color,z)
+    return make('Frame',parent,{Name=name,Size=size,Position=pos,BackgroundColor3=color,BorderSizePixel=0,ZIndex=z or 1})
+end
+local function text(parent,name,value,size,pos,color,z)
+    local label=make('TextLabel',parent,{Name=name,Text=value,Size=size,Position=pos,BackgroundTransparency=1,
+        Font=Enum.Font.Arcade,TextColor3=color,TextScaled=true,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=z or 2})
+    make('UITextSizeConstraint',label,{MinTextSize=10,MaxTextSize=32})
+    return label
+end
+local function ease(t)
+    t=math.clamp(t,0,1)
+    return 1-(1-t)^3
+end
+function Encounter.isPlaying()
+    return active~=nil
+end
+function Encounter.cancel()
+    local session=active
+    if not session then return end
+    active=nil
+    ContextActionService:UnbindAction(inputAction)
+    if session.Gui then session.Gui:Destroy() end
+    if session.Hud.Parent then session.Hud.Enabled=session.HudEnabled end
+end
+function Encounter.play(player,hud,data)
+    Encounter.cancel()
+    local species=C.Ghosts[data.Species]
+    if not species then return end
+    local session={Hud=hud,HudEnabled=hud.Enabled}
+    active=session
+    task.spawn(function()
+        local ok,err=xpcall(function()
+            local playerGui=player:WaitForChild('PlayerGui')
+            if active~=session then return end
+            local black=Color3.fromRGB(10,8,18)
+            local paper=Color3.fromRGB(244,237,215)
+            local accent=V.color(species.Rarity)
+            local gui=make('ScreenGui',playerGui,{Name='GhostlightEncounter',
+                IgnoreGuiInset=true,ResetOnSpawn=false,DisplayOrder=1000,ZIndexBehavior=Enum.ZIndexBehavior.Sibling})
+            session.Gui=gui
+            local canvas=make('CanvasGroup',gui,{Name='Transition',Size=UDim2.fromScale(1,1),BackgroundTransparency=1,BorderSizePixel=0,Active=true})
+            local scene=box(canvas,'BattleReveal',UDim2.fromScale(1,1),UDim2.new(),black,1)
+            scene.Visible=false
+            local stage=box(scene,'GhostStage',UDim2.fromScale(1,0.48),UDim2.fromScale(0,0.15),Color3.fromRGB(51,38,75),2)
+            stage.ClipsDescendants=true
+            make('UIGradient',stage,{Color=ColorSequence.new(Color3.fromRGB(23,18,41),Color3.fromRGB(92,67,114)),Rotation=90})
+            box(scene,'TopRule',UDim2.new(1,0,0,4),UDim2.fromScale(0,0.15),accent,3)
+            box(scene,'BottomRule',UDim2.new(1,0,0,4),UDim2.fromScale(0,0.63),accent,3)
+            text(scene,'EncounterHeading','GHOST ENCOUNTER',UDim2.fromScale(0.86,0.06),UDim2.fromScale(0.07,0.055),accent,3)
+            local streaks={}
+            for i=1,14 do
+                local stripe=box(stage,'SpeedLine'..i,UDim2.fromScale(0.15+(i%4)*0.06,0.006),UDim2.fromScale((i*0.29)%1,i/16),accent,3)
+                stripe.BackgroundTransparency=0.7
+                table.insert(streaks,stripe)
+            end
+            local ground=box(stage,'GhostShadow',UDim2.fromScale(0.32,0.10),UDim2.fromScale(0.53,0.83),black,3)
+            make('UICorner',ground,{CornerRadius=UDim.new(1,0)})
+            ground.BackgroundTransparency=0.2
+            local viewport=make('ViewportFrame',stage,{Name='GhostPortrait',Size=UDim2.fromScale(0.52,0.92),Position=UDim2.fromScale(0.43,0.01),
+                BackgroundTransparency=1,Ambient=Color3.fromRGB(155,155,180),LightColor=Color3.new(1,1,1),LightDirection=Vector3.new(-1,-1,2),ZIndex=4})
+            local wm=make('WorldModel',viewport,{Name='PortraitWorld'})
+            local world=workspace:FindFirstChild('GhostlightWorld')
+            local wild=world and world:FindFirstChild('WildGhosts')
+            local original=wild and wild:FindFirstChild('Ghost_'..data.Id)
+            local ghost
+            if original then
+                ghost=original:Clone(); ghost.Parent=wm; ghost:ScaleTo(1); ghost:PivotTo(CFrame.new())
+            else
+                ghost=V.ghost(data.Species,wm,CFrame.new(),1,false)
+            end
+            -- Model loading can yield. A canceled/expired intro must never hide the HUD later.
+            if active~=session or workspace:GetServerTimeNow()&gt;=data.EndsAt then return end
+            for _,obj in ghost:GetDescendants() do
+                if obj:IsA('BillboardGui') or obj:IsA('Script') or obj:IsA('LocalScript') then obj:Destroy() end
+            end
+            local bounds,size=ghost:GetBoundingBox()
+            local camera=make('Camera',viewport,{FieldOfView=40})
+            viewport.CurrentCamera=camera
+            local rarity=text(stage,'Rarity',string.upper(C.Rarities[species.Rarity]),UDim2.fromScale(0.34,0.12),UDim2.fromScale(0.07,0.24),accent,4)
+            text(stage,'WildLabel','WILD GHOST',UDim2.fromScale(0.32,0.09),UDim2.fromScale(0.07,0.41),paper,4)
+            local dialogue=box(scene,'DialogueBorder',UDim2.fromScale(0.90,0.23),UDim2.fromScale(0.05,0.70),accent,3)
+            local inner=box(dialogue,'Paper',UDim2.new(1,-8,1,-8),UDim2.fromOffset(4,4),paper,4)
+            local message='A wild '..species.Name..' appeared!'
+            local caption=text(inner,'EncounterText',message,UDim2.fromScale(0.90,0.49),UDim2.fromScale(0.05,0.08),black,5)
+            text(inner,'Hint','Get your vacuum ready!',UDim2.fromScale(0.90,0.22),UDim2.fromScale(0.05,0.68),Color3.fromRGB(78,65,96),5)
+            local flash=box(canvas,'Flash',UDim2.fromScale(1,1),UDim2.new(),paper,8)
+            flash.BackgroundTransparency=1
+            local bands={}
+            for i=1,12 do
+                local band=box(canvas,'Sweep'..i,UDim2.new(1,2,1/12,2),UDim2.new(if i%2==0 then -1.01 else 1.01,0,(i-1)/12,0),black,10)
+                table.insert(bands,band)
+            end
+            hud.Enabled=false
+            ContextActionService:BindActionAtPriority(inputAction,function() return Enum.ContextActionResult.Sink end,false,3000,
+                Enum.PlayerActions.CharacterForward,Enum.PlayerActions.CharacterBackward,Enum.PlayerActions.CharacterLeft,
+                Enum.PlayerActions.CharacterRight,Enum.PlayerActions.CharacterJump)
+            -- Bundled effect: no uploaded audio or Pokemon assets required.
+            local cue=make('Sound',gui,{SoundId='rbxasset://sounds/volume_slider.ogg',Volume=0.22,PlaybackSpeed=0.65})
+            cue:Play()
+            local endsAt=data.EndsAt
+            while active==session do
+                local t=math.clamp(1-(endsAt-workspace:GetServerTimeNow())/C.Encounter.Duration,0,1)
+                if t&gt;=1 then session.Completed=true; break end
+                -- A single warm flash, followed by staggered alternating horizontal shutters.
+                flash.BackgroundTransparency=if t&lt;0.16 then 1-math.sin(t/0.16*math.pi)*0.72 else 1
+                scene.Visible=t&gt;=0.40
+                for i,band in bands do
+                    local direction=if i%2==0 then -1 else 1
+                    local delay=(i-1)*0.006
+                    local covered=ease((t-0.16-delay)/0.16)
+                    local opened=ease((t-0.44-delay)/0.15)
+                    band.Position=UDim2.new(direction*((1-covered)-opened)*1.01,0,(i-1)/12,0)
+                end
+                local arrival=ease((t-0.44)/0.23)
+                viewport.Position=UDim2.fromScale(0.43+(1-arrival)*0.65,0.01)
+                viewport.ImageColor3=Color3.new(1,1,1):Lerp(Color3.fromRGB(15,10,25),1-ease((t-0.56)/0.12))
+                rarity.TextTransparency=1-arrival
+                caption.MaxVisibleGraphemes=math.floor(#message*math.clamp((t-0.59)/0.17,0,1))
+                for i,stripe in streaks do stripe.Position=UDim2.fromScale(((i*0.29-t*(1+i%3))%1.4)-0.25,i/16) end
+                local aspect=math.max(0.1,viewport.AbsoluteSize.X/math.max(1,viewport.AbsoluteSize.Y))
+                local distance=math.max(size.Y,size.X/aspect)*0.60/math.tan(math.rad(20))+size.Z*0.5
+                camera.CFrame=CFrame.lookAt(bounds.Position+Vector3.new(0,0,-distance),bounds.Position)
+                -- Hold the reveal until BattleStart swaps in the 1v1 screen without a world flash.
+                canvas.GroupTransparency=0
+                RunService.RenderStepped:Wait()
+            end
+        end,debug.traceback)
+        if active==session and (not ok or not session.Completed) then Encounter.cancel() end
+        if not ok then warn('Ghost encounter transition: '..tostring(err)) end
+    end)
+end
+return Encounter
+</ProtectedString>
+          </Properties>
+        </Item>
+        <Item class="LocalScript" referent="RBX84a8b20d310bd4534a49030dd89adeea582ea708">
           <Properties>
             <string name="Name">Main</string>
             <ProtectedString name="Source">local Players=game:GetService('Players')
@@ -2201,6 +2794,8 @@ local Shared=ReplicatedStorage:WaitForChild('Ghostlight')
 local C=require(Shared.Config)
 local Rules=require(Shared.Rules)
 local V=require(Shared.Visuals)
+local Encounter=require(script.Parent.Encounter)
+local Battle=require(script.Parent.Battle)
 local remote=Shared:WaitForChild('Action')
 local player=Players.LocalPlayer
 local mouse=player:GetMouse()
@@ -2311,7 +2906,7 @@ local function sortedGhosts()
 end
 local benefits={Suction='Stronger pull during capture',Capture='More progress per click',Capacity='Carry more ghosts per trip',Movement='Run faster while exploring',Flashlight='Brighter, longer light beam',Haunt='More display slots and estate decorations'}
 local function render(name)
-    if not state then return end
+    if not state or Battle.isActive() or Encounter.isPlaying() then return end
     currentPanel=name; panel.Visible=true; actions.Visible=false; captureBox.Visible=false; title.Text=string.upper(name); clearList()
     local p=state.Profile
     if name=='Haunt' then
@@ -2384,13 +2979,13 @@ local function aimedGhost()
     return best
 end
 require(Shared.LabelVisibility).start(player,function()
-    if currentPanel then return nil end
+    if currentPanel or Battle.isActive() or Encounter.isPlaying() then return nil end
     local id=targetId or aimedGhost()
     return id and wildGhost(id) or nil
 end)
 local vacuumButton
 local function click()
-    if currentPanel or chamberCenter then return end
+    if currentPanel or chamberCenter or Encounter.isPlaying() or Battle.isActive() then return end
     local id=targetId or aimedGhost()
     if id then
         send('Click',id)
@@ -2425,6 +3020,8 @@ local function beamOn(data)
     if data.UserId==player.UserId then targetId=data.Id; suction:Play() end
 end
 local function captureEnd()
+    Encounter.cancel()
+    Battle.close()
     targetId=nil; captureBox.Visible=false; suction:Stop()
 end
 local function finale(data)
@@ -2450,7 +3047,9 @@ local function finale(data)
         end)
     end
     if data.UserId==player.UserId then
-        captureEnd()
+        if Battle.isActive() then
+            Battle.finish(data); targetId=nil; captureBox.Visible=false; suction:Stop()
+        else captureEnd() end
         local gdata=C.Ghosts[data.Species]
         sound('rbxasset://sounds/volume_slider.ogg',0.35,if gdata.Rarity&gt;=5 then 0.75 else 1.1)
         notify(string.upper(C.Rarities[gdata.Rarity])..' GHOST CAPTURED!\n'..gdata.Name,V.color(gdata.Rarity))
@@ -2476,7 +3075,7 @@ remote.OnClientEvent:Connect(function(event,data)
         if chamberCenter then objective.Text='HAUNT CHAMBER • Your ghosts are hunting.'
         elseif #p.Bag&gt;=Rules.capacity(p) then objective.Text='Vacuum full · Return home to deposit'
         elseif #p.Placed==0 and #p.Bag&gt;0 then objective.Text='Return to your Haunt and DEPOSIT to start earning.'
-        elseif floor&gt;0 then objective.Text='Click to capture · F: light · Q: release'
+        elseif floor&gt;0 then objective.Text='Touch a ghost or click to encounter · F: light · Q: release'
         elseif state.Income==0 then objective.Text='Enter the mansion to catch your first ghost'
         elseif p.Floor&lt;6 then objective.Text='Next area: '..C.Floors[p.Floor+1].Name..' • '..money(C.Floors[p.Floor+1].Cost)
         else objective.Text='Explore the Catacombs or work toward your next rebirth.' end
@@ -2492,6 +3091,7 @@ remote.OnClientEvent:Connect(function(event,data)
     elseif event=='BeamOn' then beamOn(data)
     elseif event=='BeamOff' then beamOff(data.UserId)
     elseif event=='CaptureProgress' then
+        if Battle.isActive() then Battle.progress(data); return end
         captureBox.Visible=not currentPanel; bar.Size=UDim2.fromScale(data.Progress,1)
         local g=wildGhost(targetId)
         if g and g.PrimaryPart then
@@ -2501,6 +3101,16 @@ remote.OnClientEvent:Connect(function(event,data)
         end
         captureText.Text=C.Ghosts[data.Species].Name..' • '..math.floor(data.Progress*100)..'%\n'..(if data.Surge then 'PULLING AWAY! CHASE IT!' else 'KEEP CLICKING!')
         bar.BackgroundColor3=if data.Surge then amber else mint
+    elseif event=='EncounterStart' then
+        captureEnd(); panel.Visible=false; currentPanel=nil; toast.Visible=false; actions.Visible=true
+        targetId=data.Id
+        Encounter.play(player,gui,data)
+    elseif event=='BattleStart' then
+        Encounter.cancel()
+        targetId=data.Id; captureBox.Visible=false
+        Battle.open(player,gui,data,remote)
+    elseif event=='WeakSpot' then Battle.weakSpot(data)
+    elseif event=='WeakSpotResult' then Battle.weakSpotResult(data)
     elseif event=='CaptureEnd' then captureEnd(); if data and data~='' then notify(data) end
     elseif event=='GhostAttack' then
         notify('THE '..string.upper(C.Ghosts[data.Species].Name)..' STRIKES!\nKeep moving while you vacuum.',Color3.fromRGB(255,117,135))
@@ -2523,6 +3133,7 @@ remote.OnClientEvent:Connect(function(event,data)
     end
 end)
 UserInputService.InputBegan:Connect(function(input,processed)
+    if Battle.isActive() then return end
     if processed then return end
     if input.UserInputType==Enum.UserInputType.MouseButton1 or input.KeyCode==Enum.KeyCode.ButtonR2 then click()
     elseif input.KeyCode==Enum.KeyCode.F or input.KeyCode==Enum.KeyCode.ButtonX then send('Flashlight')

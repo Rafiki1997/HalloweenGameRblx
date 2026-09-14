@@ -106,7 +106,7 @@ local function enterFloor(player,floor)
     player:SetAttribute('Floor',floor)
     player.Character:PivotTo(CFrame.new(World.Areas[floor].Entry))
     stats(player); push(player)
-    notice(player,'Aim at a ghost and click repeatedly. Chase it when it pulls away!')
+    notice(player,'Run into a ghost or click one to encounter it, then click repeatedly to vacuum!')
 end
 Hunt.start(World,Profiles,remote,push)
 Chamber.start(World,Profiles,remote,push)
@@ -126,6 +126,7 @@ World.RebirthAltarPrompt.Triggered:Connect(function(player) if near(player,World
 remote.OnServerEvent:Connect(function(player,action,arg)
     if type(action)~='string' or #action>24 then return end
     if action=='Click' then Hunt.click(player,arg); return end
+    if action=='WeakSpot' then Hunt.weakSpot(player,arg); return end
     local now=os.clock()
     if now-(lastRequest[player] or 0)<0.15 then return end
     lastRequest[player]=now

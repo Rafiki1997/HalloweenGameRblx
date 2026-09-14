@@ -3,6 +3,7 @@ from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 BIN = ROOT / '.tools/luau'
@@ -29,6 +30,17 @@ for path in sorted((ROOT / 'tests').glob('*.spec.luau')):
     run = subprocess.run([str(BIN / 'luau.exe'), path.relative_to(ROOT).as_posix()], cwd=ROOT)
     if run.returncode:
         failures.append(path.name)
+# Execute the actual server hunting code with deterministic engine doubles.
+harness = (ROOT / 'tests/HuntingHarness.luau').read_text(encoding='utf-8')
+harness = harness.replace('-- HUNTING_SOURCE', (ROOT / 'src/server/Hunting.luau').read_text(encoding='utf-8'))
+with tempfile.NamedTemporaryFile(mode='w', suffix='.luau', dir=ROOT / 'tests', encoding='utf-8', delete=False) as test_file:
+    test_file.write(harness)
+try:
+    run = subprocess.run([str(BIN / 'luau.exe'), test_file.name], cwd=ROOT)
+    if run.returncode:
+        failures.append('hunting encounter transitions')
+finally:
+    Path(test_file.name).unlink()
 tree = ET.parse(ROOT / 'build/GhostlightHollow.rbxlx')
 packed = [node.text for node in tree.findall('.//ProtectedString[@name="Source"]')]
 paths = list((ROOT / 'src').rglob('*.luau'))

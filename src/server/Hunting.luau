@@ -4,7 +4,7 @@ local Shared=game:GetService('ReplicatedStorage'):WaitForChild('Ghostlight')
 local C=require(Shared.Config)
 local Rules=require(Shared.Rules)
 local V=require(Shared.Visuals)
-local H={Ghosts={},Active={},LastClick={}}
+local H={Ghosts={},Active={},LastClick={},NextEncounter={}}
 local rng=Random.new()
 local world,profiles,remote,onChanged
 local function character(player)
@@ -16,13 +16,19 @@ end
 local function equipped(player)
     return player.Character and player.Character:FindFirstChild('Spectral Vacuum')
 end
+local function releaseEncounter(g)
+    if g.FrozenRoot and g.FrozenRoot.Parent then g.FrozenRoot.Anchored=g.WasAnchored end
+    g.FrozenRoot=nil; g.IntroUntil=nil; g.Battle=nil; g.Spot=nil; g.NextSpot=nil
+end
 function H.cancel(player,message)
     local g=H.Active[player]
     if g then
+        releaseEncounter(g)
+        H.NextEncounter[player]=os.clock()+C.Encounter.Cooldown
         g.Owner=nil; g.Progress=0; g.Model:SetAttribute('Hunter',nil)
         H.Active[player]=nil
         remote:FireAllClients('BeamOff',{UserId=player.UserId})
-        remote:FireClient(player,'CaptureEnd',message or 'Ghost escaped! Stay close and keep clicking.')
+        remote:FireClient(player,'CaptureEnd',message or 'Ghost escaped! Keep clicking during the encounter.')
     end
 end
 local function spawnGhost(floor)
@@ -48,24 +54,69 @@ function H.click(player,id)
     if not g or g.Finishing or (g.Owner and g.Owner~=player) or g.Floor>p.Floor or player:GetAttribute('Floor')~=g.Floor then return end
     if #p.Bag>=Rules.capacity(p) then remote:FireClient(player,'Notice','VACUUM FULL • Return to your Haunt to deposit.'); return end
     if H.Active[player] and H.Active[player]~=g then return end
+    if g.IntroUntil then return end
     local range=if g.Owner then C.Capture.BreakRange else C.Capture.Range+p.Upgrades.Suction
     if (root.Position-g.Pos).Magnitude>range then return end
     if not g.Owner then
+        if now<(H.NextEncounter[player] or 0) then return end
         local params=RaycastParams.new(); params.FilterType=Enum.RaycastFilterType.Exclude; params.FilterDescendantsInstances={player.Character,world.GhostFolder}
         local hit=workspace:Raycast(root.Position,g.Pos-root.Position,params)
         if hit then return end
         g.Owner=player; g.Progress=0; g.Start=now; H.Active[player]=g
         g.Model:SetAttribute('Hunter',player.UserId)
-        remote:FireAllClients('BeamOn',{UserId=player.UserId,Id=g.Id})
+        -- Reserve immediately, but do not attack, decay progress, or start suction under the wipe.
+        g.IntroUntil=now+C.Encounter.Duration
+        g.FrozenRoot=root; g.WasAnchored=root.Anchored; root.Anchored=true
+        remote:FireClient(player,'EncounterStart',{Id=g.Id,Species=g.Species,EndsAt=workspace:GetServerTimeNow()+C.Encounter.Duration})
+        return
     end
-                        g.LastClick=now
+    g.LastClick=now
+    g.LastActivity=now
     g.Progress=Rules.capture(g.Progress,1,p.Upgrades.Capture,C.Ghosts[g.Species].Difficulty,0)
+end
+local function sendProgress(player,g)
+    remote:FireClient(player,'CaptureProgress',{Id=g.Id,Progress=g.Progress,Species=g.Species,Battle=true})
+end
+local function spawnSpot(player,g,now)
+    local spot={Token=Http:GenerateGUID(false),X=rng:NextNumber(0.24,0.76),Y=rng:NextNumber(0.24,0.76),
+        EndsAt=workspace:GetServerTimeNow()+C.Battle.SpotDuration}
+    g.Spot=spot
+    g.NextSpot=now+C.Battle.SpotDuration+C.Battle.LateTolerance+C.Battle.SpotGap
+    remote:FireClient(player,'WeakSpot',{Id=g.Id,Token=spot.Token,X=spot.X,Y=spot.Y,EndsAt=spot.EndsAt})
+end
+function H.weakSpot(player,claim)
+    if type(claim)~='table' or type(claim.Token)~='string' or #claim.Token>60 then return end
+    -- The client reports a pointer position, never a reward amount or trusted timestamp.
+    for _,key in {'X','Y'} do
+        local n=claim[key]
+        if type(n)~='number' or n~=n or n<0 or n>1 then return end
+    end
+    local g=H.Active[player]
+    local p=profiles.get(player)
+    local root=character(player)
+    if not g or not g.Battle or g.Finishing or not g.Spot or not p or not root or root~=g.FrozenRoot then return end
+    if not equipped(player) or player:GetAttribute('Chamber') or player:GetAttribute('Floor')~=g.Floor or #p.Bag>=Rules.capacity(p) then return end
+    local spot=g.Spot
+    if claim.Id~=g.Id or claim.Token~=spot.Token then return end
+    local offset=workspace:GetServerTimeNow()-spot.EndsAt
+    if offset< -C.Battle.EarlyTolerance or offset>C.Battle.LateTolerance then return end
+    if (claim.X-spot.X)^2+(claim.Y-spot.Y)^2>C.Battle.SpotRadius^2 then return end
+    -- Aim bonuses supplement active clicking. Parking the cursor alone cannot farm captures.
+    if os.clock()-g.LastClick>C.Capture.IdleTimeout then return end
+    g.Spot=nil -- Consume before changing progress: replayed claims cannot award twice.
+    local before=g.Progress
+    g.Progress=math.min(1,g.Progress+C.Battle.SpotBonus)
+    g.LastActivity=os.clock()
+    remote:FireClient(player,'WeakSpotResult',{Id=g.Id,Token=spot.Token,Hit=true,Bonus=g.Progress-before,Progress=g.Progress})
+    sendProgress(player,g)
 end
 local function finish(player,g,p)
     g.Finishing=true
     if not Rules.captureReward(p,g.Species) then g.Finishing=false; H.cancel(player,'Vacuum full.'); return end
     -- Award once on the server. The visual finale cannot grant or repeat a reward.
+    releaseEncounter(g)
     H.Active[player]=nil; H.Ghosts[g.Id]=nil
+    H.NextEncounter[player]=os.clock()+C.Encounter.Cooldown
     remote:FireAllClients('Captured',{UserId=player.UserId,Id=g.Id,Species=g.Species})
     onChanged(player)
     task.delay(0.8,function() g.Model:Destroy() end)
@@ -85,31 +136,43 @@ function H.start(w,p,r,changed)
                     local player=g.Owner
                     local data=profiles.get(player)
                     local root=character(player)
-                    if not root or not data or not equipped(player) or player:GetAttribute('Floor')~=g.Floor or (root.Position-g.Pos).Magnitude>C.Capture.BreakRange or now-g.LastClick>C.Capture.IdleTimeout then
+                    if g.IntroUntil then
+                        if not root or root~=g.FrozenRoot or not data or not equipped(player) or player:GetAttribute('Chamber') or player:GetAttribute('Floor')~=g.Floor then
+                            H.cancel(player,'')
+                        elseif now>=g.IntroUntil then
+                            g.IntroUntil=nil; g.Battle=true
+                            g.Start=now; g.LastClick=now; g.LastActivity=now; g.NextSpot=now+C.Battle.SpotDelay
+                            remote:FireClient(player,'BattleStart',{Id=g.Id,Species=g.Species,Progress=0})
+                            remote:FireAllClients('BeamOn',{UserId=player.UserId,Id=g.Id})
+                        end
+                        continue
+                    end
+                    if not root or root~=g.FrozenRoot or not data or not equipped(player) or player:GetAttribute('Chamber') or player:GetAttribute('Floor')~=g.Floor or (root.Position-g.Pos).Magnitude>C.Capture.BreakRange or now-g.LastActivity>C.Battle.IdleTimeout or now-g.Start>C.Battle.MaxDuration then
                         H.cancel(player)
                     else
                         if g.Progress>=1 then finish(player,g,data); continue end
                         g.Progress=Rules.capture(g.Progress,0,data.Upgrades.Capture,C.Ghosts[g.Species].Difficulty,C.Capture.Tick)
-                        if now-(g.LastAttack or 0)>=C.Capture.AttackInterval and (root.Position-g.Pos).Magnitude<=C.Capture.AttackRange then
-                            g.LastAttack=now
-                            local humanoid=player.Character and player.Character:FindFirstChildOfClass('Humanoid')
-                            if humanoid and not player:GetAttribute('TestInvulnerable') then humanoid:TakeDamage(C.Capture.AttackDamage*10) end
-                            g.Progress=math.max(0,g.Progress-C.Capture.AttackDamage*0.08)
-                            remote:FireClient(player,'GhostAttack',{Species=g.Species})
+                        -- The mansion actors stay reserved and stationary for the whole 1v1.
+                        -- Resistance still drains progress, but no off-screen chase or damage occurs.
+                        if g.Spot and workspace:GetServerTimeNow()>g.Spot.EndsAt+C.Battle.LateTolerance then
+                            remote:FireClient(player,'WeakSpotResult',{Id=g.Id,Token=g.Spot.Token,Hit=false,Progress=g.Progress})
+                            g.Spot=nil
                         end
-                        local away=g.Pos-root.Position
-                        away=Vector3.new(away.X,0,away.Z)
-                        if away.Magnitude<0.1 then away=Vector3.new(0,0,-1) end
-                        away=away.Unit
-                        local surge=math.sin((now-g.Start)*2.7+g.Seed)>0.55
-                        local speed=if surge then 9+C.Ghosts[g.Species].Rarity else -2-data.Upgrades.Suction*0.65-g.Progress*5
-                        local side=Vector3.new(-away.Z,0,away.X)*math.sin(now*5+g.Seed)*4
-                        g.Pos+= (away*speed+side)*C.Capture.Tick
-                        local relative=g.Pos-area.Center
-                        g.Pos=area.Center+Vector3.new(math.clamp(relative.X,-51,51),4+math.sin(now*7)*0.35,math.clamp(relative.Z,-40,36))
-                        remote:FireClient(player,'CaptureProgress',{Progress=g.Progress,Species=g.Species,Surge=surge})
+                        if now>=g.NextSpot then spawnSpot(player,g,now) end
+                        sendProgress(player,g)
                     end
                 else
+                    -- Anchored, non-colliding ghosts do not reliably fire Touched. Check contact
+                    -- on the server, then use the same capacity/floor/line-of-sight validation as clicks.
+                    for _,player in Players:GetPlayers() do
+                        local root=character(player)
+                        if root and not H.Active[player] and now>=(H.NextEncounter[player] or 0) and player:GetAttribute('Floor')==g.Floor and (root.Position-g.Pos).Magnitude<=C.Encounter.TouchRange then
+                            local data=profiles.get(player)
+                            if data and #data.Bag<Rules.capacity(data) then H.click(player,g.Id) end
+                            if g.Owner then break end
+                        end
+                    end
+                    if g.Owner then continue end
                     if now>g.NextMove then
                         g.NextMove=now+rng:NextNumber(2,5)
                         g.Target=area.Center+Vector3.new(rng:NextNumber(-48,48),4,rng:NextNumber(-37,28))
@@ -135,6 +198,6 @@ function H.start(w,p,r,changed)
             end
         end
     end)
-    Players.PlayerRemoving:Connect(function(player) H.cancel(player); H.LastClick[player]=nil end)
+    Players.PlayerRemoving:Connect(function(player) H.cancel(player); H.LastClick[player]=nil; H.NextEncounter[player]=nil end)
 end
 return H

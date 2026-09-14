@@ -21,6 +21,10 @@ C.UpgradeNames = {'Suction','Capture','Capacity','Movement','Flashlight'}
 C.UpgradeBase = {Suction=15000,Capture=20000,Capacity=12000,Movement=10000,Flashlight=8000}
 C.MaxUpgrade = 6
 C.Capture = {Range=24, BreakRange=38, ClickInterval=0.09, IdleTimeout=2.5, Tick=0.1, AttackInterval=4.5, AttackRange=12, AttackDamage=0.7}
+-- Intro duration is shared by the server reservation and client screen transition.
+C.Encounter = {Duration=2.8, TouchRange=5.5, Cooldown=3}
+C.Battle = {IdleTimeout=15, MaxDuration=120, SpotDelay=0.8, SpotDuration=1.2,
+    SpotGap=0.7, SpotRadius=0.10, SpotBonus=0.12, EarlyTolerance=0.08, LateTolerance=0.45}
 C.ChamberInterval = 35
 C.Ghosts = {
     little_boo={Name='Little Boo',Rarity=1,Income=3,Shape='ReferenceGhost',Weight=30},
